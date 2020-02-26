@@ -9,7 +9,6 @@
    will write the equivalent Direct3D immediate mode program. */
 
 #include <iostream>
-
 #include "src/core/Application.h"
 
 int main(int argc, char **argv)
