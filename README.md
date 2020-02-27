@@ -7,14 +7,12 @@ Before compiling the project, you will need to:
 ## Project setup
 For this to work, you will need to include several library dependencies.
 * Include the 'includes' folder in the root of the directory
-\
 * (Linux/Ubuntu) Add the following libraries to the linker, in this order: 
   1. glfw3
   1. pthread
   1. dl
   1. X11
   1. GL
-\
 * (Windows) All library paths for VC++ should already be specified in the Visual Studio solution files.
 
 ## Compilation
