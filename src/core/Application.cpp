@@ -13,6 +13,9 @@ Application& Application::GetOrCreateApp() {
   if (App == NULL)
   {
     App = new Application();
+    App->init();
+    App->window.setResizeCallback(Application::onResizeCallback);
+    App->window.setKeyCallback(Application::onKeyCallback);
   }
 
   return *App;
@@ -41,18 +44,14 @@ void Application::onKeyCallback(GLFWwindow* window, int key, int scancode, int a
 // NON STATIC MEMBERS
 Application::Application()
   : window(800, 600, "My Window")
-{
-
-}
+{}
 
 Application::~Application()
-{
-
-}
+{}
 
 void Application::onResize(int width, int height)
 {
-    glViewport(0, 0, width, height);
+  glViewport(0, 0, width, height);
 }
 
 void Application::onKey(int key, int scancode, int action, int mods)
@@ -63,7 +62,7 @@ void Application::onKey(int key, int scancode, int action, int mods)
   }
 }
 
-int Application::run()
+void Application::init()
 {
   glfwInit();
   window.initialize();
@@ -71,16 +70,16 @@ int Application::run()
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
   {
-    glfwTerminate();
-    throw "Failed to initialize GLAD";
+	  glfwTerminate();
+	  throw "Failed to initialize GLAD";
   }
 
   // NOTE: order is important here. gladLoadGLLoader must run first
   glViewport(0, 0, window.getInitWidth(), window.getInitHeight());
+}
 
-  window.setResizeCallback(Application::onResizeCallback);
-  window.setKeyCallback(Application::onKeyCallback);
-
+int Application::runMainLoop()
+{
   while(!window.shouldClose())
   {
     window.update();
@@ -88,5 +87,5 @@ int Application::run()
 
   window.destroy();
   glfwTerminate();
-  return 0;             /* ANSI C requires main to return int. */
+  return 0;
 }

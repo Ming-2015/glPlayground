@@ -16,17 +16,17 @@ class Application {
 private:
   Window window;
 
+  // private constructor - singleton!
+  void init();
+  Application();
+  ~Application();
+
+  static Application* App;
   static void onResizeCallback(GLFWwindow* window, int width, int height);
   static void onKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-  // private constructor - singleton!
-  Application();
-  ~Application();
-  static Application* App;
-
 public:
-
-  int run();
+  int runMainLoop();
 
   // return the app (single ton, created on demand)
   static Application& GetOrCreateApp();
