@@ -152,6 +152,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\core\GameObject.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\core\Application.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="src\core\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\core\GameObject.h" />
     <ClInclude Include="includes\glad\glad.h" />
     <ClInclude Include="src\core\Game.h" />
     <ClInclude Include="x64Includes\GLFW\glfw3.h" />

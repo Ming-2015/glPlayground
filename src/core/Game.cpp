@@ -8,16 +8,24 @@
 #include "Game.h"
 
 Game::Game()
-  : clearColor(0.2f, 0.2f, 0.3f, 1.0f) {
-
-}
+  : clearColor(0.2f, 0.2f, 0.3f, 1.0f), 
+    gameObjects()
+{}
 
 Game::~Game() {
 
 }
 
 void Game::init() {
-
+  gameObjects.push_back(GameObject());
+  gameObjects[0].vertices = {
+     -0.5f, -0.5f, 0.0f,  // lower left
+     0.5f, -0.5f, 0.0f,   // lower right
+     0.0f,  0.5f, 0.0f    // top
+  };
+  gameObjects[0].indices = {
+    0, 1, 2
+  };
 }
 
 void Game::render() {

@@ -10,10 +10,13 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <vector>
+#include "GameObject.h"
 
 class Game {
 private:
   glm::vec4 clearColor;
+  std::vector<GameObject> gameObjects;
 
 public:
   Game();
