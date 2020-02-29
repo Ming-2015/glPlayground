@@ -43,7 +43,8 @@ void Application::onKeyCallback(GLFWwindow* window, int key, int scancode, int a
 
 // NON STATIC MEMBERS
 Application::Application()
-  : window(800, 600, "My Window")
+  : window(800, 600, "My Window"),
+    game()
 {}
 
 Application::~Application()
@@ -76,12 +77,33 @@ void Application::init()
 
   // NOTE: order is important here. gladLoadGLLoader must run first
   glViewport(0, 0, window.getInitWidth(), window.getInitHeight());
+
+  game.init();
 }
 
 int Application::runMainLoop()
 {
+  auto timeEnd = std::chrono::system_clock::now();
+  auto timeStart = timeEnd;
+  std::chrono::duration<double, std::milli> timeElapsed;
+  float fps = 0;
+
   while(!window.shouldClose())
   {
+    timeStart = timeEnd;
+    timeEnd = std::chrono::system_clock::now();
+    timeElapsed = timeEnd - timeStart;
+    float timeElapsedF = timeElapsed.count();
+    if (timeElapsedF > 0)
+    {
+      fps = 1000.0f / timeElapsedF;
+    }
+
+    std::cout << "FPS: " << fps << std::endl;
+
+    game.update(timeElapsedF);
+    game.render();
+
     window.update();
   }
 

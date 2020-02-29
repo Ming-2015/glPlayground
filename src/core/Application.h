@@ -10,17 +10,23 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <chrono>
+#include <iostream>
 #include "Window.h"
+#include "Game.h"
 
 class Application {
 private:
+  // members
   Window window;
+  Game game;
 
   // private constructor - singleton!
   void init();
   Application();
   ~Application();
 
+  // single ton functions
   static Application* App;
   static void onResizeCallback(GLFWwindow* window, int width, int height);
   static void onKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -32,6 +38,7 @@ public:
   static Application& GetOrCreateApp();
   static void Cleanup();
 
+  // callbacks to GLFW events
   void onResize(int width, int height);
   void onKey(int key, int scancode, int action, int mods);
 };
