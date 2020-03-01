@@ -11,12 +11,15 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <vector>
-#include "GameObject.h"
+#include "../components/GameObject.h"
+#include "../components/ShaderProgram.h"
 
 class Game {
 private:
   glm::vec4 clearColor;
   std::vector<GameObject> gameObjects;
+
+  ShaderProgram basicProgram;
 
 public:
   Game();

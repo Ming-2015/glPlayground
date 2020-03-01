@@ -30,7 +30,13 @@
     <ClCompile Include="src\core\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\GameObject.cpp">
+    <ClCompile Include="src\components\GameObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\ShaderProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,12 +62,20 @@
     <ClInclude Include="src\core\Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\GameObject.h">
+    <ClInclude Include="src\components\GameObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\components\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\components\ShaderProgram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
     <None Include=".gitignore" />
+    <None Include="shaders\FragmentShader.glsl" />
+    <None Include="shaders\VertexShader.glsl" />
   </ItemGroup>
 </Project>
