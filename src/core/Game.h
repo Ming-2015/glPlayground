@@ -11,17 +11,25 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <vector>
+#include <map>
+#include <string>
+
 #include "../components/Mesh.h"
-#include "../components/ShaderProgram.h"
+#include "../components/Model.h"
+#include "../components/ShaderProgramManager.h"
 #include "../components/ShaderManager.h"
 
 class Game {
 private:
   glm::vec4 clearColor;
-  std::vector<Mesh> gameObjects;
 
-  ShaderManager shaderManager;
-  ShaderProgram basicProgram;
+  std::map<std::string, Mesh> meshes;
+  std::map<std::string, Model> models;
+
+  ShaderManager _mShaderManager;
+  ShaderProgramManager _mProgramManager;
+
+  ShaderProgram* _mDefaultProgram;
 
 public:
   Game();

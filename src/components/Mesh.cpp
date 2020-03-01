@@ -113,12 +113,7 @@ void Mesh::initArrayObject()
   glBindVertexArray(0);
 }
 
-void Mesh::update(float deltaT)
-{
-
-}
-
-void Mesh::render()
+void Mesh::render() const
 {
   if (!_mObjectVao)
   {

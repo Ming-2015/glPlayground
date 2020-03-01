@@ -8,59 +8,50 @@
 
 #include "../utils/ResourceManager.h"
 
-struct ShaderInfo {
+class ShaderInfo : ResourceInfo<ShaderInfo> {
+protected:
+  friend class Shader;
   std::string shaderPath;
   GLenum shaderType;
 
+public:
+  ShaderInfo() : shaderPath(""), shaderType(0) {}
+  ShaderInfo(std::string path, GLenum type) : shaderPath(path), shaderType(type) {}
   ShaderInfo(const ShaderInfo& other) = default;
+  virtual ~ShaderInfo() = default;
 
-  bool operator< (const ShaderInfo& other) const {
-    if (shaderType != other.shaderType)
-    {
-      return shaderType < other.shaderType;
-    }
-    else
-    {
-      return shaderPath < other.shaderPath;
-    }
-  }
+  bool operator< (const ShaderInfo& other) const;
+  bool operator== (const ShaderInfo& other) const;
+  bool isValid() const;
 
-  bool operator== (const ShaderInfo& other) const {
-    return shaderPath == other.shaderPath && shaderType == other.shaderType;
-  }
+  const std::string toString() const;
 };
 
 class Shader {
-private:
+protected:
   friend class ShaderManager;
-
   ShaderInfo _mShaderInfo;
   unsigned int _mShaderId;
   bool _mIsShaderLoaded;
 
-  void loadFromFile(const ShaderInfo& info);
+  void load(const ShaderInfo& info);
   void deleteShader();
 
 public:
-
   Shader();
   virtual ~Shader();
 
   unsigned int getShaderId() const;
-  bool isShaderLoaded() const;
+  bool isLoaded() const;
   const ShaderInfo& getShaderInfo() const;
 };
 
 // ShaderManager is an encapsulation of Shader
-class ShaderManager : ResourceManager<ShaderInfo, Shader>
+class ShaderManager : public ResourceManager<ShaderInfo, Shader>
 {
-private:
-
 public:
   ShaderManager();
-  virtual ~ShaderManager();
-
-  ShaderManager::Shader& getOrCreate(const ShaderInfo& key);
-  void remove(const ShaderInfo& key);
-  void removeAll();
+  virtual ~ShaderManager() { clear(); }
+  Shader* const create(const ShaderInfo& key);
+  void destroy(Shader* const value);
 };

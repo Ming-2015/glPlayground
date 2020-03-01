@@ -31,12 +31,10 @@ private:
 public:
   Mesh();
   virtual ~Mesh();
-
-  virtual void update(float deltaT);
-  virtual void render();
+  virtual void render() const;
 
   // should be called after setting all the vertex attributes below!
-  void initArrayObject();
+  virtual void initArrayObject();
 
   // vertex attributes
   std::vector<float> vertices;
@@ -46,5 +44,6 @@ public:
   // elements, assuming triangles
   std::vector<unsigned int> indices;
 
+  // some options
   bool renderWireMesh;
 };
