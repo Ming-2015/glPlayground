@@ -1,3 +1,6 @@
+## Description
+This is a project intended to further refine my skills as a graphics programmer. It uses glad as the openGL loader, hence the name of the project. 
+
 ## Pre-installation
 Before compiling the project, you will need to:
 1. Install latest drivers for your GPU
