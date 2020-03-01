@@ -10,6 +10,7 @@
 Game::Game()
   : clearColor(0.2f, 0.2f, 0.3f, 1.0f), 
     gameObjects(),
+    shaderManager(),
     basicProgram()
 {}
 
@@ -20,21 +21,36 @@ Game::~Game()
 
 void Game::init() 
 {
-  basicProgram.initShaderProgram(
+  ShaderInfo vertexShaderInfo = {
     "./shaders/VertexShader.glsl",
-    "./shaders/FragmentShader.glsl"
+    GL_VERTEX_SHADER
+  };
+
+  ShaderInfo fragmentShaderInfo = {
+    "./shaders/FragmentShader.glsl",
+    GL_FRAGMENT_SHADER
+  };
+
+  const Shader& vertexShader = shaderManager.getOrCreate(vertexShaderInfo);
+  const Shader& fragmentShader = shaderManager.getOrCreate(fragmentShaderInfo);
+
+  basicProgram.initShaderProgram(
+    vertexShader,
+    fragmentShader
   );
 
   gameObjects.emplace_back();
   gameObjects[0].vertices = {
      -0.5f, -0.5f, 0.0f,  // lower left
      0.5f, -0.5f, 0.0f,   // lower right
-     0.0f,  0.5f, 0.0f    // top
+     0.0f,  0.5f, 0.0f,   // top
+     0.0f, -1.f, 0.0f    // bottom
   };
   gameObjects[0].indices = {
-    0, 1, 2
+    0, 1, 2,
+    0, 1, 3
   };
-  gameObjects[0].initArrayBuffer();
+  gameObjects[0].initArrayObject();
 }
 
 void Game::render() 

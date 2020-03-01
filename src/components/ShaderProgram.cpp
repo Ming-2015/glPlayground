@@ -12,24 +12,13 @@ ShaderProgram::~ShaderProgram()
 }
 
 void ShaderProgram::initShaderProgram(
-  std::string vertexShaderPath, 
-  std::string fragmentShaderPath,
-  std::string geometryShaderPath
+  const Shader& vertexShader,
+  const Shader& fragmentShader
 )
 {
-  const Shader& vertexShader = Shader::GetOrCreateShader(GL_VERTEX_SHADER, vertexShaderPath);
-  const Shader& fragmentShader = Shader::GetOrCreateShader(GL_FRAGMENT_SHADER, fragmentShaderPath);
-
   _mShaderProgram = glCreateProgram();
   glAttachShader(_mShaderProgram, vertexShader.getShaderId());
   glAttachShader(_mShaderProgram, fragmentShader.getShaderId());
-
-  if (!geometryShaderPath.empty())
-  {
-    const Shader& geometryShader = Shader::GetOrCreateShader(GL_GEOMETRY_SHADER, geometryShaderPath);
-    glAttachShader(_mShaderProgram, geometryShader.getShaderId());
-  }
-
   glLinkProgram(_mShaderProgram);
 
   int success;

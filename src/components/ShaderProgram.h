@@ -2,7 +2,7 @@
 #include <string>
 #include <glad/glad.h>
 #include <iostream>
-#include "Shader.h"
+#include "ShaderManager.h"
 
 class ShaderProgram
 {
@@ -16,9 +16,8 @@ public:
   virtual ~ShaderProgram();
 
   void initShaderProgram(
-    std::string vertexShaderPath,
-    std::string fragmentShaderPath,
-    std::string geometryShaderPath = ""
+    const Shader& vertexShader,
+    const Shader& fragmentShader
   );
   void deleteShaderProgram();
 

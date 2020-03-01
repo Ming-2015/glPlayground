@@ -153,20 +153,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\components\ShaderProgram.cpp" />
-    <ClCompile Include="src\components\GameObject.cpp" />
+    <ClCompile Include="src\components\Mesh.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\core\Application.cpp" />
     <ClCompile Include="src\core\Game.cpp" />
-    <ClCompile Include="src\components\Shader.cpp" />
+    <ClCompile Include="src\components\ShaderManager.cpp" />
     <ClCompile Include="src\core\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\utils\ResourceManager.h" />
     <ClInclude Include="src\components\ShaderProgram.h" />
-    <ClInclude Include="src\components\GameObject.h" />
+    <ClInclude Include="src\components\Mesh.h" />
     <ClInclude Include="includes\glad\glad.h" />
     <ClInclude Include="src\core\Game.h" />
-    <ClInclude Include="src\components\Shader.h" />
+    <ClInclude Include="src\components\ShaderManager.h" />
     <ClInclude Include="x64Includes\GLFW\glfw3.h" />
     <ClInclude Include="x64Includes\GLFW\glfw3native.h" />
     <ClInclude Include="includes\khr\khrplatform.h" />

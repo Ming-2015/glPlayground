@@ -5,7 +5,7 @@
 #include <glad/glad.h>
 #include <iostream>
 
-class GameObject
+class Mesh
 {
 private:
   // for keeping track of number of game objects made
@@ -29,18 +29,22 @@ private:
   unsigned int _mObjectVao;
 
 public:
-  GameObject();
-  virtual ~GameObject();
+  Mesh();
+  virtual ~Mesh();
 
   virtual void update(float deltaT);
   virtual void render();
 
-  void initArrayBuffer();
+  // should be called after setting all the vertex attributes below!
+  void initArrayObject();
 
+  // vertex attributes
   std::vector<float> vertices;
   std::vector<float> normals;
   std::vector<float> texCoords;
 
-  // triangles only
+  // elements, assuming triangles
   std::vector<unsigned int> indices;
+
+  bool renderWireMesh;
 };

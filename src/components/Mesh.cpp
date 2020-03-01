@@ -1,8 +1,8 @@
-#include "GameObject.h"
+#include "Mesh.h"
 
-int GameObject::objectCount = 0;
+int Mesh::objectCount = 0;
 
-GameObject::GameObject()
+Mesh::Mesh()
   : _mUniqueId(++objectCount),
   _mVerticesVbo(0), 
   _mNormalsVbo(0), 
@@ -12,22 +12,24 @@ GameObject::GameObject()
   vertices(),
   normals(),
   texCoords(),
-  indices()
+  indices(),
+  renderWireMesh(false)
 {
 
 }
 
-GameObject::~GameObject() 
+Mesh::~Mesh() 
 {
 
 }
 
-void GameObject::initArrayBuffer() 
+void Mesh::initArrayObject() 
 {
   glGenVertexArrays(1, &_mObjectVao);
   glBindVertexArray(_mObjectVao);
 
-  if (vertices.size() > 0) {
+  if (vertices.size() > 0) 
+  {
     // generate buffer object
     glGenBuffers(1, &_mVerticesVbo);
     glBindBuffer(GL_ARRAY_BUFFER, _mVerticesVbo);
@@ -39,20 +41,18 @@ void GameObject::initArrayBuffer()
     );
     // define position vertex attribute
     glVertexAttribPointer(
-      GameObject::ATTRIBUTE_POSITION,  // attribute layout
-      GameObject::SIZE_POSITION,       // size of attribute
+      Mesh::ATTRIBUTE_POSITION,  // attribute layout
+      Mesh::SIZE_POSITION,       // size of attribute
       GL_FLOAT,                        // type of attribute value
       GL_FALSE,                        // normalize data?
-      GameObject::SIZE_POSITION * sizeof(float),  // data stride
+      Mesh::SIZE_POSITION * sizeof(float),  // data stride
       (void*)0                         // data offset
     );
-    glEnableVertexAttribArray(GameObject::ATTRIBUTE_POSITION);
-
-    // unbind buffer
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glEnableVertexAttribArray(Mesh::ATTRIBUTE_POSITION);
   }
 
-  if (normals.size() > 0) {
+  if (normals.size() > 0) 
+  {
     // generate buffer object
     glGenBuffers(1, &_mNormalsVbo);
     glBindBuffer(GL_ARRAY_BUFFER, _mNormalsVbo);
@@ -64,20 +64,18 @@ void GameObject::initArrayBuffer()
     );
     // define normal vertex attribute
     glVertexAttribPointer(
-      GameObject::ATTRIBUTE_NORMAL,
-      GameObject::SIZE_NORMAL,
+      Mesh::ATTRIBUTE_NORMAL,
+      Mesh::SIZE_NORMAL,
       GL_FLOAT,
       GL_FALSE,
-      GameObject::SIZE_NORMAL * sizeof(float),
+      Mesh::SIZE_NORMAL * sizeof(float),
       (void*)0
     );
-    glEnableVertexAttribArray(GameObject::ATTRIBUTE_NORMAL);
-
-    // unbind buffer
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glEnableVertexAttribArray(Mesh::ATTRIBUTE_NORMAL);
   }
 
-  if (texCoords.size() > 0) {
+  if (texCoords.size() > 0) 
+  {
     // generate buffer object
     glGenBuffers(1, &_mTexVbo);
     glBindBuffer(GL_ARRAY_BUFFER, _mTexVbo);
@@ -90,28 +88,37 @@ void GameObject::initArrayBuffer()
 
     // define texture vertex attribute
     glVertexAttribPointer(
-      GameObject::ATTRIBUTE_TEX,
-      GameObject::SIZE_TEX,
+      Mesh::ATTRIBUTE_TEX,
+      Mesh::SIZE_TEX,
       GL_FLOAT,
       GL_FALSE,
-      GameObject::SIZE_TEX * sizeof(float),
+      Mesh::SIZE_TEX * sizeof(float),
       (void*)0
     );
-    glEnableVertexAttribArray(GameObject::ATTRIBUTE_TEX);
+    glEnableVertexAttribArray(Mesh::ATTRIBUTE_TEX);
+  }
 
-    // unbind buffer
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+  if (indices.size() > 0)
+  {
+    glGenBuffers(1, &_mIndicesEbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _mIndicesEbo);
+    glBufferData(
+      GL_ELEMENT_ARRAY_BUFFER,
+      sizeof(unsigned int) * indices.size(),
+      static_cast<const void*>(indices.data()),
+      GL_STATIC_DRAW
+    );
   }
 
   glBindVertexArray(0);
 }
 
-void GameObject::update(float deltaT)
+void Mesh::update(float deltaT)
 {
 
 }
 
-void GameObject::render()
+void Mesh::render()
 {
   if (!_mObjectVao)
   {
@@ -120,6 +127,20 @@ void GameObject::render()
   }
 
   glBindVertexArray(_mObjectVao);
-  glDrawArrays(GL_TRIANGLES, 0, 3);
+
+  if (renderWireMesh) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  }
+  else {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  }
+
+  if (_mIndicesEbo) glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+  else if (_mVerticesVbo) glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 3);
+  else {
+    std::cerr << "Game object does not have a vertices array!" << std::endl;
+    return;
+  }
+
   glBindVertexArray(0);
 }
