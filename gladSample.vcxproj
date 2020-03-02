@@ -163,6 +163,7 @@
     <ClCompile Include="src\core\Window.cpp" />
     <ClCompile Include="src\utils\Logger.cpp" />
     <ClCompile Include="src\utils\Timer.cpp" />
+    <ClCompile Include="src\components\Uniform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\utils\Logger.h" />
@@ -175,6 +176,7 @@
     <ClInclude Include="src\core\Game.h" />
     <ClInclude Include="src\components\ShaderManager.h" />
     <ClInclude Include="src\utils\Timer.h" />
+    <ClInclude Include="src\components\Uniform.h" />
     <ClInclude Include="x64Includes\GLFW\glfw3.h" />
     <ClInclude Include="x64Includes\GLFW\glfw3native.h" />
     <ClInclude Include="includes\khr\khrplatform.h" />

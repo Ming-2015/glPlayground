@@ -31,7 +31,7 @@ const std::string ShaderInfo::toString() const
 // Shader
 // non static
 Shader::Shader()
-  : _mShaderInfo({}), _mShaderId(0), _mIsShaderLoaded(false)
+  : _mShaderId(0), _mIsShaderLoaded(false)
 {
 
 }
@@ -46,29 +46,28 @@ void Shader::deleteShader()
   if (_mIsShaderLoaded)
   {
     glDeleteShader(_mShaderId);
-    Log.print<info>("Shader ", _mShaderInfo.shaderPath, " successfully removed!");
+    Log.print<info>("Shader ", _mPath, " successfully removed!");
 
     _mShaderId = 0;
     _mIsShaderLoaded = false;
-    _mShaderInfo = ShaderInfo();
   }
 }
 
-void Shader::load(const ShaderInfo& info)
+void Shader::load(const std::string& shaderPath, const GLenum& shaderType)
 {
   if (_mIsShaderLoaded)
   {
-    Log.print<warning>("Shader is already loaded: ", info.shaderPath);
+    Log.print<warning>("Shader is already loaded: ", shaderPath);
     return;
   }
   
   // read the file
   std::ifstream fileStream;
-  fileStream.open(info.shaderPath);
+  fileStream.open(shaderPath);
   if (!fileStream.is_open())
   {
-    Log.print<error>("Cannot open shader file: ", info.shaderPath);
-    throw "Cannot open shader file: " + info.shaderPath;
+    Log.print<error>("Cannot open shader file: ", shaderPath);
+    throw "Cannot open shader file: " + shaderPath;
   }
   std::stringstream buffer;
   buffer << fileStream.rdbuf();
@@ -76,7 +75,7 @@ void Shader::load(const ShaderInfo& info)
   const char* shaderCodeCstr = shaderCode.c_str();
 
   // initialize variables
-  _mShaderId = glCreateShader(info.shaderType);
+  _mShaderId = glCreateShader(shaderType);
 
   // compile the shader
   glShaderSource(_mShaderId, 1, &shaderCodeCstr, NULL);
@@ -92,29 +91,15 @@ void Shader::load(const ShaderInfo& info)
     _mShaderId = 0;
 
     glGetShaderInfoLog(_mShaderId, 512, NULL, infoLog);
-    Log.print<SeverityType::error>("Compilation of shader file: ", info.shaderPath, " failed!");
+    Log.print<SeverityType::error>("Compilation of shader file: ", shaderPath, " failed!");
     Log.print<SeverityType::error>(infoLog);
-    throw "Failed to compile shader: " + info.shaderPath;
+    throw "Failed to compile shader: " + shaderPath;
   }
 
-  _mShaderInfo = info;
+  _mPath = shaderPath;
+  _mType = shaderType;
   _mIsShaderLoaded = true;
-  Log.print<SeverityType::info>("Shader ", _mShaderInfo.shaderPath, " successfully loaded!");
-}
-
-unsigned int Shader::getShaderId() const
-{
-  return _mShaderId;
-}
-
-bool Shader::isLoaded() const
-{
-  return _mIsShaderLoaded;
-}
-
-const ShaderInfo& Shader::getShaderInfo() const
-{
-  return _mShaderInfo;
+  Log.print<SeverityType::info>("Shader ", shaderPath, " successfully loaded!");
 }
 
 // ShaderManager
@@ -123,7 +108,7 @@ ShaderManager::ShaderManager() {}
 Shader* const ShaderManager::create(const ShaderInfo& info)
 {
   Shader* shader = new Shader();
-  shader->load(info);
+  shader->load(info.shaderPath, info.shaderType);
   return shader;
 }
 

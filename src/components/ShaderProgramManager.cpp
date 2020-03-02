@@ -177,7 +177,6 @@ void ShaderProgram::deleteShaderProgram()
 
     _mShaderProgramId = 0;
     _mIsLoaded = false;
-    _mShaderProgramInfo = ShaderProgramInfo();
   }
   else 
   {
@@ -195,14 +194,9 @@ bool ShaderProgram::isLoaded() const
   return _mIsLoaded;
 }
 
-void ShaderProgram::useProgram() const
+void ShaderProgram::use() const
 {
   glUseProgram(_mShaderProgramId);
-}
-
-const ShaderProgramInfo& ShaderProgram::getShaderProgramInfo() const
-{
-  return _mShaderProgramInfo;
 }
 
 // Shader Program Manager

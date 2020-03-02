@@ -9,9 +9,34 @@
 #include "../utils/ResourceManager.hpp"
 #include "../utils/Logger.h"
 
+// Shader - has to be instantiated by ShaderManager
+class Shader {
+protected:
+  friend class ShaderManager;
+
+  unsigned int _mShaderId;
+  bool _mIsShaderLoaded;
+  std::string _mPath;
+  GLenum _mType;
+
+  Shader();
+  virtual ~Shader();
+
+  void load(const std::string& shaderPath, const GLenum& shaderType);
+  void deleteShader();
+
+public:
+
+  unsigned int getShaderId() const { return _mShaderId; }
+  bool isLoaded() const { return _mShaderId; }
+  const std::string& getShaderPath() const { return _mPath; }
+  const GLenum& getShaderType() const { return _mType; }
+};
+
+// Shader Info - everything necessary to instantiate a Shader
 class ShaderInfo : ResourceInfo<ShaderInfo> {
 protected:
-  friend class Shader;
+  friend class ShaderManager;
   std::string shaderPath;
   GLenum shaderType;
 
@@ -28,26 +53,7 @@ public:
   const std::string toString() const;
 };
 
-class Shader {
-protected:
-  friend class ShaderManager;
-  ShaderInfo _mShaderInfo;
-  unsigned int _mShaderId;
-  bool _mIsShaderLoaded;
-
-  void load(const ShaderInfo& info);
-  void deleteShader();
-
-public:
-  Shader();
-  virtual ~Shader();
-
-  unsigned int getShaderId() const;
-  bool isLoaded() const;
-  const ShaderInfo& getShaderInfo() const;
-};
-
-// ShaderManager is an encapsulation of Shader
+// ShaderManager is an encapsulation of Shader - allows the creation and lookup of shader
 class ShaderManager : public ResourceManager<ShaderInfo, Shader>
 {
 protected:

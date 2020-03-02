@@ -42,7 +42,6 @@ class ShaderProgram
 {
 private:
   friend class ShaderProgramManager;
-  ShaderProgramInfo _mShaderProgramInfo;
   unsigned int _mShaderProgramId;
   bool _mIsLoaded;
 
@@ -59,15 +58,14 @@ private:
 
   void deleteShaderProgram();
 
-public:
-
   ShaderProgram();
   virtual ~ShaderProgram();
 
+public:
+
   unsigned int getShaderProgramId() const;
   bool isLoaded() const;
-  void useProgram() const;
-  const ShaderProgramInfo& getShaderProgramInfo() const;
+  void use() const;
 };
 
 // encapsulate and manages shader program instances
