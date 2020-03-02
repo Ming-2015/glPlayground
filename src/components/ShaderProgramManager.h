@@ -5,6 +5,7 @@
 #include <vector>
 #include "ShaderManager.h"
 #include "../utils/ResourceManager.hpp"
+#include "Uniform.h"
 
 // Contains all the info needed to initialize a shader program
 class ShaderProgramInfo : ResourceInfo<ShaderProgramInfo>
@@ -42,8 +43,10 @@ class ShaderProgram
 {
 private:
   friend class ShaderProgramManager;
-  unsigned int _mShaderProgramId;
+  unsigned int _mId;
   bool _mIsLoaded;
+
+  std::map<std::string, Uniform*> _mUniforms;
 
   void initShaderProgram(
     const Shader& vertexShader,
@@ -56,16 +59,20 @@ private:
     const Shader& geometryShader
   );
 
+  // called to initiate uniforms
+  void parseProgramInfo();
+
   void deleteShaderProgram();
+  void use() const;
 
   ShaderProgram();
   virtual ~ShaderProgram();
 
 public:
+  Uniform* getUniform(const std::string& name) const;
 
   unsigned int getShaderProgramId() const;
   bool isLoaded() const;
-  void use() const;
 };
 
 // encapsulate and manages shader program instances
@@ -73,10 +80,16 @@ class ShaderProgramManager : public ResourceManager<ShaderProgramInfo, ShaderPro
 {
 private:
   ShaderManager& _mShaderManager;
+  ShaderProgram* _mProgramInUse;
+
 protected:
   ShaderProgram* const create(const ShaderProgramInfo& key);
   void destroy(ShaderProgram* const value);
+
 public:
   ShaderProgramManager(ShaderManager& shaderManager);
   virtual ~ShaderProgramManager() { clear(); }
+
+  void useProgram(ShaderProgram* program);
+  ShaderProgram* getProgramInUse() const;
 };

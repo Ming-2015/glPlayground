@@ -67,7 +67,7 @@ void Game::render()
   // clear the color buffer
   glClear(GL_COLOR_BUFFER_BIT);
 
-  _mDefaultProgram->use();
+  _mProgramManager.useProgram(_mDefaultProgram);
   for (auto pair : models) 
   {
     pair.second.draw(glm::mat4());
@@ -78,8 +78,8 @@ void Game::update(float deltaT)
 {
   float timeValue = Timer::GetCurrentTime().time_since_epoch().count();
   float greenValue = sin(timeValue) / 2.0f + 0.5f;
-  int vertexColorLocation = glGetUniformLocation(_mDefaultProgram->getShaderProgramId(), "ourColor");
 
+  //Uniform* uniform = _mDefaultProgram->getUniform("globalColor");
 
   for (auto pair : models)
   {

@@ -78,7 +78,7 @@ bool ShaderProgramInfo::hasGeometryShader() const
 
 // ShaderProgram
 ShaderProgram::ShaderProgram()
-  : _mShaderProgramId(0), _mIsLoaded(false)
+  : _mId(0), _mIsLoaded(false)
 {}
 
 ShaderProgram::~ShaderProgram()
@@ -101,6 +101,36 @@ void checkProgramLinkingError(unsigned int programId)
   }
 }
 
+void ShaderProgram::parseProgramInfo()
+{
+  int count;
+  glGetProgramiv(_mId, GL_ACTIVE_UNIFORMS, &count);
+
+  for (int idx = 0; idx < count; idx++)
+  {
+    char name[32];
+    GLsizei length; // length of name
+    GLsizei size;   // size of uniform variable
+    GLenum type;    // data type
+    glGetActiveUniform(_mId, idx, sizeof(name), &length, &size, &type, name);
+
+    std::string sName(name);
+    Uniform* uniform = new Uniform(_mId, idx, type, size, sName);
+    _mUniforms.insert({ sName, uniform });
+
+    if (sName.length() > 3) {
+      std::string last = sName.substr(sName.length() - 3, 3);
+      if (last == "[0]")
+      {
+        std::string first = sName.substr(0, sName.length() - 3);
+        Log.print<SeverityType::debug>("Found an array uniform: ", first);
+
+        _mUniforms.insert({ first, uniform });
+      }
+    }
+  }
+}
+
 void ShaderProgram::initShaderProgram(
   const Shader& vertexShader,
   const Shader& fragmentShader
@@ -111,25 +141,26 @@ void ShaderProgram::initShaderProgram(
   }
 
   // attach shaders
-  _mShaderProgramId = glCreateProgram();
-  glAttachShader(_mShaderProgramId, vertexShader.getShaderId());
-  glAttachShader(_mShaderProgramId, fragmentShader.getShaderId());
-  glLinkProgram(_mShaderProgramId);
+  _mId = glCreateProgram();
+  glAttachShader(_mId, vertexShader.getShaderId());
+  glAttachShader(_mId, fragmentShader.getShaderId());
+  glLinkProgram(_mId);
 
   // detach shaders
-  glDetachShader(_mShaderProgramId, vertexShader.getShaderId());
-  glDetachShader(_mShaderProgramId, fragmentShader.getShaderId());
+  glDetachShader(_mId, vertexShader.getShaderId());
+  glDetachShader(_mId, fragmentShader.getShaderId());
 
   // check for linking error
   try {
-    checkProgramLinkingError(_mShaderProgramId);
+    checkProgramLinkingError(_mId);
   }
   catch (const char* msg) {
-    _mShaderProgramId = 0;
+    _mId = 0;
     throw msg;
   }
 
   _mIsLoaded = true;
+  parseProgramInfo();
   Log.print<SeverityType::info>("Shader Program successfully loaded!");
 }
 
@@ -144,27 +175,28 @@ void ShaderProgram::initShaderProgram(
   }
 
   // create program
-  _mShaderProgramId = glCreateProgram();
-  glAttachShader(_mShaderProgramId, vertexShader.getShaderId());
-  glAttachShader(_mShaderProgramId, fragmentShader.getShaderId());
-  glAttachShader(_mShaderProgramId, geometryShader.getShaderId());
-  glLinkProgram(_mShaderProgramId);
+  _mId = glCreateProgram();
+  glAttachShader(_mId, vertexShader.getShaderId());
+  glAttachShader(_mId, fragmentShader.getShaderId());
+  glAttachShader(_mId, geometryShader.getShaderId());
+  glLinkProgram(_mId);
 
   // detach shaders
-  glDetachShader(_mShaderProgramId, vertexShader.getShaderId());
-  glDetachShader(_mShaderProgramId, fragmentShader.getShaderId());
-  glDetachShader(_mShaderProgramId, geometryShader.getShaderId());
+  glDetachShader(_mId, vertexShader.getShaderId());
+  glDetachShader(_mId, fragmentShader.getShaderId());
+  glDetachShader(_mId, geometryShader.getShaderId());
 
   // check for linking error
   try {
-    checkProgramLinkingError(_mShaderProgramId);
+    checkProgramLinkingError(_mId);
   }
   catch (const char* msg) {
-    _mShaderProgramId = 0;
+    _mId = 0;
     throw msg;
   }
 
   _mIsLoaded = true;
+  parseProgramInfo();
   Log.print<SeverityType::info>("Shader Program successfully loaded!");
 }
 
@@ -172,10 +204,16 @@ void ShaderProgram::deleteShaderProgram()
 {
   if (_mIsLoaded)
   {
-    glDeleteProgram(_mShaderProgramId);
+    glDeleteProgram(_mId);
     Log.print<SeverityType::info>("Shader Program successfully deleted!");
 
-    _mShaderProgramId = 0;
+    for (auto it : _mUniforms)
+    {
+      delete it.second;
+    }
+    _mUniforms.clear();
+
+    _mId = 0;
     _mIsLoaded = false;
   }
   else 
@@ -186,7 +224,19 @@ void ShaderProgram::deleteShaderProgram()
 
 unsigned int ShaderProgram::getShaderProgramId() const
 {
-  return _mShaderProgramId;
+  return _mId;
+}
+
+Uniform* ShaderProgram::getUniform(const std::string& name) const
+{
+  // Check the cache
+  auto it = _mUniforms.find(name);
+  if (it != _mUniforms.end())
+  {
+    // Already in cache, return it
+    return it->second;
+  }
+  else return nullptr;
 }
 
 bool ShaderProgram::isLoaded() const
@@ -196,12 +246,12 @@ bool ShaderProgram::isLoaded() const
 
 void ShaderProgram::use() const
 {
-  glUseProgram(_mShaderProgramId);
+  glUseProgram(_mId);
 }
 
 // Shader Program Manager
 ShaderProgramManager::ShaderProgramManager(ShaderManager& shaderManager)
-  : _mShaderManager(shaderManager)
+  : _mShaderManager(shaderManager), _mProgramInUse(nullptr)
 {}
 
 ShaderProgram* const ShaderProgramManager::create(const ShaderProgramInfo& key)
@@ -223,4 +273,22 @@ ShaderProgram* const ShaderProgramManager::create(const ShaderProgramInfo& key)
 void ShaderProgramManager::destroy(ShaderProgram* const value)
 {
   delete value;
+}
+
+void ShaderProgramManager::useProgram(ShaderProgram* program)
+{
+  if (program == _mProgramInUse) return;
+  if (!program->isLoaded())
+  {
+    Log.print<SeverityType::warning>("Trying to use shader program before linking!");
+    return;
+  }
+
+  program->use();
+  _mProgramInUse = program;
+}
+
+ShaderProgram* ShaderProgramManager::getProgramInUse() const
+{
+  return _mProgramInUse;
 }

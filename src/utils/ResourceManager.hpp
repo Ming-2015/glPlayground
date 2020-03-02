@@ -100,18 +100,13 @@ public:
   virtual void clear() 
   {
     resourceMutex.lock();
-    std::vector<V*> toDelete;
+    
     for (auto it : resources)
     {
-      //resources.erase(it.first);
-      toDelete.push_back(it.second);
+      destroy(it.second);
     }
     resources.clear();
 
-    for (int i = 0; i < toDelete.size(); i++)
-    {
-      destroy(toDelete[i]);
-    }
     resourceMutex.unlock();
   }
 
