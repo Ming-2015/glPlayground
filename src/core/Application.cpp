@@ -87,6 +87,7 @@ int Application::runMainLoop()
   auto timeStart = timeEnd;
   std::chrono::duration<double, std::milli> timeElapsed;
   float fps = 0;
+  fpsPrintTimer.startTimer();
 
   while(!window.shouldClose())
   {
@@ -99,7 +100,13 @@ int Application::runMainLoop()
       fps = 1000.0f / timeElapsedF;
     }
 
-    std::cout << "FPS: " << fps << std::endl;
+    // print every 5 seconds
+    if (fpsPrintTimer.getTimeElapsed() > 5000)
+    {
+      fpsPrintTimer.stopTimer();
+      fpsPrintTimer.startTimer();
+      Log.print<SeverityType::debug>("FPS: ", fps);
+    }
 
     game.update(timeElapsedF);
     game.render();

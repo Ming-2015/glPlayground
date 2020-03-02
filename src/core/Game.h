@@ -14,6 +14,7 @@
 #include <map>
 #include <string>
 
+#include "../utils/Timer.h"
 #include "../components/Mesh.h"
 #include "../components/Model.h"
 #include "../components/ShaderProgramManager.h"

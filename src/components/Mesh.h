@@ -4,6 +4,7 @@
 #include <vector>
 #include <glad/glad.h>
 #include <iostream>
+#include "../utils/Logger.h"
 
 class Mesh
 {

@@ -117,7 +117,7 @@ void Mesh::render() const
 {
   if (!_mObjectVao)
   {
-    std::cerr << "Game Object is not initialized yet!" << std::endl;
+    Log.print<SeverityType::warning>("Mesh ", _mUniqueId, "'s VAO is not initialized yet!");
     return;
   }
 
@@ -133,7 +133,7 @@ void Mesh::render() const
   if (_mIndicesEbo) glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
   else if (_mVerticesVbo) glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 3);
   else {
-    std::cerr << "Game object does not have a vertices array!" << std::endl;
+    Log.print<SeverityType::warning>("Mesh ", _mUniqueId, " does not have vertices!");
     return;
   }
 

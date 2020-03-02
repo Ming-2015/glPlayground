@@ -95,8 +95,8 @@ void checkProgramLinkingError(unsigned int programId)
     glDeleteProgram(programId);
 
     glGetProgramInfoLog(programId, 512, NULL, infoLog);
-    std::cerr << "ERROR: Linking of shader program failed!" << std::endl;
-    std::cerr << infoLog << std::endl;
+    Log.print<SeverityType::error>("Linking of shader program failed!");
+    Log.print<SeverityType::error>(infoLog);
     throw "Failed to link shader program";
   }
 }
@@ -130,7 +130,7 @@ void ShaderProgram::initShaderProgram(
   }
 
   _mIsLoaded = true;
-  std::cout << "Shader Program successfully loaded!" << std::endl;
+  Log.print<SeverityType::info>("Shader Program successfully loaded!");
 }
 
 void ShaderProgram::initShaderProgram(
@@ -165,7 +165,7 @@ void ShaderProgram::initShaderProgram(
   }
 
   _mIsLoaded = true;
-  std::cout << "Shader Program successfully loaded!" << std::endl;
+  Log.print<SeverityType::info>("Shader Program successfully loaded!");
 }
 
 void ShaderProgram::deleteShaderProgram()
@@ -173,12 +173,15 @@ void ShaderProgram::deleteShaderProgram()
   if (_mIsLoaded)
   {
     glDeleteProgram(_mShaderProgramId);
-    std::cout << "Shader Program successfully deleted!" << std::endl;
-    std::cout << _mShaderProgramInfo.toString() << std::endl;
+    Log.print<SeverityType::info>("Shader Program successfully deleted!");
 
     _mShaderProgramId = 0;
     _mIsLoaded = false;
     _mShaderProgramInfo = ShaderProgramInfo();
+  }
+  else 
+  {
+    Log.print<SeverityType::warning>("Trying to delete Shader Program before load");
   }
 }
 

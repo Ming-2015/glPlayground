@@ -76,6 +76,8 @@ void Game::render()
 
 void Game::update(float deltaT) 
 {
+  float timeValue = Timer::GetCurrentTime().time_since_epoch().count();
+
   for (auto pair : models)
   {
     pair.second.update(deltaT);

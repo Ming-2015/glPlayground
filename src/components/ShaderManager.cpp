@@ -46,7 +46,7 @@ void Shader::deleteShader()
   if (_mIsShaderLoaded)
   {
     glDeleteShader(_mShaderId);
-    std::cout << "Shader " << _mShaderInfo.shaderPath << " successfully removed!" << std::endl;
+    Log.print<info>("Shader ", _mShaderInfo.shaderPath, " successfully removed!");
 
     _mShaderId = 0;
     _mIsShaderLoaded = false;
@@ -58,8 +58,8 @@ void Shader::load(const ShaderInfo& info)
 {
   if (_mIsShaderLoaded)
   {
-    std::cerr << "Shader is already loaded: " << info.toString() << std::endl;
-    throw "Shader is already loaded: " + info.shaderPath;
+    Log.print<warning>("Shader is already loaded: ", info.shaderPath);
+    return;
   }
   
   // read the file
@@ -67,7 +67,7 @@ void Shader::load(const ShaderInfo& info)
   fileStream.open(info.shaderPath);
   if (!fileStream.is_open())
   {
-    std::cerr << "Cannot open shader file: " << info.toString() << std::endl;
+    Log.print<error>("Cannot open shader file: ", info.shaderPath);
     throw "Cannot open shader file: " + info.shaderPath;
   }
   std::stringstream buffer;
@@ -92,14 +92,14 @@ void Shader::load(const ShaderInfo& info)
     _mShaderId = 0;
 
     glGetShaderInfoLog(_mShaderId, 512, NULL, infoLog);
-    std::cerr << "ERROR: Compilation of shader from path " << info.shaderPath << " failed!" << std::endl;
-    std::cerr << infoLog << std::endl;
+    Log.print<SeverityType::error>("Compilation of shader file: ", info.shaderPath, " failed!");
+    Log.print<SeverityType::error>(infoLog);
     throw "Failed to compile shader: " + info.shaderPath;
   }
 
   _mShaderInfo = info;
   _mIsShaderLoaded = true;
-  std::cout << "Shader " << _mShaderInfo.shaderPath << " successfully loaded!" << std::endl;
+  Log.print<SeverityType::info>("Shader ", _mShaderInfo.shaderPath, " successfully loaded!");
 }
 
 unsigned int Shader::getShaderId() const

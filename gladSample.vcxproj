@@ -161,16 +161,20 @@
     <ClCompile Include="src\core\Game.cpp" />
     <ClCompile Include="src\components\ShaderManager.cpp" />
     <ClCompile Include="src\core\Window.cpp" />
+    <ClCompile Include="src\utils\Logger.cpp" />
+    <ClCompile Include="src\utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\utils\Logger.h" />
     <ClInclude Include="src\components\Node.h" />
     <ClInclude Include="src\components\Model.h" />
-    <ClInclude Include="src\utils\ResourceManager.h" />
+    <ClInclude Include="src\utils\ResourceManager.hpp" />
     <ClInclude Include="src\components\ShaderProgramManager.h" />
     <ClInclude Include="src\components\Mesh.h" />
     <ClInclude Include="includes\glad\glad.h" />
     <ClInclude Include="src\core\Game.h" />
     <ClInclude Include="src\components\ShaderManager.h" />
+    <ClInclude Include="src\utils\Timer.h" />
     <ClInclude Include="x64Includes\GLFW\glfw3.h" />
     <ClInclude Include="x64Includes\GLFW\glfw3native.h" />
     <ClInclude Include="includes\khr\khrplatform.h" />

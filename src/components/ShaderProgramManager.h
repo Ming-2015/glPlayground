@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "ShaderManager.h"
-#include "../utils/ResourceManager.h"
+#include "../utils/ResourceManager.hpp"
 
 // Contains all the info needed to initialize a shader program
 class ShaderProgramInfo : ResourceInfo<ShaderProgramInfo>

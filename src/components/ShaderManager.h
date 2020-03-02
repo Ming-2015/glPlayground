@@ -6,7 +6,8 @@
 #include <sstream>
 #include <map>
 
-#include "../utils/ResourceManager.h"
+#include "../utils/ResourceManager.hpp"
+#include "../utils/Logger.h"
 
 class ShaderInfo : ResourceInfo<ShaderInfo> {
 protected:

@@ -2,6 +2,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <mutex>
 #include <type_traits>
 
 // Information that can be used to initialize some kind of resource
@@ -32,6 +33,7 @@ class ResourceManager
 protected:
   // a resource storage map
   std::map<K, V*> resources;
+  std::mutex resourceMutex;
 
   // define how the resource V is created from key K
   virtual V* const create(const K& key) = 0;
@@ -44,26 +46,32 @@ public:
   // get the resource, or create it if not found
   virtual V* const getOrCreate(const K& key)
   {
+    resourceMutex.lock();
     auto it = resources.find(key);
     bool found = it != resources.end();
 
     if (found)
     {
+      resourceMutex.unlock();
       return it->second;
     }
     else {
       V* const resource = create(key);
       auto it = resources.insert({ key, resource });
+
+      resourceMutex.unlock();
       return resource;
     }
   }
 
   // find the resource without creating it
-  virtual V* const find(const K& key) const
+  virtual V* const find(const K& key)
   {
+    resourceMutex.lock();
     auto it = resources.find(key);
     bool found = it != resources.end();
 
+    resourceMutex.unlock();
     if (!found) return nullptr;
     else return it->second;
   }
@@ -71,6 +79,7 @@ public:
   // remove one resource
   virtual bool erase(const K& key)
   {
+    resourceMutex.lock();
     auto it = resources.find(key);
     bool found = it != resources.end();
 
@@ -78,9 +87,11 @@ public:
     {
       destroy(it->second);
       resources.erase(key);
+      resourceMutex.unlock();
       return true;
     }
     else {
+      resourceMutex.unlock();
       return false;
     }
   }
@@ -88,6 +99,7 @@ public:
   // remove all resources
   virtual void clear() 
   {
+    resourceMutex.lock();
     std::vector<V*> toDelete;
     for (auto it : resources)
     {
@@ -100,6 +112,7 @@ public:
     {
       destroy(toDelete[i]);
     }
+    resourceMutex.unlock();
   }
 
   // constructor

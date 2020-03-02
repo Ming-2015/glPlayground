@@ -12,6 +12,8 @@
 #include <GLFW/glfw3.h>
 #include <chrono>
 #include <iostream>
+#include "../utils/Logger.h"
+#include "../utils/Timer.h"
 #include "Window.h"
 #include "Game.h"
 
@@ -20,6 +22,7 @@ private:
   // members
   Window window;
   Game game;
+  Timer fpsPrintTimer;
 
   // private constructor - singleton!
   void init();
