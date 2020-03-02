@@ -75,10 +75,10 @@ class ShaderProgramManager : public ResourceManager<ShaderProgramInfo, ShaderPro
 {
 private:
   ShaderManager& _mShaderManager;
-
+protected:
+  ShaderProgram* const create(const ShaderProgramInfo& key);
+  void destroy(ShaderProgram* const value);
 public:
   ShaderProgramManager(ShaderManager& shaderManager);
   virtual ~ShaderProgramManager() { clear(); }
-  ShaderProgram* const create(const ShaderProgramInfo& key);
-  void destroy(ShaderProgram* const value);
 };

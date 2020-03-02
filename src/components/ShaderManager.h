@@ -49,9 +49,11 @@ public:
 // ShaderManager is an encapsulation of Shader
 class ShaderManager : public ResourceManager<ShaderInfo, Shader>
 {
+protected:
+  Shader* const create(const ShaderInfo& key);
+  void destroy(Shader* const value);
+
 public:
   ShaderManager();
   virtual ~ShaderManager() { clear(); }
-  Shader* const create(const ShaderInfo& key);
-  void destroy(Shader* const value);
 };

@@ -33,13 +33,13 @@ protected:
   // a resource storage map
   std::map<K, V*> resources;
 
-public:
-
   // define how the resource V is created from key K
   virtual V* const create(const K& key) = 0;
 
   // define how the resource V is destroyed
   virtual void destroy(V* const value) = 0;
+
+public:
 
   // get the resource, or create it if not found
   virtual V* const getOrCreate(const K& key)
