@@ -117,7 +117,7 @@ void Mesh::render() const
 {
   if (!_mObjectVao)
   {
-    Log.print<SeverityType::warning>("Mesh ", _mUniqueId, "'s VAO is not initialized yet!");
+    Log.print<Severity::warning>("Mesh ", _mUniqueId, "'s VAO is not initialized yet!");
     return;
   }
 
@@ -133,7 +133,7 @@ void Mesh::render() const
   if (_mIndicesEbo) glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
   else if (_mVerticesVbo) glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 3);
   else {
-    Log.print<SeverityType::warning>("Mesh ", _mUniqueId, " does not have vertices!");
+    Log.print<Severity::warning>("Mesh ", _mUniqueId, " does not have vertices!");
     return;
   }
 

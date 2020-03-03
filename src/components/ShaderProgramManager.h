@@ -46,7 +46,11 @@ private:
   unsigned int _mId;
   bool _mIsLoaded;
 
-  std::map<std::string, Uniform*> _mUniforms;
+  // NOTE: contains a copy of each uniform created, in the order the uniforms are queried
+  std::vector<Uniform*> _mUniforms;
+
+  // NOTE: map may contain multiple same uniforms with different names
+  std::map<std::string, Uniform*> _mUniformMap;
 
   void initShaderProgram(
     const Shader& vertexShader,
@@ -69,7 +73,11 @@ private:
   virtual ~ShaderProgram();
 
 public:
-  Uniform* getUniform(const std::string& name) const;
+  // get uniform by its name
+  Uniform* getUniformByName(const std::string& name) const;
+  
+  // get uniform by its index - arrays only take 1 space in the vector!
+  Uniform* getUniformByIndex(unsigned int index) const;
 
   unsigned int getShaderProgramId() const;
   bool isLoaded() const;

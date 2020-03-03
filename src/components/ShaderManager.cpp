@@ -91,15 +91,15 @@ void Shader::load(const std::string& shaderPath, const GLenum& shaderType)
     _mShaderId = 0;
 
     glGetShaderInfoLog(_mShaderId, 512, NULL, infoLog);
-    Log.print<SeverityType::error>("Compilation of shader file: ", shaderPath, " failed!");
-    Log.print<SeverityType::error>(infoLog);
+    Log.print<Severity::error>("Compilation of shader file: ", shaderPath, " failed!");
+    Log.print<Severity::error>(infoLog);
     throw "Failed to compile shader: " + shaderPath;
   }
 
   _mPath = shaderPath;
   _mType = shaderType;
   _mIsShaderLoaded = true;
-  Log.print<SeverityType::info>("Shader ", shaderPath, " successfully loaded!");
+  Log.print<Severity::info>("Shader ", shaderPath, " successfully loaded!");
 }
 
 // ShaderManager

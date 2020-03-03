@@ -87,7 +87,7 @@ public:
 	~MultiLogPolicy() { closeOstream(); }
 };
 
-enum SeverityType
+enum Severity
 {
 	debug = 1,
 	info,
@@ -128,7 +128,7 @@ public:
 	Logger(const std::string& name);
 	~Logger();
 
-	template< SeverityType severity, typename...Args >
+	template< Severity severity, typename...Args >
 		void print(Args...args);
 };
 
@@ -166,22 +166,22 @@ void Logger< LogPolicy >::_iPrint(First parm1, Rest...parm)
 
 // print message to a string stream with a mutex lock
 template< typename LogPolicy >
-template< SeverityType severity, typename...Args >
+template< Severity severity, typename...Args >
 void Logger< LogPolicy >::print(Args...args)
 {
 	writeMutex.lock();
 	switch (severity)
 	{
-	case SeverityType::debug:
+	case Severity::debug:
 		logStream << "<DEBUG>\t:  ";
 		break;
-	case SeverityType::warning:
+	case Severity::warning:
 		logStream << "<WARNING>\t:  ";
 		break;
-	case SeverityType::info:
+	case Severity::info:
 		logStream << "<INFO>\t:  ";
 		break;
-	case SeverityType::error:
+	case Severity::error:
 		logStream << "<ERROR>\t:  ";
 		break;
 	};

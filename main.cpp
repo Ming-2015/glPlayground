@@ -14,13 +14,13 @@ int main(int argc, char **argv)
   int retCode = 0;
   try
   {
-    Log.print<SeverityType::info>("Starting the application...");
+    Log.print<Severity::info>("Starting the application...");
     Application& app = Application::GetOrCreateApp();
     retCode = app.runMainLoop();
   }
   catch (const char* msg)
   {
-    Log.print<SeverityType::error>(msg);
+    Log.print<Severity::error>(msg);
     retCode = -1;
   }
 

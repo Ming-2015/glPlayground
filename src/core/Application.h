@@ -14,7 +14,7 @@
 #include <iostream>
 #include "../utils/Logger.h"
 #include "../utils/Timer.h"
-#include "Window.h"
+#include "../components/Window.h"
 #include "Game.h"
 
 class Application {

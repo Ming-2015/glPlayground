@@ -95,8 +95,8 @@ void checkProgramLinkingError(unsigned int programId)
     glDeleteProgram(programId);
 
     glGetProgramInfoLog(programId, 512, NULL, infoLog);
-    Log.print<SeverityType::error>("Linking of shader program failed!");
-    Log.print<SeverityType::error>(infoLog);
+    Log.print<Severity::error>("Linking of shader program failed!");
+    Log.print<Severity::error>(infoLog);
     throw "Failed to link shader program";
   }
 }
@@ -116,16 +116,18 @@ void ShaderProgram::parseProgramInfo()
 
     std::string sName(name);
     Uniform* uniform = new Uniform(_mId, idx, type, size, sName);
-    _mUniforms.insert({ sName, uniform });
+    _mUniforms.push_back(uniform);
 
+    // handle all maps
+    _mUniformMap.insert({ sName, uniform });
     if (sName.length() > 3) {
       std::string last = sName.substr(sName.length() - 3, 3);
       if (last == "[0]")
       {
         std::string first = sName.substr(0, sName.length() - 3);
-        Log.print<SeverityType::debug>("Found an array uniform: ", first);
+        Log.print<Severity::debug>("Found an array uniform: ", first);
 
-        _mUniforms.insert({ first, uniform });
+        _mUniformMap.insert({ first, uniform });
       }
     }
   }
@@ -161,7 +163,7 @@ void ShaderProgram::initShaderProgram(
 
   _mIsLoaded = true;
   parseProgramInfo();
-  Log.print<SeverityType::info>("Shader Program successfully loaded!");
+  Log.print<Severity::info>("Shader Program successfully loaded!");
 }
 
 void ShaderProgram::initShaderProgram(
@@ -197,7 +199,7 @@ void ShaderProgram::initShaderProgram(
 
   _mIsLoaded = true;
   parseProgramInfo();
-  Log.print<SeverityType::info>("Shader Program successfully loaded!");
+  Log.print<Severity::info>("Shader Program successfully loaded!");
 }
 
 void ShaderProgram::deleteShaderProgram()
@@ -205,20 +207,21 @@ void ShaderProgram::deleteShaderProgram()
   if (_mIsLoaded)
   {
     glDeleteProgram(_mId);
-    Log.print<SeverityType::info>("Shader Program successfully deleted!");
+    Log.print<Severity::info>("Shader Program successfully deleted!");
 
     for (auto it : _mUniforms)
     {
-      delete it.second;
+      delete it;
     }
     _mUniforms.clear();
+    _mUniformMap.clear();
 
     _mId = 0;
     _mIsLoaded = false;
   }
   else 
   {
-    Log.print<SeverityType::warning>("Trying to delete Shader Program before load");
+    Log.print<Severity::warning>("Trying to delete Shader Program before load");
   }
 }
 
@@ -227,14 +230,23 @@ unsigned int ShaderProgram::getShaderProgramId() const
   return _mId;
 }
 
-Uniform* ShaderProgram::getUniform(const std::string& name) const
+Uniform* ShaderProgram::getUniformByName(const std::string& name) const
 {
   // Check the cache
-  auto it = _mUniforms.find(name);
-  if (it != _mUniforms.end())
+  auto it = _mUniformMap.find(name);
+  if (it != _mUniformMap.end())
   {
     // Already in cache, return it
     return it->second;
+  }
+  else return nullptr;
+}
+
+Uniform* ShaderProgram::getUniformByIndex(unsigned int index) const
+{
+  if (index < _mUniforms.size())
+  {
+    return _mUniforms[index];
   }
   else return nullptr;
 }
@@ -280,7 +292,7 @@ void ShaderProgramManager::useProgram(ShaderProgram* program)
   if (program == _mProgramInUse) return;
   if (!program->isLoaded())
   {
-    Log.print<SeverityType::warning>("Trying to use shader program before linking!");
+    Log.print<Severity::warning>("Trying to use shader program before linking!");
     return;
   }
 

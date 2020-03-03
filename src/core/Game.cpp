@@ -68,6 +68,13 @@ void Game::render()
   glClear(GL_COLOR_BUFFER_BIT);
 
   _mProgramManager.useProgram(_mDefaultProgram);
+  Uniform* uniform = _mDefaultProgram->getUniformByName("colors");
+  if (uniform != nullptr)
+  {
+    uniform->setUniform(glm::vec3(0, 0.8, 0));
+    uniform->setUniform(glm::vec3(0.4, -0.4, 0.4), 1);
+  }
+
   for (auto pair : models) 
   {
     pair.second.draw(glm::mat4());
@@ -78,8 +85,6 @@ void Game::update(float deltaT)
 {
   float timeValue = Timer::GetCurrentTime().time_since_epoch().count();
   float greenValue = sin(timeValue) / 2.0f + 0.5f;
-
-  //Uniform* uniform = _mDefaultProgram->getUniform("globalColor");
 
   for (auto pair : models)
   {

@@ -105,7 +105,7 @@ int Application::runMainLoop()
     {
       fpsPrintTimer.stopTimer();
       fpsPrintTimer.startTimer();
-      Log.print<SeverityType::debug>("FPS: ", fps);
+      Log.print<Severity::debug>("FPS: ", fps);
     }
 
     game.update(timeElapsedF);
