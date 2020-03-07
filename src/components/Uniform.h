@@ -34,6 +34,12 @@ protected:
   template<typename T>
   void _dataToValue(T* output, unsigned int index = 0) const
   {
+    unsigned int dataEnd = sizeof(T) * (index + 1);
+    if (dataEnd > _mDataBuffer.size()) {
+      Log.print<Severity::error>("Trying to read uniform data from bad location");
+      throw std::out_of_range("Bad opengl uniform memory write");
+    }
+
     unsigned int valSize = sizeof(T);
     unsigned int startByte = index * valSize;
     const unsigned char* src = _mDataBuffer.data() + startByte;
@@ -49,14 +55,15 @@ protected:
   {
     if (index >= _mArraySize)
     {
-      Log.print<Severity::error>("Trying to write data in bad location");
-      throw "Bad opengl memory write";
+      Log.print<Severity::error>("Trying to write uniform data in bad location");
+      throw std::out_of_range("Bad opengl uniform memory write");
     }
 
     unsigned int valSize = sizeof(T);
-    if (_mDataBuffer.size() < valSize)
+    unsigned int endData = (index + 1) * valSize;
+    if (_mDataBuffer.size() < endData)
     {
-      _mDataBuffer.resize((index + 1) * valSize, unsigned char(0));
+      _mDataBuffer.resize(endData, unsigned char(0));
     }
     
     // get the pointers to memory location
@@ -78,6 +85,7 @@ protected:
 
 public:
   Uniform(int programId, int index, GLenum type, GLenum size, const std::string& name);
+  virtual ~Uniform();
 
   // uniform location
   int getLocation() const { return _mLocation; }

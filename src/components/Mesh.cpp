@@ -25,10 +25,32 @@ Mesh::~Mesh()
 
 void Mesh::initArrayObject() 
 {
+  // assuming all triangles
+  unsigned int numVertices = vertices.size() / 3;
+  unsigned int numTexCoords = texCoords.size() / 2;
+  unsigned int numNormals = normals.size() / 3;
+  unsigned int numFaces = indices.size() / 3;
+
+  if (numVertices == 0) {
+    Log.print<Severity::warning>("Trying to initialize a VAO with no vertices!");
+  }
+
+  if (numTexCoords > 0 && numVertices != numTexCoords) {
+    Log.print<Severity::warning>("Trying to initialize tex coords with different size!");
+  }
+
+  if (numNormals > 0 && numVertices != numNormals) {
+    Log.print<Severity::warning>("trying to initialize normals with different size!");
+  }
+
+  if (numFaces == 0) {
+    Log.print<Severity::warning>("Trying to initialize a mesh without faces");
+  }
+
   glGenVertexArrays(1, &_mObjectVao);
   glBindVertexArray(_mObjectVao);
 
-  if (vertices.size() > 0) 
+  if (numVertices) 
   {
     // generate buffer object
     glGenBuffers(1, &_mVerticesVbo);
@@ -51,7 +73,7 @@ void Mesh::initArrayObject()
     glEnableVertexAttribArray(Mesh::ATTRIBUTE_POSITION);
   }
 
-  if (normals.size() > 0) 
+  if (numNormals) 
   {
     // generate buffer object
     glGenBuffers(1, &_mNormalsVbo);
@@ -74,7 +96,7 @@ void Mesh::initArrayObject()
     glEnableVertexAttribArray(Mesh::ATTRIBUTE_NORMAL);
   }
 
-  if (texCoords.size() > 0) 
+  if (numTexCoords) 
   {
     // generate buffer object
     glGenBuffers(1, &_mTexVbo);
@@ -98,7 +120,7 @@ void Mesh::initArrayObject()
     glEnableVertexAttribArray(Mesh::ATTRIBUTE_TEX);
   }
 
-  if (indices.size() > 0)
+  if (numFaces)
   {
     glGenBuffers(1, &_mIndicesEbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _mIndicesEbo);

@@ -6,6 +6,7 @@
  */
 
 #include "Application.h"
+#include <stdexcept>
 
 // STATIC MEMBERS
 Application* Application::App = NULL;
@@ -72,7 +73,7 @@ void Application::init()
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
   {
 	  glfwTerminate();
-	  throw "Failed to initialize GLAD";
+	  throw std::runtime_error("Failed to initialize GLAD");
   }
 
   // NOTE: order is important here. gladLoadGLLoader must run first

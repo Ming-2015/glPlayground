@@ -102,3 +102,8 @@ Uniform::Uniform(int programId, int index, GLenum type, GLenum size, const std::
     Log.print<Severity::warning>("Uniform ", _mName, " is not valid!");
   }
 }
+
+Uniform::~Uniform()
+{
+  Log.print<Severity::info>("Removing uniform ", _mName, ": ", _dataToHex());
+}

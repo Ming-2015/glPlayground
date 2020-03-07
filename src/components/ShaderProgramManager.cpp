@@ -92,12 +92,13 @@ void checkProgramLinkingError(unsigned int programId)
   char infoLog[512];
   glGetProgramiv(programId, GL_LINK_STATUS, &success);
   if (!success) {
-    glDeleteProgram(programId);
 
     glGetProgramInfoLog(programId, 512, NULL, infoLog);
     Log.print<Severity::error>("Linking of shader program failed!");
     Log.print<Severity::error>(infoLog);
-    throw "Failed to link shader program";
+
+    glDeleteProgram(programId);
+    throw std::exception("Failed to link shader program");
   }
 }
 
@@ -139,7 +140,7 @@ void ShaderProgram::initShaderProgram(
 )
 {
   if (_mIsLoaded) {
-    throw "Shader Program is already loaded!";
+    throw std::exception("Shader Program is already loaded!");
   }
 
   // attach shaders
@@ -156,7 +157,7 @@ void ShaderProgram::initShaderProgram(
   try {
     checkProgramLinkingError(_mId);
   }
-  catch (const char* msg) {
+  catch (std::exception msg) {
     _mId = 0;
     throw msg;
   }
@@ -173,7 +174,7 @@ void ShaderProgram::initShaderProgram(
 )
 {
   if (_mIsLoaded) {
-    throw "Shader Program is already loaded!";
+    throw std::exception("Shader Program is already loaded!");
   }
 
   // create program
@@ -192,7 +193,7 @@ void ShaderProgram::initShaderProgram(
   try {
     checkProgramLinkingError(_mId);
   }
-  catch (const char* msg) {
+  catch (std::exception msg) {
     _mId = 0;
     throw msg;
   }

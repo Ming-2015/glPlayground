@@ -1,6 +1,7 @@
 #pragma once
 #include "Mesh.h"
 #include "Node.h"
+#include "Material.h"
 #include "ShaderProgramManager.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -29,6 +30,10 @@ protected:
   void _updatePositionMatrix();
   void _updateScaleMatrix();
   void _updateRotationMatrix();
+
+public:
+  // material to render the model...
+  Material* material = nullptr;
 
 public:
 

@@ -18,9 +18,9 @@ int main(int argc, char **argv)
     Application& app = Application::GetOrCreateApp();
     retCode = app.runMainLoop();
   }
-  catch (const char* msg)
+  catch (std::exception e)
   {
-    Log.print<Severity::error>(msg);
+    Log.print<Severity::critical>(e.what());
     retCode = -1;
   }
 

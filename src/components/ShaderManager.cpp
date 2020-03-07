@@ -1,4 +1,5 @@
 #include "ShaderManager.h"
+#include <stdexcept>
 
 // ShaderInfo
 bool ShaderInfo::operator< (const ShaderInfo& other) const 
@@ -67,7 +68,8 @@ void Shader::load(const std::string& shaderPath, const GLenum& shaderType)
   if (!fileStream.is_open())
   {
     Log.print<error>("Cannot open shader file: ", shaderPath);
-    throw "Cannot open shader file: " + shaderPath;
+    std::string errMsg("Cannot open shader file: " + shaderPath);
+    throw errMsg;
   }
   std::stringstream buffer;
   buffer << fileStream.rdbuf();
@@ -87,13 +89,15 @@ void Shader::load(const std::string& shaderPath, const GLenum& shaderType)
   glGetShaderiv(_mShaderId, GL_COMPILE_STATUS, &success);
   if (!success)
   {
+    glGetShaderInfoLog(_mShaderId, 512, NULL, infoLog);
+    Log.print<Severity::error>("Compilation of shader file: ", shaderPath, " failed!");
+    Log.print<Severity::error>( std::string(infoLog) );
+
     glDeleteShader(_mShaderId);
     _mShaderId = 0;
 
-    glGetShaderInfoLog(_mShaderId, 512, NULL, infoLog);
-    Log.print<Severity::error>("Compilation of shader file: ", shaderPath, " failed!");
-    Log.print<Severity::error>(infoLog);
-    throw "Failed to compile shader: " + shaderPath;
+    std::string errMsg("Failed to compile shader: " + shaderPath);
+    throw std::exception(errMsg.c_str());
   }
 
   _mPath = shaderPath;

@@ -45,6 +45,9 @@ void Model::update(float deltaT)
 
 void Model::draw(const glm::mat4& C) const
 {
+  if (material) 
+    material->use();
+
   // TODO: do something with the matrices
   _mMesh.render();
 }

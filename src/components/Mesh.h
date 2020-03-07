@@ -6,6 +6,10 @@
 #include <iostream>
 #include "../utils/Logger.h"
 
+
+// NOTE: this class does not support interleaved buffer for now...
+// Only reason for an interleaved buffer would be performance gain
+// But I will not focus on getting more performance for now
 class Mesh
 {
 private:
@@ -22,9 +26,16 @@ private:
 
   // unique object id, based on objectCount
   int _mUniqueId;
+
   unsigned int _mVerticesVbo;
   unsigned int _mNormalsVbo;
+  unsigned int _mTangentsVbo;
+
   unsigned int _mTexVbo;
+  //unsigned int _mTexVbo2;
+  //unsigned int _mTexVbo3;
+  //unsigned int _mTexVbo4;
+
   unsigned int _mIndicesEbo;
 
   unsigned int _mObjectVao;
@@ -41,6 +52,7 @@ public:
   std::vector<float> vertices;
   std::vector<float> normals;
   std::vector<float> texCoords;
+  std::vector<float> tangents;
 
   // elements, assuming triangles
   std::vector<unsigned int> indices;

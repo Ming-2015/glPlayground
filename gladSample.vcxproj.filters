@@ -51,14 +51,14 @@
     <ClCompile Include="src\components\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\components\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="includes\glad\glad.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes\khr\khrplatform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\core\Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -99,6 +99,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\components\Window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\components\Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\components\Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

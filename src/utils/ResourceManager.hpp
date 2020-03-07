@@ -56,11 +56,19 @@ public:
       return it->second;
     }
     else {
-      V* const resource = create(key);
-      auto it = resources.insert({ key, resource });
-
-      resourceMutex.unlock();
-      return resource;
+      try 
+      {
+        V* const resource = create(key);
+        auto it = resources.insert({ key, resource });
+        resourceMutex.unlock();
+        return resource;
+      }
+      catch (std::exception e) 
+      {
+        Log.print<Severity::error>("Failed to create resource: ", key.toString());
+        resourceMutex.unlock();
+        throw e;
+      }
     }
   }
 
@@ -85,10 +93,19 @@ public:
 
     if (found)
     {
-      destroy(it->second);
-      resources.erase(key);
-      resourceMutex.unlock();
-      return true;
+      try 
+      {
+        destroy(it->second);
+        resources.erase(key);
+        resourceMutex.unlock();
+        return true;
+      }
+      catch (std::exception e)
+      {
+        Log.print<Severity::error>("Failed to destroy resource: ", key.toString());
+        resourceMutex.unlock();
+        throw e;
+      }
     }
     else {
       resourceMutex.unlock();
@@ -101,13 +118,32 @@ public:
   {
     resourceMutex.lock();
     
+    bool thrown = false;
+    std::exception err;
     for (auto it : resources)
     {
-      destroy(it.second);
+      try
+      {
+        destroy(it.second);
+      }
+      catch (std::exception e)
+      {
+        thrown = true;
+        err = e;
+        Log.print<Severity::error>(
+          "Failed to clear resources: ", 
+          it.first.toString()
+        );
+      }
     }
-    resources.clear();
 
+    resources.clear();
     resourceMutex.unlock();
+
+    if (thrown)
+    {
+      throw err;
+    }
   }
 
   // constructor

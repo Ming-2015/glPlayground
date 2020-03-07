@@ -49,14 +49,26 @@ void Game::init()
      0.0f,  0.5f, 0.0f,   // top
      0.0f, -1.f, 0.0f    // bottom
   };
+  triangleMesh.texCoords = {
+    0, 0,
+    1.f, 0,
+    0.5f, 1.f,
+    0.5f, -.5f
+  };
   triangleMesh.indices = {
     0, 1, 2,
     0, 1, 3
   };
+
   triangleMesh.initArrayObject();
 
   auto itModel = models.emplace("TriModel", Model(triangleMesh));
   Model& triModel = (*itModel.first).second;
+
+  TestMaterial* mat = new TestMaterial(_mProgramManager, *_mDefaultProgram);
+  mat->diffuseTex = new Texture();
+  mat->diffuseTex->loadFromFile("assets/wall.jpg", true);
+  triModel.material = mat;
 }
 
 void Game::render() 
@@ -66,14 +78,6 @@ void Game::render()
 
   // clear the color buffer
   glClear(GL_COLOR_BUFFER_BIT);
-
-  _mProgramManager.useProgram(_mDefaultProgram);
-  Uniform* uniform = _mDefaultProgram->getUniformByName("colors");
-  if (uniform != nullptr)
-  {
-    uniform->setUniform(glm::vec3(0, 0.8, 0));
-    uniform->setUniform(glm::vec3(0.4, -0.4, 0.4), 1);
-  }
 
   for (auto pair : models) 
   {

@@ -6,6 +6,7 @@
  */
 
 #include "Window.h"
+#include <stdexcept>
 
 GLFWwindow* createWindow(int width, int height, std::string title)
 {
@@ -17,7 +18,7 @@ GLFWwindow* createWindow(int width, int height, std::string title)
   GLFWwindow* window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
   if (window == NULL)
   {
-      throw "Failed to create GLFW window";
+      throw std::runtime_error("Failed to create GLFW window");
   }
 
   return window;

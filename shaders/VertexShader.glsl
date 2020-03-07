@@ -9,8 +9,10 @@ out vec3 fNormal;
 out vec2 fTex;
 
 /* matrix inputs */
-uniform mat4 model; // model matrix
-uniform mat4 projViewModel; // projectionMat * viewMat * modelMat
+// model matrix
+uniform mat4 model;
+// projectionMat * viewMat * modelMat
+uniform mat4 projViewModel;
 
 void main()
 {

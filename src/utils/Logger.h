@@ -184,6 +184,12 @@ void Logger< LogPolicy >::print(Args...args)
 	case Severity::error:
 		logStream << "<ERROR>\t:  ";
 		break;
+	case Severity::critical:
+		logStream << "<!-- CRITICAL --!>\t:  ";
+		break;
+	case Severity::emergency:
+		logStream << "<!!! EMERGENCY !!!>\t:  ";
+		break;
 	};
 	_iPrint(args...);
 	writeMutex.unlock();
