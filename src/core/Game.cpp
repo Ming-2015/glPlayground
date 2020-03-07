@@ -23,6 +23,9 @@ Game::~Game()
 
 void Game::init() 
 {
+  // set the clear color
+  glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+
   ShaderInfo vertexShaderInfo(
     "./shaders/VertexShader.glsl",
     GL_VERTEX_SHADER
@@ -66,16 +69,17 @@ void Game::init()
   Model& triModel = (*itModel.first).second;
 
   TestMaterial* mat = new TestMaterial(_mProgramManager, *_mDefaultProgram);
+  triModel.material = mat;
+
   mat->diffuseTex = new Texture();
   mat->diffuseTex->loadFromFile("assets/wall.jpg", true);
-  triModel.material = mat;
+
+  mat->specularTex = new Texture();
+  mat->specularTex->loadFromFile("assets/fujiwara.jpg", true);
 }
 
 void Game::render() 
 {
-  // set the clear color
-  glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
-
   // clear the color buffer
   glClear(GL_COLOR_BUFFER_BIT);
 
@@ -87,9 +91,6 @@ void Game::render()
 
 void Game::update(float deltaT) 
 {
-  float timeValue = Timer::GetCurrentTime().time_since_epoch().count();
-  float greenValue = sin(timeValue) / 2.0f + 0.5f;
-
   for (auto pair : models)
   {
     pair.second.update(deltaT);

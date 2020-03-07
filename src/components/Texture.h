@@ -25,8 +25,10 @@ public:
     return _mId;
   }
 
-  void bindTexture() const 
+  // bind texture to an active target
+  void bind(GLenum activeTarget) const 
   {
+    glActiveTexture(GL_TEXTURE0 + activeTarget);
     glBindTexture(GL_TEXTURE_2D, _mId);
   }
 };

@@ -15,6 +15,7 @@ Texture::~Texture()
 
 bool Texture::loadFromFile(std::string path, bool generateMipmap)
 {
+  stbi_set_flip_vertically_on_load(true);
   unsigned char* data = stbi_load(
     path.c_str(), 
     &_mWidth, 
@@ -32,6 +33,14 @@ bool Texture::loadFromFile(std::string path, bool generateMipmap)
   // generate texture
   glGenTextures(1, &_mId);
   glBindTexture(GL_TEXTURE_2D, _mId);
+
+  // set the texture wrapping/filtering options... default options for now
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  // buffer the image into gl
   glTexImage2D(
     GL_TEXTURE_2D,      // buffer image to a 2D texture 
     0,                  // mipmap level, if this is a pre-generated mipmap

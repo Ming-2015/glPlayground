@@ -105,6 +105,9 @@ public:
   // write a float into the uniform location
   void setUniform(float f, unsigned int index = 0);
 
+  // write a int into the uniform location
+  void setUniform(int i, unsigned int index = 0);
+
   // write a vec2 into the uniform location
   void setUniform(glm::vec2 vector, unsigned int index = 0);
 

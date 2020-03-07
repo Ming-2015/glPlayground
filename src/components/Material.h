@@ -30,9 +30,18 @@ class TestMaterial : public Material
 protected:
   virtual void preRender();
 
+private:
+  // texture settings
+  Uniform* specularTexUniform = nullptr;
+  static const int SPECULAR_TEX_IDX = 1;
+
+  Uniform* diffuseTexUniform = nullptr;
+  static const int DIFFUSE_TEX_IDX = 0;
+
 public:
   // diffuse texture of the material
-  Texture* diffuseTex;
+  Texture* diffuseTex = nullptr;
+  Texture* specularTex = nullptr;
 
 public:
   TestMaterial(

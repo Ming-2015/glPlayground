@@ -13,6 +13,22 @@ void Uniform::setUniform(float f, unsigned int index)
     glUniform1f(_mLocation + index, f);
 }
 
+void Uniform::setUniform(int i, unsigned int index)
+{
+  if (
+    _mType != GL_INT
+    && _mType != GL_SAMPLER_2D
+  )
+  {
+    Log.print<Severity::warning>("Type is ", _mType);
+    Log.print<Severity::warning>("Trying to write Uniform \"", _mName, "\" with an invalid type!");
+    return;
+  }
+
+  if (_registerData(i, index))
+    glUniform1i(_mLocation + index, i);
+}
+
 // write a vec2 into the uniform location
 void Uniform::setUniform(glm::vec2 vector, unsigned int index)
 {
@@ -95,7 +111,7 @@ Uniform::Uniform(int programId, int index, GLenum type, GLenum size, const std::
 : _mProgramId(programId), _mIndex(index), _mType(type), _mArraySize(size), _mName(name)
 {
   _mLocation = glGetUniformLocation(programId, name.c_str());
-  Log.print<Severity::debug>("Found uniform: name = ", name, ", size = ", size, ", location = ", _mLocation);
+  Log.print<Severity::debug>("Found uniform: name = ", name, ", size = ", size, ", location = ", _mLocation, " type = ", _mType);
 
   if (_mLocation < 0)
   {

@@ -8,8 +8,13 @@ in vec2 fTex;
 
 /* textures */
 uniform sampler2D diffuseTex;
+uniform sampler2D specularTex;
 
 void main()
 {
-  FragColor = texture(diffuseTex, fTex);
+  FragColor = mix( 
+    texture(diffuseTex, fTex),
+    texture(specularTex, fTex),
+    0.8
+  );
 }
