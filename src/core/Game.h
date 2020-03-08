@@ -32,6 +32,7 @@ private:
   TextureManager _mTextureManager;
 
   Scene* _mCurrentScene;
+  Timer timer;
 
 public:
   Game();

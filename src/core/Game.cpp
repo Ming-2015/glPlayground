@@ -62,9 +62,28 @@ void Game::init()
   mat->specularTex = _mTextureManager.getOrCreate(fujiwaraTex);
 
   _mCurrentScene->addChild(triModel);
-  _mCurrentScene->setActiveCamera(new TargetCamera());
+  TargetCamera* cam = new TargetCamera();
+  _mCurrentScene->setActiveCamera(cam);
+  cam->setPosition(glm::vec3(0, 0, 2));
 
   glClearColor(_mClearColor.r, _mClearColor.g, _mClearColor.b, _mClearColor.a);
+}
+
+void Game::update(float deltaT)
+{
+  // rotate camera 45 degress per second around y axis
+  TargetCamera* camera = dynamic_cast<TargetCamera*>(_mCurrentScene->getActiveCamera());
+  float angle = 45.f * deltaT / 1000.f;
+  glm::vec3 axis(0, 1.f, 0);
+  glm::vec3 currentPos = camera->getPosition();
+  glm::vec3 newPos = glm::rotate(glm::radians(angle), axis) * glm::vec4( currentPos, 1.0f );
+  camera->setPosition(newPos);
+
+
+  if (_mCurrentScene != nullptr)
+  {
+    _mCurrentScene->update(deltaT);
+  }
 }
 
 void Game::render() const
@@ -73,14 +92,6 @@ void Game::render() const
   if (_mCurrentScene != nullptr)
   {
     _mCurrentScene->draw();
-  }
-}
-
-void Game::update(float deltaT)
-{
-  if (_mCurrentScene != nullptr)
-  {
-    _mCurrentScene->update(deltaT);
   }
 }
 
