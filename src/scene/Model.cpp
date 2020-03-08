@@ -5,7 +5,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 
-Model::Model(const Geometry& mesh)
+Model::Model(const Geometry* mesh)
   : GameObject(), _mMesh(mesh)
 {}
 
@@ -19,12 +19,15 @@ void Model::update(float deltaT)
 
 void Model::draw(const glm::mat4& PV, const glm::mat4& M) const
 {
+
+  if (!_mMesh) return;
+
   if (material) {
     material->use();
   }
 
   // TODO: do something with the matrices
-  _mMesh.render();
+  _mMesh->render();
 
   GameObject::draw(PV, M);
 }

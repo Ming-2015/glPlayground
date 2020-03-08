@@ -11,18 +11,14 @@
 class Scene : public Node
 {
 protected:
-
-  // activeCamera will be part of the nodes
-  Camera* activeCamera = nullptr;
-  Window* _mWindow = nullptr;
-  std::vector<Node*> rootNodes;
+  // activeCamera needs to be added to the scene separately to be part of the scene
+  // i.e. scene->addCamera(cam); scene->addChild(cam);
+  Camera* _mActiveCamera = nullptr;
 
 public:
 
-  Scene(Window* window);
-  virtual ~Scene();
-
-  virtual void update(float deltaT);
+  void setActiveCamera(Camera* camera, bool addToScene=true);
+  Camera* getActiveCamera() const;
 
   // NOTE: for scenes, PV and M will have no effect at all
   virtual void draw(const glm::mat4 PV, const glm::mat4& M) const

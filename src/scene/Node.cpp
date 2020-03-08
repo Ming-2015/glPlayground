@@ -10,7 +10,7 @@ Node::~Node()
   _mChildren.clear();
 }
 
-void Node::draw(const glm::mat4 PV, const glm::mat4& M) const
+void Node::draw(const glm::mat4& PV, const glm::mat4& M) const
 {
   for (Node* n : _mChildren)
   {

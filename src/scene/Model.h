@@ -6,7 +6,7 @@
 class Model : public GameObject
 {
 protected:
-  const Geometry& _mMesh;
+  const Geometry* _mMesh;
 
 public:
   // material to render the model...
@@ -14,7 +14,7 @@ public:
 
 public:
 
-  Model(const Geometry& mesh);
+  Model(const Geometry* mesh);
   virtual ~Model();
   virtual void update(float deltaT);
   virtual void draw(const glm::mat4& PV, const glm::mat4& M) const;

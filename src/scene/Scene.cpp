@@ -1,38 +1,26 @@
 #include "Scene.h"
 
-
-Scene::Scene(Window* window)
-  : _mWindow(window)
+void Scene::setActiveCamera(Camera* camera, bool addToScene)
 {
-
+  _mActiveCamera = camera;
+  if (addToScene)
+  {
+    addChild(camera);
+  }
 }
 
-Scene::~Scene()
+Camera* Scene::getActiveCamera() const
 {
-  for (Node* n : rootNodes)
-  {
-    delete n;
-  }
-  rootNodes.clear();
-}
-
-void Scene::update(float deltaT)
-{
-  for (Node* n : rootNodes)
-  {
-    n->update(deltaT);
-  }
+  return _mActiveCamera;
 }
 
 void Scene::draw() const
 {
-  if (!activeCamera) return;
+  glClear(GL_COLOR_BUFFER_BIT);
+  if (_mActiveCamera == nullptr) return;
 
-  glm::mat4 V = activeCamera->getViewMatrix();
-  glm::mat4 P = activeCamera->getProjectionMatrix();
+  glm::mat4 V = _mActiveCamera->getViewMatrix();
+  glm::mat4 P = _mActiveCamera->getProjectionMatrix();
 
-  for (Node* n : rootNodes)
-  {
-    n->draw(P * V, glm::mat4());
-  }
+  Node::draw(P * V, glm::mat4());
 }

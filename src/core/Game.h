@@ -20,17 +20,18 @@
 
 #include "../scene/Model.h"
 #include "../components/Material.h"
+#include "../scene/Scene.h"
 
 class Game {
 private:
-  glm::vec4 clearColor;
-
-  std::map<std::string, Geometry> meshes;
-  std::map<std::string, Model> models;
+  // clear color
+  glm::vec4 _mClearColor;
 
   ShaderManager _mShaderManager;
   ShaderProgramManager _mProgramManager;
   TextureManager _mTextureManager;
+
+  Scene* _mCurrentScene;
 
 public:
   Game();
@@ -38,7 +39,7 @@ public:
 
   void init();
   void update(float deltaT);
-  void render();
+  void render() const;
 };
 
 #endif /* SRC_CORE_GAME_H_ */

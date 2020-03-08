@@ -20,7 +20,7 @@ public:
   virtual ~Node();
 
   // these should be inherited AND called from super class
-  virtual void draw(const glm::mat4 PV, const glm::mat4& M) const;
+  virtual void draw(const glm::mat4& PV, const glm::mat4& M) const;
   virtual void update(float deltaT);
 
   // these should not be modified by super class

@@ -7,25 +7,45 @@
 
 #include "Game.h"
 
-Game::Game()
-  : clearColor(0.2f, 0.2f, 0.3f, 1.0f), 
-  meshes(),
-  models(),
+Game::Game() : 
   _mShaderManager(),
-  _mProgramManager(_mShaderManager)
+  _mTextureManager(),
+  _mProgramManager(_mShaderManager),
+  _mClearColor(0.1f, 0.7f, 0.5f, 1.0f),
+  _mCurrentScene(new Scene())
 {}
 
 Game::~Game() 
 {
-  
+  delete  _mCurrentScene;
 }
 
 void Game::init() 
 {
-  // set the clear color
-  glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+  // our temporary mesh
+  Geometry* triangleMesh = new Geometry();
+  triangleMesh->vertices = {
+     -0.5f, -0.5f, 0.0f,  // lower left
+     0.5f, -0.5f, 0.0f,   // lower right
+     0.0f,  0.5f, 0.0f,   // top
+     0.0f, -1.f, 0.0f    // bottom
+  };
+  triangleMesh->texCoords = {
+    0, 0,
+    1.f, 0,
+    0.5f, 1.f,
+    0.5f, -.5f
+  };
+  triangleMesh->indices = {
+    0, 1, 2,
+    0, 1, 3
+  };
+  triangleMesh->initArrayObject();
 
-  // initialize all the resources
+  // our model
+  Model* triModel = new Model(triangleMesh);
+
+  // initialize the material
   ShaderInfo vertexShaderInfo(
     "./shaders/VertexShader.glsl",
     GL_VERTEX_SHADER
@@ -41,69 +61,45 @@ void Game::init()
     fragmentShaderInfo
   );
 
-  TextureInfo wallTex(
-    "assets/wall.jpg",
-    true
-  );
-
-  TextureInfo fujiwaraTex(
-    "assets/fujiwara.jpg",
-    true
-  );
-
-  // our temporary mesh
-  auto itMesh = meshes.emplace("Triangle", Geometry());
-  Geometry& triangleMesh = (*itMesh.first).second;
-  triangleMesh.vertices = {
-     -0.5f, -0.5f, 0.0f,  // lower left
-     0.5f, -0.5f, 0.0f,   // lower right
-     0.0f,  0.5f, 0.0f,   // top
-     0.0f, -1.f, 0.0f    // bottom
-  };
-  triangleMesh.texCoords = {
-    0, 0,
-    1.f, 0,
-    0.5f, 1.f,
-    0.5f, -.5f
-  };
-  triangleMesh.indices = {
-    0, 1, 2,
-    0, 1, 3
-  };
-  triangleMesh.initArrayObject();
-
-  // our model
-  auto itModel = models.emplace("TriModel", Model(triangleMesh));
-  Model& triModel = (*itModel.first).second;
-
-  // initialize the material - NOTE: figure out a way to dealloc material
   TestMaterial* mat = new TestMaterial(
     _mProgramManager, 
     *_mProgramManager.getOrCreate(programInfo)
   );
 
-  triModel.material = mat;
+  triModel->material = mat;
 
   // set the textures for the material
+  TextureInfo wallTex(
+    "assets/wall.jpg",
+    true
+  );
   mat->diffuseTex = _mTextureManager.getOrCreate(wallTex);
+
+  TextureInfo fujiwaraTex(
+    "assets/fujiwara.jpg",
+    true
+  );
   mat->specularTex = _mTextureManager.getOrCreate(fujiwaraTex);
+
+  _mCurrentScene->addChild(triModel);
+  _mCurrentScene->setActiveCamera(new TargetCamera());
+
+  glClearColor(_mClearColor.r, _mClearColor.g, _mClearColor.b, _mClearColor.a);
 }
 
-void Game::render() 
+void Game::render() const
 {
-  // clear the color buffer
   glClear(GL_COLOR_BUFFER_BIT);
-
-  for (auto pair : models) 
+  if (_mCurrentScene != nullptr)
   {
-    pair.second.draw(glm::mat4(), glm::mat4());
+    _mCurrentScene->draw();
   }
 }
 
-void Game::update(float deltaT) 
+void Game::update(float deltaT)
 {
-  for (auto pair : models)
+  if (_mCurrentScene != nullptr)
   {
-    pair.second.update(deltaT);
+    _mCurrentScene->update(deltaT);
   }
 }
