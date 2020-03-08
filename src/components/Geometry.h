@@ -10,7 +10,7 @@
 // NOTE: this class does not support interleaved buffer for now...
 // Only reason for an interleaved buffer would be performance gain
 // But I will not focus on getting more performance for now
-class Mesh
+class Geometry
 {
 private:
   // for keeping track of number of game objects made
@@ -41,8 +41,8 @@ private:
   unsigned int _mObjectVao;
 
 public:
-  Mesh();
-  virtual ~Mesh();
+  Geometry();
+  virtual ~Geometry();
   virtual void render() const;
 
   // should be called after setting all the vertex attributes below!

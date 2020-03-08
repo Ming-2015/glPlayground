@@ -1,8 +1,8 @@
-#include "Mesh.h"
+#include "Geometry.h"
 
-int Mesh::objectCount = 0;
+int Geometry::objectCount = 0;
 
-Mesh::Mesh()
+Geometry::Geometry()
   : _mUniqueId(++objectCount),
   _mVerticesVbo(0), 
   _mNormalsVbo(0), 
@@ -18,12 +18,12 @@ Mesh::Mesh()
 
 }
 
-Mesh::~Mesh() 
+Geometry::~Geometry() 
 {
 
 }
 
-void Mesh::initArrayObject() 
+void Geometry::initArrayObject() 
 {
   // assuming all triangles
   unsigned int numVertices = vertices.size() / 3;
@@ -63,14 +63,14 @@ void Mesh::initArrayObject()
     );
     // define position vertex attribute
     glVertexAttribPointer(
-      Mesh::ATTRIBUTE_POSITION,  // attribute layout
-      Mesh::SIZE_POSITION,       // size of attribute
+      Geometry::ATTRIBUTE_POSITION,  // attribute layout
+      Geometry::SIZE_POSITION,       // size of attribute
       GL_FLOAT,                        // type of attribute value
       GL_FALSE,                        // normalize data?
-      Mesh::SIZE_POSITION * sizeof(float),  // data stride
+      Geometry::SIZE_POSITION * sizeof(float),  // data stride
       (void*)0                         // data offset
     );
-    glEnableVertexAttribArray(Mesh::ATTRIBUTE_POSITION);
+    glEnableVertexAttribArray(Geometry::ATTRIBUTE_POSITION);
   }
 
   if (numNormals) 
@@ -86,14 +86,14 @@ void Mesh::initArrayObject()
     );
     // define normal vertex attribute
     glVertexAttribPointer(
-      Mesh::ATTRIBUTE_NORMAL,
-      Mesh::SIZE_NORMAL,
+      Geometry::ATTRIBUTE_NORMAL,
+      Geometry::SIZE_NORMAL,
       GL_FLOAT,
       GL_FALSE,
-      Mesh::SIZE_NORMAL * sizeof(float),
+      Geometry::SIZE_NORMAL * sizeof(float),
       (void*)0
     );
-    glEnableVertexAttribArray(Mesh::ATTRIBUTE_NORMAL);
+    glEnableVertexAttribArray(Geometry::ATTRIBUTE_NORMAL);
   }
 
   if (numTexCoords) 
@@ -110,14 +110,14 @@ void Mesh::initArrayObject()
 
     // define texture vertex attribute
     glVertexAttribPointer(
-      Mesh::ATTRIBUTE_TEX,
-      Mesh::SIZE_TEX,
+      Geometry::ATTRIBUTE_TEX,
+      Geometry::SIZE_TEX,
       GL_FLOAT,
       GL_FALSE,
-      Mesh::SIZE_TEX * sizeof(float),
+      Geometry::SIZE_TEX * sizeof(float),
       (void*)0
     );
-    glEnableVertexAttribArray(Mesh::ATTRIBUTE_TEX);
+    glEnableVertexAttribArray(Geometry::ATTRIBUTE_TEX);
   }
 
   if (numFaces)
@@ -135,7 +135,7 @@ void Mesh::initArrayObject()
   glBindVertexArray(0);
 }
 
-void Mesh::render() const
+void Geometry::render() const
 {
   if (!_mObjectVao)
   {

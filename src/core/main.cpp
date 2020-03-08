@@ -6,8 +6,8 @@
  */
 
 #include <iostream>
-#include "src/utils/Logger.h"
-#include "src/core/Application.h"
+#include "../utils/Logger.h"
+#include "Application.h"
 
 int main(int argc, char **argv)
 {

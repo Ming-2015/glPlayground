@@ -15,18 +15,17 @@
 #include <string>
 
 #include "../utils/Timer.h"
-#include "../components/Mesh.h"
 #include "../components/ShaderProgramManager.h"
 #include "../components/ShaderManager.h"
 
 #include "../scene/Model.h"
-#include "../scene/Material.h"
+#include "../components/Material.h"
 
 class Game {
 private:
   glm::vec4 clearColor;
 
-  std::map<std::string, Mesh> meshes;
+  std::map<std::string, Geometry> meshes;
   std::map<std::string, Model> models;
 
   ShaderManager _mShaderManager;

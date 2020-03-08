@@ -152,12 +152,16 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\scene\Material.cpp" />
+    <ClCompile Include="src\scene\GameObject.cpp" />
+    <ClCompile Include="src\scene\Camera.cpp" />
+    <ClCompile Include="src\scene\Node.cpp" />
+    <ClCompile Include="src\scene\Scene.cpp" />
+    <ClCompile Include="src\components\Material.cpp" />
     <ClCompile Include="src\scene\Model.cpp" />
     <ClCompile Include="src\components\ShaderProgramManager.cpp" />
-    <ClCompile Include="src\components\Mesh.cpp" />
-    <ClCompile Include="glad.c" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\components\Geometry.cpp" />
+    <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\core\main.cpp" />
     <ClCompile Include="src\core\Application.cpp" />
     <ClCompile Include="src\core\Game.cpp" />
     <ClCompile Include="src\components\ShaderManager.cpp" />
@@ -168,13 +172,16 @@
     <ClCompile Include="src\components\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\scene\Material.h" />
+    <ClInclude Include="src\scene\GameObject.h" />
+    <ClInclude Include="src\scene\Camera.h" />
+    <ClInclude Include="src\scene\Scene.h" />
+    <ClInclude Include="src\components\Material.h" />
     <ClInclude Include="src\utils\Logger.h" />
     <ClInclude Include="src\scene\Node.h" />
     <ClInclude Include="src\scene\Model.h" />
     <ClInclude Include="src\utils\ResourceManager.hpp" />
     <ClInclude Include="src\components\ShaderProgramManager.h" />
-    <ClInclude Include="src\components\Mesh.h" />
+    <ClInclude Include="src\components\Geometry.h" />
     <ClInclude Include="src\core\Game.h" />
     <ClInclude Include="src\components\ShaderManager.h" />
     <ClInclude Include="src\utils\Timer.h" />

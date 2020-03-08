@@ -52,8 +52,8 @@ void Game::init()
   );
 
   // our temporary mesh
-  auto itMesh = meshes.emplace("Triangle", Mesh());
-  Mesh& triangleMesh = (*itMesh.first).second;
+  auto itMesh = meshes.emplace("Triangle", Geometry());
+  Geometry& triangleMesh = (*itMesh.first).second;
   triangleMesh.vertices = {
      -0.5f, -0.5f, 0.0f,  // lower left
      0.5f, -0.5f, 0.0f,   // lower right
@@ -96,7 +96,7 @@ void Game::render()
 
   for (auto pair : models) 
   {
-    pair.second.draw(glm::mat4());
+    pair.second.draw(glm::mat4(), glm::mat4());
   }
 }
 
