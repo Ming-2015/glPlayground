@@ -69,7 +69,7 @@ void Shader::load(const std::string& shaderPath, const GLenum& shaderType)
   {
     Log.print<error>("Cannot open shader file: ", shaderPath);
     std::string errMsg("Cannot open shader file: " + shaderPath);
-    throw errMsg;
+    throw std::runtime_error(errMsg);
   }
   std::stringstream buffer;
   buffer << fileStream.rdbuf();
@@ -97,7 +97,7 @@ void Shader::load(const std::string& shaderPath, const GLenum& shaderType)
     _mShaderId = 0;
 
     std::string errMsg("Failed to compile shader: " + shaderPath);
-    throw std::exception(errMsg.c_str());
+    throw std::runtime_error(errMsg.c_str());
   }
 
   _mPath = shaderPath;

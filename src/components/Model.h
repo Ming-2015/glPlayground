@@ -3,10 +3,6 @@
 #include "Node.h"
 #include "Material.h"
 #include "ShaderProgramManager.h"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/transform.hpp>
 
 class Model : Node
 {

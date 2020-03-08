@@ -12,8 +12,7 @@ Game::Game()
   meshes(),
   models(),
   _mShaderManager(),
-  _mProgramManager(_mShaderManager),
-  _mDefaultProgram(nullptr)
+  _mProgramManager(_mShaderManager)
 {}
 
 Game::~Game() 
@@ -26,6 +25,7 @@ void Game::init()
   // set the clear color
   glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 
+  // initialize all the resources
   ShaderInfo vertexShaderInfo(
     "./shaders/VertexShader.glsl",
     GL_VERTEX_SHADER
@@ -41,11 +41,19 @@ void Game::init()
     fragmentShaderInfo
   );
 
-  _mDefaultProgram = _mProgramManager.getOrCreate(programInfo);
+  TextureInfo wallTex(
+    "assets/wall.jpg",
+    true
+  );
 
+  TextureInfo fujiwaraTex(
+    "assets/fujiwara.jpg",
+    true
+  );
+
+  // our temporary mesh
   auto itMesh = meshes.emplace("Triangle", Mesh());
   Mesh& triangleMesh = (*itMesh.first).second;
-
   triangleMesh.vertices = {
      -0.5f, -0.5f, 0.0f,  // lower left
      0.5f, -0.5f, 0.0f,   // lower right
@@ -62,20 +70,23 @@ void Game::init()
     0, 1, 2,
     0, 1, 3
   };
-
   triangleMesh.initArrayObject();
 
+  // our model
   auto itModel = models.emplace("TriModel", Model(triangleMesh));
   Model& triModel = (*itModel.first).second;
 
-  TestMaterial* mat = new TestMaterial(_mProgramManager, *_mDefaultProgram);
+  // initialize the material
+  TestMaterial* mat = new TestMaterial(
+    _mProgramManager, 
+    *_mProgramManager.getOrCreate(programInfo)
+  );
+
   triModel.material = mat;
 
-  mat->diffuseTex = new Texture();
-  mat->diffuseTex->loadFromFile("assets/wall.jpg", true);
-
-  mat->specularTex = new Texture();
-  mat->specularTex->loadFromFile("assets/fujiwara.jpg", true);
+  // set the textures for the material
+  mat->diffuseTex = _mTextureManager.getOrCreate(wallTex);
+  mat->specularTex = _mTextureManager.getOrCreate(fujiwaraTex);
 }
 
 void Game::render() 

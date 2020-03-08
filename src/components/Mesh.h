@@ -29,7 +29,7 @@ private:
 
   unsigned int _mVerticesVbo;
   unsigned int _mNormalsVbo;
-  unsigned int _mTangentsVbo;
+  // unsigned int _mTangentsVbo;
 
   unsigned int _mTexVbo;
   //unsigned int _mTexVbo2;
@@ -52,7 +52,7 @@ public:
   std::vector<float> vertices;
   std::vector<float> normals;
   std::vector<float> texCoords;
-  std::vector<float> tangents;
+  // std::vector<float> tangents;
 
   // elements, assuming triangles
   std::vector<unsigned int> indices;

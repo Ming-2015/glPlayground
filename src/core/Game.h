@@ -29,8 +29,7 @@ private:
 
   ShaderManager _mShaderManager;
   ShaderProgramManager _mProgramManager;
-
-  ShaderProgram* _mDefaultProgram;
+  TextureManager _mTextureManager;
 
 public:
   Game();

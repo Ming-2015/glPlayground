@@ -41,7 +41,7 @@ public:
 // TODO: update it to support Shader Program Pipeline
 class ShaderProgram
 {
-private:
+protected:
   friend class ShaderProgramManager;
   unsigned int _mId;
   bool _mIsLoaded;
