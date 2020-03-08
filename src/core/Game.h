@@ -16,9 +16,11 @@
 
 #include "../utils/Timer.h"
 #include "../components/Mesh.h"
-#include "../components/Model.h"
 #include "../components/ShaderProgramManager.h"
 #include "../components/ShaderManager.h"
+
+#include "../scene/Model.h"
+#include "../scene/Material.h"
 
 class Game {
 private:

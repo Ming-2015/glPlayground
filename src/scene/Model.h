@@ -1,8 +1,7 @@
 #pragma once
-#include "Mesh.h"
 #include "Node.h"
+#include "../components/Mesh.h"
 #include "Material.h"
-#include "ShaderProgramManager.h"
 
 class Model : Node
 {

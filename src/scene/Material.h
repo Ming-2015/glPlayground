@@ -1,6 +1,6 @@
 #pragma once
-#include "ShaderProgramManager.h"
-#include "Texture.h"
+#include "../components/ShaderProgramManager.h"
+#include "../components/Texture.h"
 
 // an interface for all materials
 class Material

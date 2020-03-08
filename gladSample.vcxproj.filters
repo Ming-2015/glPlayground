@@ -33,9 +33,6 @@
     <ClCompile Include="src\components\ShaderManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\components\Model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\components\ShaderProgramManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -54,7 +51,10 @@
     <ClCompile Include="src\components\Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\components\Material.cpp">
+    <ClCompile Include="src\scene\Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -75,12 +75,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\components\ShaderManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\components\Model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\components\Node.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\components\ShaderProgramManager.h">
@@ -104,7 +98,13 @@
     <ClInclude Include="src\components\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\components\Material.h">
+    <ClInclude Include="src\scene\Node.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

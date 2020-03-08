@@ -152,8 +152,8 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\components\Material.cpp" />
-    <ClCompile Include="src\components\Model.cpp" />
+    <ClCompile Include="src\scene\Material.cpp" />
+    <ClCompile Include="src\scene\Model.cpp" />
     <ClCompile Include="src\components\ShaderProgramManager.cpp" />
     <ClCompile Include="src\components\Mesh.cpp" />
     <ClCompile Include="glad.c" />
@@ -168,10 +168,10 @@
     <ClCompile Include="src\components\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\components\Material.h" />
+    <ClInclude Include="src\scene\Material.h" />
     <ClInclude Include="src\utils\Logger.h" />
-    <ClInclude Include="src\components\Node.h" />
-    <ClInclude Include="src\components\Model.h" />
+    <ClInclude Include="src\scene\Node.h" />
+    <ClInclude Include="src\scene\Model.h" />
     <ClInclude Include="src\utils\ResourceManager.hpp" />
     <ClInclude Include="src\components\ShaderProgramManager.h" />
     <ClInclude Include="src\components\Mesh.h" />

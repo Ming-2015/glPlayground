@@ -17,7 +17,7 @@ Game::Game()
 
 Game::~Game() 
 {
-
+  
 }
 
 void Game::init() 
@@ -76,7 +76,7 @@ void Game::init()
   auto itModel = models.emplace("TriModel", Model(triangleMesh));
   Model& triModel = (*itModel.first).second;
 
-  // initialize the material
+  // initialize the material - NOTE: figure out a way to dealloc material
   TestMaterial* mat = new TestMaterial(
     _mProgramManager, 
     *_mProgramManager.getOrCreate(programInfo)
