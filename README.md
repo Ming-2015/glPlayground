@@ -1,5 +1,5 @@
 ## Description
-This is a project intended to further refine my skills as a graphics programmer. It uses glad as the openGL loader, hence the name of the project.
+This is a project intended to further refine my skills as a graphics programmer. It uses glad as the openGL API loader.
 
 ![screenshot]
 
