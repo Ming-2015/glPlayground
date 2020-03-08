@@ -44,7 +44,7 @@ void Application::onKeyCallback(GLFWwindow* window, int key, int scancode, int a
 
 // NON STATIC MEMBERS
 Application::Application()
-  : window(800, 600, "My Window"),
+  : window(1600, 900, "My Window"),
     game()
 {}
 
@@ -53,7 +53,7 @@ Application::~Application()
 
 void Application::onResize(int width, int height)
 {
-  glViewport(0, 0, width, height);
+  game.setWindowSize(width, height);
 }
 
 void Application::onKey(int key, int scancode, int action, int mods)
@@ -62,6 +62,7 @@ void Application::onKey(int key, int scancode, int action, int mods)
   {
     window.close();
   }
+  game.onKeyEvent(key, scancode, action, mods);
 }
 
 void Application::init()
@@ -77,25 +78,20 @@ void Application::init()
   }
 
   // NOTE: order is important here. gladLoadGLLoader must run first
-  glViewport(0, 0, window.getInitWidth(), window.getInitHeight());
-
   game.init();
+  game.setWindowSize(window.getInitWidth(), window.getInitHeight());
 }
 
 int Application::runMainLoop()
 {
-  auto timeEnd = std::chrono::system_clock::now();
-  auto timeStart = timeEnd;
-  std::chrono::duration<double, std::milli> timeElapsed;
   float fps = 0;
   fpsPrintTimer.startTimer();
+  updateTimer.startTimer();
 
   while(!window.shouldClose())
   {
-    timeStart = timeEnd;
-    timeEnd = std::chrono::system_clock::now();
-    timeElapsed = timeEnd - timeStart;
-    float timeElapsedF = timeElapsed.count();
+    float timeElapsedF = updateTimer.stopTimer();
+    updateTimer.startTimer();
     if (timeElapsedF > 0)
     {
       fps = 1000.0f / timeElapsedF;

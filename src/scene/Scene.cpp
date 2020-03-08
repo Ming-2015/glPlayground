@@ -1,6 +1,6 @@
 #include "Scene.h"
 
-void Scene::setActiveCamera(Camera* camera, bool addToScene)
+void Scene::setActiveCamera(CameraBase* camera, bool addToScene)
 {
   _mActiveCamera = camera;
   if (addToScene)
@@ -9,7 +9,7 @@ void Scene::setActiveCamera(Camera* camera, bool addToScene)
   }
 }
 
-Camera* Scene::getActiveCamera() const
+CameraBase* Scene::getActiveCamera() const
 {
   return _mActiveCamera;
 }
@@ -22,5 +22,5 @@ void Scene::draw() const
   glm::mat4 V = _mActiveCamera->getViewMatrix();
   glm::mat4 P = _mActiveCamera->getProjectionMatrix();
 
-  Node::draw(P * V, glm::mat4());
+  Node::draw(P * V, glm::mat4(1.f));
 }

@@ -1,5 +1,16 @@
 #include "GameObject.h"
 
+GameObject::GameObject()
+  : _mModelMatrix( glm::mat4(1.0f) ),
+  _mPositionMatrix( glm::mat4(1.0f) ),
+  _mRotationMatrix( glm::mat4(1.0f) ),
+  _mScaleMatrix( glm::mat4(1.0f) ),
+  _mPosition( glm::vec3(0) ),
+  _mRotationQuaternion( glm::quat(0,0,0,1) ),
+  _mScale( glm::vec3(1.f) ),
+  _mShouldUpdateModelMatrix( false )
+{}
+
 void GameObject::_updateWorldMatrix()
 {
   _mModelMatrix = _mPositionMatrix * _mRotationMatrix * _mScaleMatrix;
@@ -64,4 +75,9 @@ void GameObject::update(float deltaT)
   }
 
   Node::update(deltaT);
+}
+
+void GameObject::draw(const glm::mat4& PV, const glm::mat4& M) const
+{
+  Node::draw(PV, M * _mModelMatrix);
 }

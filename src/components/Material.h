@@ -3,33 +3,48 @@
 #include "../components/Texture.h"
 
 // an interface for all materials
-class Material
+class MaterialBase
 {
 protected:
-  ShaderProgram* _mProgram;
-  ShaderProgramManager* _mProgramManager;
+  ShaderProgram* _mProgram = nullptr;
+  ShaderProgramManager* _mProgramManager = nullptr;
 
-  virtual void linkToProgram(
-    ShaderProgramManager* manager,
-    ShaderProgram* program
-  )
-  {
-    _mProgramManager = manager;
-    _mProgram = program;
-  }
+  // this should prep a program to be used before a draw call
   virtual void preRender() = 0;
 
 public:
-  virtual void use() {
-    preRender();
-  }
+  void use() { preRender(); }
 };
 
 
-class TestMaterial : public Material
+class Material : public MaterialBase
+{
+protected:
+  Uniform* modelMatUniform = nullptr;
+  Uniform* normalMatUniform = nullptr;
+  Uniform* projViewModelMatUniform = nullptr;
+
+protected:
+  // not public: has to generated with a factory method!
+  Material();
+  virtual void preRender();
+
+public:
+  Material(ShaderProgramManager* manager);
+  Material(const Material& other);
+  virtual ~Material();
+
+  // these matrices need to be set before a model can be rendered!
+  void setModelMatrix(const glm::mat4& model);
+  void setProjViewModelMatrix(const glm::mat4& projViewModel);
+  void setNormalMatrix(const glm::mat3& normal);
+};
+
+
+class PhoonMaterial : public Material 
 {
 private:
-  // texture settings
+  // uniforms
   Uniform* specularTexUniform = nullptr;
   static const int SPECULAR_TEX_IDX = 1;
 
@@ -37,6 +52,7 @@ private:
   static const int DIFFUSE_TEX_IDX = 0;
 
 protected:
+  PhoonMaterial();
   virtual void preRender();
 
 public:
@@ -45,10 +61,7 @@ public:
   Texture* specularTex = nullptr;
 
 public:
-  TestMaterial(
-    ShaderProgramManager& manager,
-    ShaderProgram& program
-  );
-  TestMaterial(const TestMaterial& other);
-  virtual ~TestMaterial();
+  PhoonMaterial(ShaderProgramManager* manager);
+  PhoonMaterial(const PhoonMaterial& other);
+  virtual ~PhoonMaterial();
 };

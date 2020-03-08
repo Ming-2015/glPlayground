@@ -40,6 +40,10 @@ public:
   void init();
   void update(float deltaT);
   void render() const;
+
+  // callbacks to GLFW events
+  void setWindowSize(int width, int height);
+  void onKeyEvent(int key, int scancode, int action, int mods);
 };
 
 #endif /* SRC_CORE_GAME_H_ */

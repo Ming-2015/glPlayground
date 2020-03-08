@@ -12,9 +12,10 @@ uniform sampler2D specularTex;
 
 void main()
 {
+  
   FragColor = mix( 
     texture(diffuseTex, fTex),
     texture(specularTex, fTex),
-    0.8
+    0.5
   );
 }

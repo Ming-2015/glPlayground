@@ -22,7 +22,9 @@ private:
   // members
   Window window;
   Game game;
+
   Timer fpsPrintTimer;
+  Timer updateTimer;
 
   // private constructor - singleton!
   void init();

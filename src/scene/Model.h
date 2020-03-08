@@ -10,11 +10,11 @@ protected:
 
 public:
   // material to render the model...
-  Material* material = nullptr;
+  Material* material;
 
 public:
 
-  Model(const Geometry* mesh);
+  Model(const Geometry* mesh = nullptr);
   virtual ~Model();
   virtual void update(float deltaT);
   virtual void draw(const glm::mat4& PV, const glm::mat4& M) const;

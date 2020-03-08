@@ -29,6 +29,10 @@ protected:
   void _updateRotationMatrix();
 
 public:
+
+  GameObject();
+
+  virtual void draw(const glm::mat4& PV, const glm::mat4& M) const;
   virtual void update(float deltaT);
 
   virtual void setPosition(const glm::vec3& pos);

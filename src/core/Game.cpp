@@ -17,7 +17,7 @@ Game::Game() :
 
 Game::~Game() 
 {
-  delete  _mCurrentScene;
+  delete _mCurrentScene;
 }
 
 void Game::init() 
@@ -44,27 +44,7 @@ void Game::init()
 
   // our model
   Model* triModel = new Model(triangleMesh);
-
-  // initialize the material
-  ShaderInfo vertexShaderInfo(
-    "./shaders/VertexShader.glsl",
-    GL_VERTEX_SHADER
-  );
-
-  ShaderInfo fragmentShaderInfo(
-    "./shaders/FragmentShader.glsl",
-    GL_FRAGMENT_SHADER
-  );
-
-  ShaderProgramInfo programInfo(
-    vertexShaderInfo,
-    fragmentShaderInfo
-  );
-
-  TestMaterial* mat = new TestMaterial(
-    _mProgramManager, 
-    *_mProgramManager.getOrCreate(programInfo)
-  );
+  PhoonMaterial* mat = new PhoonMaterial(&_mProgramManager);
 
   triModel->material = mat;
 
@@ -102,4 +82,23 @@ void Game::update(float deltaT)
   {
     _mCurrentScene->update(deltaT);
   }
+}
+
+void Game::setWindowSize(int width, int height)
+{
+  glViewport(0, 0, width, height);
+  
+  if (_mCurrentScene != nullptr)
+  {
+    PerspectiveCamera* camera = dynamic_cast<PerspectiveCamera*>(_mCurrentScene->getActiveCamera());
+    if (camera) {
+      camera->setAspectRatio(float(width) / float(height));
+      Log.print<Severity::debug>("Managed to change aspect ratio!");
+    }
+  }
+}
+
+void Game::onKeyEvent(int key, int scancode, int action, int mods)
+{
+  // key events here...
 }

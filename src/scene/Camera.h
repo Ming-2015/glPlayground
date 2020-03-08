@@ -3,28 +3,40 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
-class Camera : public Node
+class CameraBase : public Node
 {
 protected:
+  virtual void _updateViewMatrix() = 0;
+  virtual void _updateProjectionMatrix() = 0;
 
+public:
+  virtual const glm::mat4& getViewMatrix() const = 0;
+  virtual const glm::mat4& getProjectionMatrix() const = 0;
+  virtual const glm::mat4& forceComputeViewMatrix() = 0;
+  virtual const glm::mat4& forceComputeProjectionMatrix() = 0;
+};
+
+class PerspectiveCamera : public CameraBase
+{
+protected:
   // some initial settings - should be changed later
   float _mMinZ = 0.1f;
   float _mMaxZ = 100.f;
   float _mFovy = 45.f;
-  float _mAspectRatio = 16.f/9.f;
-  bool _mOrthogonal = false;
+  float _mAspectRatio = 16.f / 9.f;
 
   bool _mShouldUpdateView;
   glm::mat4 _mViewMatrixCache;
-  virtual void _updateViewMatrix() = 0;
+  // NOTE: view matrix is not defined here
+  // virtual void _updateViewMatrix() = 0;
 
   bool _mShouldUpdateProjection;
   glm::mat4 _mProjectMatrixCache;
   virtual void _updateProjectionMatrix();
 
 public:
-  Camera();
-  virtual ~Camera();
+  PerspectiveCamera();
+  virtual ~PerspectiveCamera();
 
   // Returns the cached camera matrix
   const glm::mat4& getViewMatrix() const;
@@ -45,20 +57,15 @@ public:
   float getMinZ() const { return _mMinZ; }
   float getMaxZ() const { return _mMaxZ; }
   float getFovy() const { return _mFovy; }
-  float getAspectRatio() const { return _mAspectRatio; }
-  bool isPerspective() const { return !_mOrthogonal; }
-  bool isOrthogonal() const { return _mOrthogonal; }
 
   // setters
   void setMinZ(float minZ);
   void setMaxZ(float maxZ);
   void setFovy(float fovy);
   void setAspectRatio(float aspectRatio);
-  void usePerspective();
-  void useOrthogonal();
 };
 
-class TargetCamera : public Camera
+class TargetCamera : public PerspectiveCamera
 {
 protected:
   glm::vec3 _mPosition;

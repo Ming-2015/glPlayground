@@ -8,16 +8,19 @@ out vec3 fPos;
 out vec3 fNormal;
 out vec2 fTex;
 
-/* matrix inputs */
 // model matrix
-uniform mat4 model;
+uniform mat4 modelMat;
+
+// normal matrix
+uniform mat3 normalMat;
+
 // projectionMat * viewMat * modelMat
-uniform mat4 projViewModel;
+uniform mat4 projViewModelMat;
 
 void main()
 {
-    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-    fPos = aPos;
-    fNormal = aNormal;
+    gl_Position = projViewModelMat * vec4(aPos, 1.0);
+    fPos = vec3(modelMat * vec4(aPos, 1.0));
+    fNormal = normalMat * aNormal;
     fTex = aTex;
 }

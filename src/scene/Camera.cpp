@@ -1,37 +1,29 @@
 #include "Camera.h"
 
 // Camera
-Camera::Camera()
+PerspectiveCamera::PerspectiveCamera()
   : _mShouldUpdateView(false), 
-  _mViewMatrixCache(),
+  _mViewMatrixCache( glm::mat4(1.0f) ),
   _mShouldUpdateProjection(false),
   _mProjectMatrixCache( glm::perspective(_mFovy, _mAspectRatio, _mMinZ, _mMaxZ) )
 {}
 
-Camera::~Camera()
+PerspectiveCamera::~PerspectiveCamera()
 {}
 
-void Camera::_updateProjectionMatrix()
+void PerspectiveCamera::_updateProjectionMatrix()
 {
-  if (_mOrthogonal)
-  {
-    // TODO: figure out orthogonal matrix
-    //_mProjectMatrixCache = glm::ortho()
-  }
-  else
-  {
-    _mProjectMatrixCache = glm::perspective(_mFovy, _mAspectRatio, _mMinZ, _mMaxZ);
-  }
+  _mProjectMatrixCache = glm::perspective(_mFovy, _mAspectRatio, _mMinZ, _mMaxZ); 
 }
 
 // Returns the cached camera matrix
-const glm::mat4& Camera::getViewMatrix() const
+const glm::mat4& PerspectiveCamera::getViewMatrix() const
 {
   return _mViewMatrixCache;
 }
 
 // Force a re-computation of the camera matrix and get the view matrix
-const glm::mat4& Camera::forceComputeViewMatrix()
+const glm::mat4& PerspectiveCamera::forceComputeViewMatrix()
 {
   if (_mShouldUpdateView)
   {
@@ -43,13 +35,13 @@ const glm::mat4& Camera::forceComputeViewMatrix()
 
 
 // Returns the cached 
-const glm::mat4& Camera::getProjectionMatrix() const
+const glm::mat4& PerspectiveCamera::getProjectionMatrix() const
 {
   return _mProjectMatrixCache;
 }
 
 // Force a re-computation of the projection matrix
-const glm::mat4& Camera::forceComputeProjectionMatrix()
+const glm::mat4& PerspectiveCamera::forceComputeProjectionMatrix()
 {
   if (_mShouldUpdateProjection)
   {
@@ -60,7 +52,7 @@ const glm::mat4& Camera::forceComputeProjectionMatrix()
 }
 
 // update the camera
-void Camera::update(float deltaT)
+void PerspectiveCamera::update(float deltaT)
 {
   if (_mShouldUpdateView)
   {
@@ -73,7 +65,7 @@ void Camera::update(float deltaT)
   }
 }
 
-void Camera::setMinZ(float minZ)
+void PerspectiveCamera::setMinZ(float minZ)
 {
   if (_mMinZ != minZ)
   {
@@ -82,7 +74,7 @@ void Camera::setMinZ(float minZ)
   }
 }
 
-void Camera::setMaxZ(float maxZ)
+void PerspectiveCamera::setMaxZ(float maxZ)
 {
   if (_mMaxZ != maxZ)
   {
@@ -91,7 +83,7 @@ void Camera::setMaxZ(float maxZ)
   }
 }
 
-void Camera::setFovy(float fovy)
+void PerspectiveCamera::setFovy(float fovy)
 {
   if (_mFovy != fovy)
   {
@@ -100,27 +92,13 @@ void Camera::setFovy(float fovy)
   }
 }
 
-void Camera::setAspectRatio(float aspectRatio)
+void PerspectiveCamera::setAspectRatio(float aspectRatio)
 {
   if (_mAspectRatio != aspectRatio)
   {
     _mAspectRatio = aspectRatio;
     _mShouldUpdateProjection = true;
   }
-}
-
-void Camera::usePerspective()
-{
-  if (_mOrthogonal) 
-  {
-    _mOrthogonal = false;
-    _mShouldUpdateProjection = true;
-  }
-}
-
-void Camera::useOrthogonal()
-{
-  // orthogonal is disabled for now...
 }
 
 // ------------------------ target camera ------------------------
