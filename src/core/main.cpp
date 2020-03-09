@@ -12,11 +12,14 @@
 int main(int argc, char **argv)
 {
   int retCode = 0;
+  Application app;
+
   try
   {
     Log.print<Severity::info>("Starting the application...");
-    Application& app = Application::GetOrCreateApp();
+    app.init();
     retCode = app.runMainLoop();
+    app.destroy();
   }
   catch (std::exception e)
   {
@@ -24,6 +27,5 @@ int main(int argc, char **argv)
     retCode = -1;
   }
 
-  Application::Cleanup();
   return retCode;
 }

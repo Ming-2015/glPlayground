@@ -65,6 +65,7 @@ public:
   void setAspectRatio(float aspectRatio);
 };
 
+// always look at a particular point in world space
 class TargetCamera : public PerspectiveCamera
 {
 protected:
@@ -86,4 +87,51 @@ public:
   const glm::vec3& getPosition() const;
   const glm::vec3& getTarget() const;
   const glm::vec3& getUp() const;
+};
+
+// always looks at a certain direction
+class ForwardCamera : public PerspectiveCamera
+{
+protected:
+  glm::vec3 _mPosition;
+  glm::vec3 _mForwardDirection;
+  glm::vec3 _mUp;
+
+  virtual void _updateViewMatrix();
+
+public:
+
+  ForwardCamera();
+  virtual ~ForwardCamera();
+
+  void setPosition(const glm::vec3& pos);
+  void setForwardDirection(const glm::vec3& direction);
+  void setUp(const glm::vec3& up);
+
+  const glm::vec3& getPosition() const;
+  const glm::vec3& getForwardDirection() const;
+  const glm::vec3& getUp() const;
+};
+
+// has both target and forward camera, on a switch
+class FreeCamera : public TargetCamera
+{
+protected:
+
+  // always a normalized vector
+  glm::vec3 _mForwardDirection;
+  bool _mUseTarget;
+
+  virtual void _updateViewMatrix();
+
+public:
+
+  FreeCamera();
+  virtual ~FreeCamera();
+
+  void useTarget(bool shouldUseTarget);
+  void setForwardDirection(const glm::vec3& forwardDirection);
+
+  bool isUsingTarget() const;
+  const glm::vec3& getForwardDirection() const;
 };

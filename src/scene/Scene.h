@@ -3,7 +3,6 @@
 #include "Node.h"
 #include "Camera.h"
 #include "Model.h"
-#include "../components/Window.h"
 
 #include <glm/glm.hpp>
 #include <vector>
