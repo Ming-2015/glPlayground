@@ -158,18 +158,19 @@
     <ClCompile Include="src\scene\Scene.cpp" />
     <ClCompile Include="src\components\Material.cpp" />
     <ClCompile Include="src\scene\Model.cpp" />
-    <ClCompile Include="src\components\ShaderProgramManager.cpp" />
-    <ClCompile Include="src\components\Geometry.cpp" />
+    <ClCompile Include="src\components\ShaderProgram.cpp" />
+    <ClCompile Include="src\components\Primitive.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\core\main.cpp" />
     <ClCompile Include="src\core\Application.cpp" />
     <ClCompile Include="src\core\Game.cpp" />
-    <ClCompile Include="src\components\ShaderManager.cpp" />
+    <ClCompile Include="src\components\Shader.cpp" />
     <ClCompile Include="src\core\Window.cpp" />
     <ClCompile Include="src\utils\Logger.cpp" />
     <ClCompile Include="src\utils\Timer.cpp" />
     <ClCompile Include="src\components\Uniform.cpp" />
     <ClCompile Include="src\components\Texture.cpp" />
+    <ClCompile Include="src\scene\GameState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\scene\GameObject.h" />
@@ -180,13 +181,14 @@
     <ClInclude Include="src\scene\Node.h" />
     <ClInclude Include="src\scene\Model.h" />
     <ClInclude Include="src\utils\ResourceManager.hpp" />
-    <ClInclude Include="src\components\ShaderProgramManager.h" />
-    <ClInclude Include="src\components\Geometry.h" />
+    <ClInclude Include="src\components\ShaderProgram.h" />
+    <ClInclude Include="src\components\Primitive.h" />
     <ClInclude Include="src\core\Game.h" />
-    <ClInclude Include="src\components\ShaderManager.h" />
+    <ClInclude Include="src\components\Shader.h" />
     <ClInclude Include="src\utils\Timer.h" />
     <ClInclude Include="src\components\Uniform.h" />
     <ClInclude Include="src\components\Texture.h" />
+    <ClInclude Include="src\scene\GameState.h" />
     <ClInclude Include="x64Includes\GLFW\glfw3.h" />
     <ClInclude Include="x64Includes\GLFW\glfw3native.h" />
     <ClInclude Include="src\core\Application.h" />

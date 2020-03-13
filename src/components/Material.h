@@ -1,5 +1,5 @@
 #pragma once
-#include "../components/ShaderProgramManager.h"
+#include "../components/ShaderProgram.h"
 #include "../components/Texture.h"
 
 // an interface for all materials
@@ -51,6 +51,10 @@ private:
   Uniform* diffuseTexUniform = nullptr;
   static const int DIFFUSE_TEX_IDX = 0;
 
+  Uniform* diffuseUniform = nullptr;
+  Uniform* specularUniform = nullptr;
+  Uniform* ambientUniform = nullptr;
+
 protected:
   PhoonMaterial();
   virtual void preRender();
@@ -59,6 +63,10 @@ public:
   // diffuse texture of the material
   Texture* diffuseTex = nullptr;
   Texture* specularTex = nullptr;
+
+  glm::vec4 diffuse;
+  glm::vec4 specular;
+  glm::vec4 ambient;
 
 public:
   PhoonMaterial(ShaderProgramManager* manager);

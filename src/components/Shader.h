@@ -25,7 +25,7 @@ public:
 
   bool operator< (const ShaderInfo& other) const;
   bool operator== (const ShaderInfo& other) const;
-  bool isValid() const;
+  bool isValidForCreation() const;
 
   const std::string toString() const;
 };

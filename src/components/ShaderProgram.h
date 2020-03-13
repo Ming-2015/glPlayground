@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <iostream>
 #include <vector>
-#include "ShaderManager.h"
+#include "Shader.h"
 #include "../utils/ResourceManager.hpp"
 #include "Uniform.h"
 
@@ -31,7 +31,7 @@ public:
 
   bool operator< (const ShaderProgramInfo& other) const;
   bool operator== (const ShaderProgramInfo& other) const;
-  bool isValid() const;
+  bool isValidForCreation() const;
   const std::string toString() const;
 
   bool hasGeometryShader() const;

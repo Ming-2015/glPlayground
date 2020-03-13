@@ -14,6 +14,7 @@ public:
   virtual bool operator< (const Derived& other) const = 0;
   virtual bool operator== (const Derived& other) const = 0;
   virtual const std::string toString() const = 0;
+  virtual bool isValidForCreation() const = 0;
 };
 
 // Intended for avoiding duplicate resource allocation. 
@@ -54,6 +55,10 @@ public:
     {
       resourceMutex.unlock();
       return it->second;
+    }
+    else if (!key.isValidForCreation())
+    {
+      return nullptr;
     }
     else {
       try 

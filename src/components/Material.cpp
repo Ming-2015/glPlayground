@@ -76,9 +76,11 @@ void Material::setNormalMatrix(const glm::mat3& normal)
 
 // ----------- phoon material ---------------
 PhoonMaterial::PhoonMaterial()
+  : diffuse(1, 1, 1, 1), specular(0, 0, 0, 1), ambient(0, 0, 0, 1)
 {}
 
 PhoonMaterial::PhoonMaterial(ShaderProgramManager* manager)
+  : diffuse(1, 1, 1, 1), specular(0, 0, 0, 1), ambient(0, 0, 0, 1)
 {
   _mProgramManager = manager;
   if (!_mProgramManager)
@@ -114,18 +116,28 @@ PhoonMaterial::PhoonMaterial(ShaderProgramManager* manager)
   }
 
   _mProgram = program;
-  diffuseTexUniform = _mProgram->getUniformByName("diffuseTex");
-  specularTexUniform = _mProgram->getUniformByName("specularTex");
   modelMatUniform = _mProgram->getUniformByName("modelMat");
   normalMatUniform = _mProgram->getUniformByName("normalMat");
   projViewModelMatUniform = _mProgram->getUniformByName("projViewModelMat");
+
+  diffuseTexUniform = _mProgram->getUniformByName("diffuseTex");
+  specularTexUniform = _mProgram->getUniformByName("specularTex");
+  diffuseUniform = _mProgram->getUniformByName("diffuse");
+  specularUniform = _mProgram->getUniformByName("specular");
+  ambientUniform = _mProgram->getUniformByName("ambient");
 }
 
 PhoonMaterial::PhoonMaterial(const PhoonMaterial& other)
-  : Material(other)
+  : Material(other), 
+  diffuse(other.diffuse), 
+  specular(other.specular), 
+  ambient(other.ambient)
 {
   diffuseTexUniform = other.diffuseTexUniform;
   specularTexUniform = other.specularTexUniform;
+  diffuseUniform = other.diffuseUniform;
+  specularUniform = other.specularUniform;
+  ambientUniform = other.ambientUniform;
 }
 
 PhoonMaterial::~PhoonMaterial()
@@ -146,5 +158,20 @@ void PhoonMaterial::preRender()
   {
     specularTexUniform->setUniform(SPECULAR_TEX_IDX);
     specularTex->bind(SPECULAR_TEX_IDX);
+  }
+
+  if (diffuseUniform)
+  {
+    diffuseUniform->setUniform(diffuse);
+  }
+
+  if (specularUniform)
+  {
+    specularUniform->setUniform(specular);
+  }
+
+  if (ambientUniform) 
+  {
+    ambientUniform->setUniform(ambient);
   }
 }

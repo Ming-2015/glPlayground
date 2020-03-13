@@ -1,4 +1,4 @@
-#include "ShaderProgramManager.h"
+#include "ShaderProgram.h"
 
 // ShaderProgramInfo
 ShaderProgramInfo::ShaderProgramInfo(
@@ -59,9 +59,9 @@ bool ShaderProgramInfo::operator== (const ShaderProgramInfo& other) const {
   return eq1 && eq2 && eq3;
 }
 
-bool ShaderProgramInfo::isValid() const
+bool ShaderProgramInfo::isValidForCreation() const
 {
-  return vertexShaderInfo.isValid() && fragmentShaderInfo.isValid();
+  return vertexShaderInfo.isValidForCreation() && fragmentShaderInfo.isValidForCreation();
 }
 
 const std::string ShaderProgramInfo::toString() const
@@ -73,7 +73,7 @@ const std::string ShaderProgramInfo::toString() const
 
 bool ShaderProgramInfo::hasGeometryShader() const
 {
-  return geometryShaderInfo.isValid();
+  return geometryShaderInfo.isValidForCreation();
 }
 
 // ShaderProgram

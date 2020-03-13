@@ -6,8 +6,8 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 
-Model::Model(const Geometry* mesh)
-  : GameObject(), _mMesh(mesh), material(nullptr)
+Model::Model(const Primitive* mesh)
+  : GameObject(), _mMesh(mesh), material(nullptr), renderWireMesh(false)
 {}
 
 Model::~Model()
@@ -35,7 +35,17 @@ void Model::draw(const glm::mat4& PV, const glm::mat4& M) const
   material->setNormalMatrix(normal);
   material->setProjViewModelMatrix(PVM);
 
+  // draw line if wire mesh
+  if (renderWireMesh) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  }
+
   _mMesh->render();
+
+  // revert
+  if (renderWireMesh) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  }
 
   GameObject::draw(PV, M);
 }

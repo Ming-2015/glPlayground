@@ -36,7 +36,7 @@ bool TextureInfo::operator== (const TextureInfo & other) const
   return false;
 }
 
-bool TextureInfo::isValid() const
+bool TextureInfo::isValidForCreation() const
 {
   return !_mTexPath.empty();
 }
@@ -164,7 +164,7 @@ TextureManager::TextureManager()
 
 Texture* const TextureManager::create(const TextureInfo& key)
 {
-  if (!key.isValid())
+  if (!key.isValidForCreation())
   {
     throw std::runtime_error("Attempting to load invalid texture...");
   }

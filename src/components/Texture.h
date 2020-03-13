@@ -21,7 +21,7 @@ public:
 
   bool operator< (const TextureInfo& other) const;
   bool operator== (const TextureInfo& other) const;
-  bool isValid() const;
+  bool isValidForCreation() const;
 
   const std::string toString() const;
   const std::string& getTexPath() const { return _mTexPath; }

@@ -15,8 +15,8 @@
 #include <string>
 
 #include "../utils/Timer.h"
-#include "../components/ShaderProgramManager.h"
-#include "../components/ShaderManager.h"
+#include "../components/ShaderProgram.h"
+#include "../components/Shader.h"
 
 #include "../scene/Model.h"
 #include "../components/Material.h"
@@ -39,6 +39,7 @@ private:
   ShaderManager _mShaderManager;
   ShaderProgramManager _mProgramManager;
   TextureManager _mTextureManager;
+  PrimitiveManager _mPrimitiveManager;
 
   // current scene stuffs - all Temporary!! 
   Scene* _mCurrentScene;

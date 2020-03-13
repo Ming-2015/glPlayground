@@ -1,4 +1,4 @@
-#include "ShaderManager.h"
+#include "Shader.h"
 #include <stdexcept>
 
 // ShaderInfo
@@ -19,7 +19,7 @@ bool ShaderInfo::operator== (const ShaderInfo& other) const
   return shaderPath == other.shaderPath && shaderType == other.shaderType;
 }
 
-bool ShaderInfo::isValid() const 
+bool ShaderInfo::isValidForCreation() const
 {
   return !shaderPath.empty() && shaderType;
 }
@@ -32,10 +32,8 @@ const std::string ShaderInfo::toString() const
 // Shader
 // non static
 Shader::Shader()
-  : _mShaderId(0), _mIsShaderLoaded(false)
-{
-
-}
+  : _mShaderId(0), _mIsShaderLoaded(false), _mType(0)
+{}
 
 Shader::~Shader()
 {
@@ -111,6 +109,12 @@ ShaderManager::ShaderManager() {}
 
 Shader* const ShaderManager::create(const ShaderInfo& info)
 {
+  if (!info.isValidForCreation())
+  {
+    Log.print<Severity::error>("Trying to load shader with invalid info: ", info.toString());
+    throw std::runtime_error("Failed to load shader with invalid info");
+  }
+
   Shader* shader = new Shader();
   shader->load(info.shaderPath, info.shaderType);
   return shader;

@@ -31,27 +31,29 @@ void Game::init()
   _mWindow.setCursorMode(GLFW_CURSOR_DISABLED);
     
   // our temporary mesh
-  Geometry* triangleMesh = new Geometry();
-  triangleMesh->vertices = {
+  PrimitiveData triangleMesh;
+  triangleMesh.vertices = {
      -0.5f, -0.5f, 0.0f,  // lower left
      0.5f, -0.5f, 0.0f,   // lower right
      0.0f,  0.5f, 0.0f,   // top
      0.0f, -1.f, 0.0f    // bottom
   };
-  triangleMesh->texCoords = {
+  triangleMesh.texCoords = {
     0, 0,
     1.f, 0,
     0.5f, 1.f,
     0.5f, -.5f
   };
-  triangleMesh->indices = {
+  triangleMesh.indices = {
     0, 1, 2,
     0, 1, 3
   };
-  triangleMesh->initArrayObject();
+  
+  PrimitiveInfo info("test", &triangleMesh);
+  Primitive* primitive = _mPrimitiveManager.getOrCreate(info);
 
   // our model
-  Model* triModel = new Model(triangleMesh);
+  Model* triModel = new Model(primitive);
   PhoonMaterial* mat = new PhoonMaterial(&_mProgramManager);
 
   triModel->material = mat;
