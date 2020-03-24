@@ -165,12 +165,13 @@
     <ClCompile Include="src\core\Application.cpp" />
     <ClCompile Include="src\core\Game.cpp" />
     <ClCompile Include="src\components\Shader.cpp" />
-    <ClCompile Include="src\core\Window.cpp" />
+    <ClCompile Include="src\components\Window.cpp" />
     <ClCompile Include="src\utils\Logger.cpp" />
     <ClCompile Include="src\utils\Timer.cpp" />
     <ClCompile Include="src\components\Uniform.cpp" />
     <ClCompile Include="src\components\Texture.cpp" />
-    <ClCompile Include="src\scene\GameState.cpp" />
+    <ClCompile Include="src\GameStates\GameState.cpp" />
+    <ClCompile Include="src\GameStates\TestTriangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\scene\GameObject.h" />
@@ -188,11 +189,12 @@
     <ClInclude Include="src\utils\Timer.h" />
     <ClInclude Include="src\components\Uniform.h" />
     <ClInclude Include="src\components\Texture.h" />
-    <ClInclude Include="src\scene\GameState.h" />
+    <ClInclude Include="src\GameStates\GameState.h" />
+    <ClInclude Include="src\GameStates\TestTriangle.h" />
     <ClInclude Include="x64Includes\GLFW\glfw3.h" />
     <ClInclude Include="x64Includes\GLFW\glfw3native.h" />
     <ClInclude Include="src\core\Application.h" />
-    <ClInclude Include="src\core\Window.h" />
+    <ClInclude Include="src\components\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />

@@ -28,6 +28,17 @@ void Node::update(float deltaT)
 
 void Node::addChild(Node* n)
 {
+  if (!n)
+  {
+    Log.print<Severity::warning>("Trying to add a null child!");
+    return;
+  }
+
+  if (n->_mParent) 
+  {
+    n->_mParent->removeChild(n);
+  }
+
   _mChildren.push_back(n);
   n->_mParentIdx = _mChildren.size() - 1;
   n->_mParent = this;
@@ -35,7 +46,13 @@ void Node::addChild(Node* n)
 
 void Node::removeChild(Node* n)
 {
-  if (_mParentIdx < 0 || _mParentIdx >= _mChildren.size())
+  if (!n)
+  {
+    Log.print<Severity::warning>("Trying to remove a null child!");
+    return;
+  }
+
+  if (n->_mParentIdx < 0 || n->_mParentIdx >= _mChildren.size())
   {
     Log.print<Severity::warning>("Node's parentIdx is out of bound!");
     return;
@@ -65,9 +82,10 @@ Node* Node::getParent() const
 
 void Node::setParent(Node* newParent)
 {
-  if (_mParent) 
+  if (newParent == nullptr)
   {
     _mParent->removeChild(this);
+    return;
   }
 
   newParent->addChild(this);

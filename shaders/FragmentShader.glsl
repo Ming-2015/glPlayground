@@ -30,9 +30,9 @@ void main()
     diffuseTexCoord = fTex_3;
 
   vec2 specularTexCoord = fTex;
-  if (specularTexCoord == 2)
+  if (specularTexIndex == 2)
     specularTexCoord = fTex_2;
-  if (specularTexCoord == 3)
+  if (specularTexIndex == 3)
     specularTexCoord = fTex_3;
 
   FragColor = mix( 
