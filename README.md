@@ -1,5 +1,9 @@
 ## Description
-This is a project intended to further refine my skills as a graphics programmer. It uses glad as the openGL loader, hence the name of the project. 
+This is a project intended to further refine my skills as a graphics programmer. It uses glad as the openGL API loader.
+
+![screenshot]
+
+[screenshot]: https://i.imgur.com/TCC3a1l.png
 
 ## Pre-installation
 Before compiling the project, you will need to:
