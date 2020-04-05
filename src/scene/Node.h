@@ -30,5 +30,7 @@ public:
   Node* getParent() const;
   void setParent(Node * n);
 
+  Node* getRoot();
+
   const std::vector<Node*>& getChildren() const;
 };

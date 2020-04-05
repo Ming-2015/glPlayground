@@ -1,11 +1,13 @@
 #include "TestTriangle.h"
+#include "../scene/Models/Box.h"
+#include "../scene/Lights/PointLight.h"
 
 TestTriangle::TestTriangle(const GameResources& resources)
   : GameState(resources),
   _mClearColor(0.5, 0.7, 0.3, 1.0),
   _mCamera(nullptr),
   mat(nullptr),
-  triModel(nullptr)
+  model(nullptr)
 {}
 
 TestTriangle::~TestTriangle()
@@ -42,44 +44,22 @@ void TestTriangle::_onUpdate(float deltaT)
   }
 
   currentAngle += deltaT / 1000.0f * rotateSpeed;
-  triModel->setRotationQuaternion(glm::angleAxis(currentAngle, glm::vec3(0, 1, 0)));
+  model->setRotationQuaternion(glm::angleAxis(currentAngle, glm::vec3(0, 1, 0)));
 }
 
 void TestTriangle::_onDraw()
 {
   glClearColor(_mClearColor.r, _mClearColor.g, _mClearColor.b, _mClearColor.a);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 // resouce allocation/deallocation
 void TestTriangle::_onLoad()
 {
-  // our temporary mesh
-  PrimitiveData triangleMesh;
-  triangleMesh.vertices = {
-     -0.5f, -0.5f, 0.0f,  // lower left
-     0.5f, -0.5f, 0.0f,   // lower right
-     0.0f,  0.5f, 0.0f,   // top
-     0.0f, -1.f, 0.0f    // bottom
-  };
-  triangleMesh.texCoords = {
-    0, 0,
-    1.f, 0,
-    0.5f, 1.f,
-    0.5f, -.5f
-  };
-  triangleMesh.indices = {
-    0, 1, 2,
-    0, 1, 3
-  };
-
-  PrimitiveInfo info("test", &triangleMesh);
-  Primitive* primitive = _mResources.primitiveManager.getOrCreate(info);
-
   // our model
-  triModel = new Model(primitive);
+  model = new Box(_mResources.primitiveManager);
   mat = new PhoonMaterial(&_mResources.shaderProgramManager);
-  triModel->material = mat;
+  model->material = mat;
 
   // set the textures for the material
   TextureInfo wallTex(
@@ -97,8 +77,15 @@ void TestTriangle::_onLoad()
   _mCamera = new FreeCamera();
   _mCamera->setPosition(glm::vec3(0, 0, 2));
 
-  _mScene.addChild(triModel);
+  _mScene.addChild(model);
   _mScene.setActiveCamera(_mCamera, true);
+
+  _mScene.addLight(new PointLight(), true);
+
+  // some global settings
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
 }
 
 void TestTriangle::_onDestroy()
@@ -107,9 +94,9 @@ void TestTriangle::_onDestroy()
   delete _mCamera;
   _mCamera = nullptr;
 
-  _mScene.removeChild(triModel);
-  delete triModel;
-  triModel = nullptr;
+  _mScene.removeChild(model);
+  delete model;
+  model = nullptr;
 
   delete mat;
   mat = nullptr;

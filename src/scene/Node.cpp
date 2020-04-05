@@ -80,6 +80,15 @@ Node* Node::getParent() const
   return _mParent;
 }
 
+Node* Node::getRoot() 
+{
+  Node* current = this;
+  while (current->_mParent) {
+    current = current->_mParent;
+  }
+  return current;
+}
+
 void Node::setParent(Node* newParent)
 {
   if (newParent == nullptr)

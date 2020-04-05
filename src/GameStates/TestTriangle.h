@@ -12,7 +12,7 @@ private:
 
   // current scene stuffs - all Temporary!! 
   FreeCamera* _mCamera;
-  Model* triModel;
+  Model* model;
   PhoonMaterial* mat;
   Timer timer;
 
@@ -35,7 +35,7 @@ private:
 
   // triangle rotate speed - radians per second
   float currentAngle = 0;
-  float rotateSpeed = glm::half_pi<float>();
+  float rotateSpeed = 0* glm::half_pi<float>();
 
   virtual void _onUpdate(float deltaT);
   virtual void _onDraw();

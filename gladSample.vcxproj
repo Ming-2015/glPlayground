@@ -152,6 +152,8 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\scene\Lights\PointLight.cpp" />
+    <ClCompile Include="src\scene\Models\Box.cpp" />
     <ClCompile Include="src\scene\GameObject.cpp" />
     <ClCompile Include="src\scene\Camera.cpp" />
     <ClCompile Include="src\scene\Node.cpp" />
@@ -174,6 +176,9 @@
     <ClCompile Include="src\GameStates\TestTriangle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\scene\Lights\PointLight.h" />
+    <ClInclude Include="src\scene\Models\Box.h" />
+    <ClInclude Include="src\scene\Light.h" />
     <ClInclude Include="src\scene\GameObject.h" />
     <ClInclude Include="src\scene\Camera.h" />
     <ClInclude Include="src\scene\Scene.h" />

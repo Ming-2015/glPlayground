@@ -76,8 +76,9 @@ public:
   virtual bool isLoaded() const { return _mIsLoaded; }
 
   // main loop functions
-  virtual void draw() 
+  virtual void draw()
   { 
+    _mScene.useLights(_mResources.shaderProgramManager);
     _onDraw(); 
     _mScene.draw(); 
   };

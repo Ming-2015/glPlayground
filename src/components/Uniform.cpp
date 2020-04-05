@@ -10,7 +10,7 @@ void Uniform::setUniform(float f, unsigned int index)
   }
 
   if (_registerData(f, index))
-    glUniform1f(_mLocation + index, f);
+    glProgramUniform1f(_mProgramId, _mLocation + index, f);
 }
 
 void Uniform::setUniform(int i, unsigned int index)
@@ -26,7 +26,7 @@ void Uniform::setUniform(int i, unsigned int index)
   }
 
   if (_registerData(i, index))
-    glUniform1i(_mLocation + index, i);
+    glProgramUniform1i(_mProgramId, _mLocation + index, i);
 }
 
 // write a vec2 into the uniform location
@@ -39,7 +39,7 @@ void Uniform::setUniform(glm::vec2 vector, unsigned int index)
   }
 
   if (_registerData(vector, index))
-    glUniform2f(_mLocation + index, vector.x, vector.y);
+    glProgramUniform2f(_mProgramId, _mLocation + index, vector.x, vector.y);
 }
 
 // write a vec3 into the uniform location
@@ -52,7 +52,7 @@ void Uniform::setUniform(glm::vec3 vector, unsigned int index)
   }
 
   if (_registerData(vector, index))
-    glUniform3f(_mLocation + index, vector.x, vector.y, vector.z);
+    glProgramUniform3f(_mProgramId, _mLocation + index, vector.x, vector.y, vector.z);
 }
 
 // write a vec3 into the uniform location
@@ -65,7 +65,7 @@ void Uniform::setUniform(glm::vec4 vector, unsigned int index)
   }
 
   if (_registerData(vector, index))
-    glUniform4f(_mLocation + index, vector.x, vector.y, vector.z, vector.w);
+    glProgramUniform4f(_mProgramId, _mLocation + index, vector.x, vector.y, vector.z, vector.w);
 }
 
 // write a mat4 into the uniform location
@@ -78,7 +78,7 @@ void Uniform::setUniform(glm::mat4 mat, unsigned int index)
   }
 
   if (_registerData(mat, index))
-    glUniformMatrix4fv(_mLocation + index, 1, GL_FALSE, glm::value_ptr(mat));
+    glProgramUniformMatrix4fv(_mProgramId, _mLocation + index, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 // write a mat3 into the uniform location
@@ -91,7 +91,7 @@ void Uniform::setUniform(glm::mat3 mat, unsigned int index)
   }
 
   if (_registerData(mat, index))
-    glUniformMatrix3fv(_mLocation + index, 1, GL_FALSE, glm::value_ptr(mat));
+    glProgramUniformMatrix3fv(_mProgramId, _mLocation + index, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 // write a mat2 into the uniform location
@@ -104,7 +104,7 @@ void Uniform::setUniform(glm::mat2 mat, unsigned int index)
   }
 
   if (_registerData(mat, index))
-    glUniformMatrix2fv(_mLocation + index, 1, GL_FALSE, glm::value_ptr(mat));
+    glProgramUniformMatrix2fv(_mProgramId, _mLocation + index, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 Uniform::Uniform(int programId, int index, GLenum type, GLenum size, const std::string& name)

@@ -58,6 +58,7 @@ public:
     }
     else if (!key.isValidForCreation())
     {
+      resourceMutex.unlock();
       return nullptr;
     }
     else {
@@ -149,6 +150,10 @@ public:
     {
       throw err;
     }
+  }
+
+  const std::map<K, V*>& getAllResources() {
+    return resources; 
   }
 
   // constructor

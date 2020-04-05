@@ -1,4 +1,6 @@
 #version 460 core
+
+/* final output */
 out vec4 FragColor;
 
 /* inputs */
@@ -21,6 +23,20 @@ uniform sampler2D diffuseTex;
 uniform uint specularTexIndex;
 uniform sampler2D specularTex;
 
+/* lights */
+#define NR_POINT_LIGHTS 4
+struct PointLight {
+  vec3 position;
+  vec3 ambient;
+  vec3 diffuse;
+  vec3 specular;
+
+  float constant;
+  float linear;
+  float quadratic;
+};
+uniform PointLight pointLights[NR_POINT_LIGHTS];
+
 void main()
 {
   vec2 diffuseTexCoord = fTex;
@@ -35,9 +51,15 @@ void main()
   if (specularTexIndex == 3)
     specularTexCoord = fTex_3;
 
+  vec4 totalDiffuseLight = vec4(0, 0, 0, 1.f);
+  
+  for (int i = 0; i < 4; i++) {
+    totalDiffuseLight += vec4(pointLights[i].diffuse, 0);
+  }
+
   FragColor = mix( 
-    texture(diffuseTex, diffuseTexCoord),
-    texture(specularTex, specularTexCoord),
+    texture(diffuseTex, diffuseTexCoord) * totalDiffuseLight,
+    texture(specularTex, specularTexCoord) * vec4(pointLights[0].specular, 1.f),
     0.7
   );
 }
