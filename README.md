@@ -3,7 +3,7 @@ This is a project intended to further refine my skills as a graphics programmer.
 
 ![screenshot]
 
-[screenshot]: https://i.imgur.com/TCC3a1l.png
+[screenshot]: https://i.imgur.com/WPAQXwn.png
 
 ## Pre-installation
 Before compiling the project, you will need to:
