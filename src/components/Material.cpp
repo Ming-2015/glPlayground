@@ -75,11 +75,11 @@ void Material::setNormalMatrix(const glm::mat3& normal)
 }
 
 // ----------- phoon material ---------------
-PhoonMaterial::PhoonMaterial()
+PhongMaterial::PhongMaterial()
   : diffuse(1, 1, 1, 1), specular(0, 0, 0, 1), ambient(0, 0, 0, 1)
 {}
 
-PhoonMaterial::PhoonMaterial(ShaderProgramManager* manager)
+PhongMaterial::PhongMaterial(ShaderProgramManager* manager)
   : diffuse(1, 1, 1, 1), specular(0, 0, 0, 1), ambient(0, 0, 0, 1)
 {
   _mProgramManager = manager;
@@ -120,16 +120,16 @@ PhoonMaterial::PhoonMaterial(ShaderProgramManager* manager)
   normalMatUniform = _mProgram->getUniformByName("normalMat");
   projViewModelMatUniform = _mProgram->getUniformByName("projViewModelMat");
 
-  diffuseTexUniform = _mProgram->getUniformByName("phoonMaterial.diffuseTex");
-  specularTexUniform = _mProgram->getUniformByName("phoonMaterial.specularTex");
-  ambientTexUniform = _mProgram->getUniformByName("phoonMaterial.ambientTex");
-  diffuseUniform = _mProgram->getUniformByName("phoonMaterial.diffuse");
-  specularUniform = _mProgram->getUniformByName("phoonMaterial.specular");
-  ambientUniform = _mProgram->getUniformByName("phoonMaterial.ambient");
-  shininessUniform = _mProgram->getUniformByName("phoonMaterial.shininess");
+  diffuseTexUniform = _mProgram->getUniformByName("phongMaterial.diffuseTex");
+  specularTexUniform = _mProgram->getUniformByName("phongMaterial.specularTex");
+  ambientTexUniform = _mProgram->getUniformByName("phongMaterial.ambientTex");
+  diffuseUniform = _mProgram->getUniformByName("phongMaterial.diffuse");
+  specularUniform = _mProgram->getUniformByName("phongMaterial.specular");
+  ambientUniform = _mProgram->getUniformByName("phongMaterial.ambient");
+  shininessUniform = _mProgram->getUniformByName("phongMaterial.shininess");
 }
 
-PhoonMaterial::PhoonMaterial(const PhoonMaterial& other)
+PhongMaterial::PhongMaterial(const PhongMaterial& other)
   : Material(other), 
   diffuse(other.diffuse), 
   specular(other.specular), 
@@ -144,7 +144,7 @@ PhoonMaterial::PhoonMaterial(const PhoonMaterial& other)
   shininessUniform = other.shininessUniform;
 }
 
-PhoonMaterial::~PhoonMaterial()
+PhongMaterial::~PhongMaterial()
 {}
 
 void bindTexUniform(Uniform* texUniform, Uniform* colorUniform, Texture* tex, glm::vec4 color, int texIdx)
@@ -173,7 +173,7 @@ void bindTexUniform(Uniform* texUniform, Uniform* colorUniform, Texture* tex, gl
   }
 }
 
-void PhoonMaterial::preRender()
+void PhongMaterial::preRender()
 {
   Material::preRender();
 

@@ -18,7 +18,7 @@ struct Camera {
 uniform Camera camera;
 
 /* materials */
-struct PhoonMaterial {
+struct PhongMaterial {
   /* colors */
   vec4 ambient;
   vec4 diffuse;
@@ -32,7 +32,7 @@ struct PhoonMaterial {
   /* others */
   int shininess;
 };
-uniform PhoonMaterial phoonMaterial;
+uniform PhongMaterial phongMaterial;
 
 /* lights */
 #define NR_POINT_LIGHTS 4
@@ -70,16 +70,16 @@ void main()
     float distFromLight = length(surfaceToLight);
     float nDotL = max(dot(fNormal, lightDir), 0.0);
     float vDotR = max(dot(viewDir, reflectDir), 0.0);
-    float spec = pow(vDotR, phoonMaterial.shininess);
+    float spec = pow(vDotR, phongMaterial.shininess);
 
     ambientComponent += pointLights[i].ambient;
     diffuseComponent += nDotL * pointLights[i].diffuse;
     specularComponent += pointLights[i].specular * spec;
   }
 
-  vec3 matAmbient = phoonMaterial.ambient.xyz + texture(phoonMaterial.ambientTex, ambientTexCoord).xyz;
-  vec3 matDiffuse = phoonMaterial.diffuse.xyz + texture(phoonMaterial.diffuseTex, diffuseTexCoord).xyz;
-  vec3 matSpecular = phoonMaterial.specular.xyz + texture(phoonMaterial.specularTex, specularTexCoord).xyz;
+  vec3 matAmbient = phongMaterial.ambient.xyz + texture(phongMaterial.ambientTex, ambientTexCoord).xyz;
+  vec3 matDiffuse = phongMaterial.diffuse.xyz + texture(phongMaterial.diffuseTex, diffuseTexCoord).xyz;
+  vec3 matSpecular = phongMaterial.specular.xyz + texture(phongMaterial.specularTex, specularTexCoord).xyz;
 
   ambientComponent = ambientComponent * matAmbient;
   diffuseComponent = diffuseComponent * matDiffuse;

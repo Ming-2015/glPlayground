@@ -18,7 +18,7 @@ void TestTriangle::_onLoad()
 {
   // our model
   model = new Box(_mResources.primitiveManager);
-  mat = new PhoonMaterial(&_mResources.shaderProgramManager);
+  mat = new PhongMaterial(&_mResources.shaderProgramManager);
   model->material = mat;
 
   // set the textures for the material
@@ -47,7 +47,7 @@ void TestTriangle::_onLoad()
   pointLight->specular = glm::vec3(0.7f);
   _mScene.addLight(pointLight, true);
   lightBox = new Box(_mResources.primitiveManager, .3f, .3f, .3f, true);
-  lightBox->material = new PhoonMaterial(&_mResources.shaderProgramManager);
+  lightBox->material = new PhongMaterial(&_mResources.shaderProgramManager);
   pointLight->addChild(lightBox);
 
   // some global settings
@@ -103,7 +103,7 @@ void TestTriangle::_onDraw()
   glClearColor(_mClearColor.r, _mClearColor.g, _mClearColor.b, _mClearColor.a);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  PhoonMaterial* lightBoxMat = dynamic_cast<PhoonMaterial*> (lightBox->material);
+  PhongMaterial* lightBoxMat = dynamic_cast<PhongMaterial*> (lightBox->material);
   if (lightBoxMat)
   {
     lightBoxMat->diffuse = glm::vec4(pointLight->diffuse, 1.f);

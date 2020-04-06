@@ -41,7 +41,7 @@ public:
 };
 
 
-class PhoonMaterial : public Material 
+class PhongMaterial : public Material 
 {
 private:
   // uniforms
@@ -61,7 +61,7 @@ private:
   Uniform* shininessUniform = nullptr;
 
 protected:
-  PhoonMaterial();
+  PhongMaterial();
   virtual void preRender();
 
 public:
@@ -77,7 +77,7 @@ public:
   int shininess = 32;
 
 public:
-  PhoonMaterial(ShaderProgramManager* manager);
-  PhoonMaterial(const PhoonMaterial& other);
-  virtual ~PhoonMaterial();
+  PhongMaterial(ShaderProgramManager* manager);
+  PhongMaterial(const PhongMaterial& other);
+  virtual ~PhongMaterial();
 };

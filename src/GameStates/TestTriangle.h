@@ -15,7 +15,7 @@ private:
   // current scene stuffs - all Temporary!! 
   FreeCamera* _mCamera;
   Model* model;
-  PhoonMaterial* mat;
+  PhongMaterial* mat;
   Timer timer;
 
   // key movement
