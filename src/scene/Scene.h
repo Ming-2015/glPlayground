@@ -10,7 +10,7 @@
 #include <vector>
 #include <set>
 
-class Scene : public Node
+class Scene : public virtual Node
 {
 protected:
   // activeCamera needs to be added to the scene separately to be part of the scene
@@ -28,7 +28,7 @@ public:
   const std::set<Light*>& getLights() { return _mLights; }
 
   // this should be called before a draw call to activate lights!
-  void useLights(ShaderProgramManager& manager);
+  void prepShaderPrograms(ShaderProgramManager& manager);
 
   // NOTE: for scenes, PV and M will have no effect at all
   virtual void draw(const glm::mat4 PV, const glm::mat4& M) const

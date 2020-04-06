@@ -45,6 +45,9 @@ class PhoonMaterial : public Material
 {
 private:
   // uniforms
+  Uniform* ambientTexUniform = nullptr;
+  static const int AMBIENT_TEX_IDX = 2;
+
   Uniform* specularTexUniform = nullptr;
   static const int SPECULAR_TEX_IDX = 1;
 
@@ -55,6 +58,8 @@ private:
   Uniform* specularUniform = nullptr;
   Uniform* ambientUniform = nullptr;
 
+  Uniform* shininessUniform = nullptr;
+
 protected:
   PhoonMaterial();
   virtual void preRender();
@@ -63,10 +68,13 @@ public:
   // diffuse texture of the material
   Texture* diffuseTex = nullptr;
   Texture* specularTex = nullptr;
+  Texture* ambientTex = nullptr;
 
   glm::vec4 diffuse;
   glm::vec4 specular;
   glm::vec4 ambient;
+
+  int shininess = 32;
 
 public:
   PhoonMaterial(ShaderProgramManager* manager);

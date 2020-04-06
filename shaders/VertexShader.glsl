@@ -29,7 +29,7 @@ void main()
 {
     gl_Position = projViewModelMat * vec4(aPos, 1.0);
     fPos = vec3(modelMat * vec4(aPos, 1.0));
-    fNormal = normalMat * aNormal;
+    fNormal = normalize(normalMat * aNormal);
     fTex = aTex;
     fTex_2 = aTex_2;
     fTex_3 = aTex_3;

@@ -7,7 +7,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 
-class GameObject : public Node
+class GameObject : public virtual Node
 {
 protected:
   // cached matrices for faster updates

@@ -22,28 +22,30 @@ void Model::draw(const glm::mat4& PV, const glm::mat4& M) const
 {
   if (_mMesh == nullptr) return;
 
-  if (material != nullptr) {
-    material->use();
-  }
-
   glm::mat4 model = M * _mModelMatrix;
   glm::mat4 PVM = PV * model;
   glm::mat3 modelMat3(model);
   glm::mat3 normal = glm::inverseTranspose(modelMat3);
 
-  material->setModelMatrix(model);
-  material->setNormalMatrix(normal);
-  material->setProjViewModelMatrix(PVM);
+  if (material != nullptr) 
+  {
+    material->use();
+    material->setModelMatrix(model);
+    material->setNormalMatrix(normal);
+    material->setProjViewModelMatrix(PVM);
+  }
 
   // draw line if wire mesh
-  if (renderWireMesh) {
+  if (renderWireMesh) 
+  {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   }
 
   _mMesh->render();
 
   // revert
-  if (renderWireMesh) {
+  if (renderWireMesh) 
+  {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   }
 

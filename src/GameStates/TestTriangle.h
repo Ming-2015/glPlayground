@@ -1,7 +1,9 @@
 #pragma once
 #include "GameState.h"
-#include "../utils/Timer.h"
 #include <glm/gtc/constants.hpp>
+#include "../utils/Timer.h"
+#include "../scene/Lights/PointLight.h"
+#include "../scene/Models/Box.h"
 
 class TestTriangle : public GameState
 {
@@ -33,9 +35,16 @@ private:
   double cursorMoveX = 0;
   double cursorMoveY = 0;
 
-  // triangle rotate speed - radians per second
+  // model rotate speed - radians per second
   float currentAngle = 0;
-  float rotateSpeed = 0* glm::half_pi<float>();
+  float rotateSpeed = glm::half_pi<float>();
+
+  // point light
+  PointLight* pointLight;
+  Box* lightBox;
+  float lightAngle = 0;
+  float lightRotateSpeed = glm::half_pi<float>() / 2.f;
+  float distFromCenter = 2.f;
 
   virtual void _onUpdate(float deltaT);
   virtual void _onDraw();

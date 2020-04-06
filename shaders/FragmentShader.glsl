@@ -3,25 +3,36 @@
 /* final output */
 out vec4 FragColor;
 
-/* inputs */
+/* inputs, world coordinates */
 in vec3 fPos;
 in vec3 fNormal;
 in vec2 fTex;
 in vec4 fTangent;
-in vec2 fTex_2;
-in vec2 fTex_3;
 
-/* colors */
-uniform vec4 diffuse;
-uniform vec4 specular;
-uniform vec4 ambient;
+/* camera */
+struct Camera {
+  float minZ;
+  float maxZ;
+  vec3 position;
+};
+uniform Camera camera;
 
-/* textures */
-uniform uint diffuseTexIndex;
-uniform sampler2D diffuseTex;
+/* materials */
+struct PhoonMaterial {
+  /* colors */
+  vec4 ambient;
+  vec4 diffuse;
+  vec4 specular;
 
-uniform uint specularTexIndex;
-uniform sampler2D specularTex;
+  /* textures */
+  sampler2D ambientTex;
+  sampler2D diffuseTex;
+  sampler2D specularTex;
+  
+  /* others */
+  int shininess;
+};
+uniform PhoonMaterial phoonMaterial;
 
 /* lights */
 #define NR_POINT_LIGHTS 4
@@ -37,29 +48,42 @@ struct PointLight {
 };
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 
+
 void main()
 {
+  vec3 ambientComponent = vec3(0);
+  vec3 diffuseComponent = vec3(0);
+  vec3 specularComponent = vec3(0);
+
   vec2 diffuseTexCoord = fTex;
-  if (diffuseTexIndex == 2)
-    diffuseTexCoord = fTex_2;
-  if (diffuseTexIndex == 3)
-    diffuseTexCoord = fTex_3;
-
   vec2 specularTexCoord = fTex;
-  if (specularTexIndex == 2)
-    specularTexCoord = fTex_2;
-  if (specularTexIndex == 3)
-    specularTexCoord = fTex_3;
-
-  vec4 totalDiffuseLight = vec4(0, 0, 0, 1.f);
+  vec2 ambientTexCoord = fTex;
   
-  for (int i = 0; i < 4; i++) {
-    totalDiffuseLight += vec4(pointLights[i].diffuse, 0);
+  vec3 surfaceToCamera = camera.position - fPos;
+  vec3 viewDir = normalize(surfaceToCamera);
+
+  for (int i = 0; i < NR_POINT_LIGHTS; i++) 
+  {
+    vec3 surfaceToLight = pointLights[i].position - fPos;
+    vec3 lightDir = normalize(surfaceToLight);
+    vec3 reflectDir = reflect(-lightDir, fNormal);
+    float distFromLight = length(surfaceToLight);
+    float nDotL = max(dot(fNormal, lightDir), 0.0);
+    float vDotR = max(dot(viewDir, reflectDir), 0.0);
+    float spec = pow(vDotR, phoonMaterial.shininess);
+
+    ambientComponent += pointLights[i].ambient;
+    diffuseComponent += nDotL * pointLights[i].diffuse;
+    specularComponent += pointLights[i].specular * spec;
   }
 
-  FragColor = mix( 
-    texture(diffuseTex, diffuseTexCoord) * totalDiffuseLight,
-    texture(specularTex, specularTexCoord) * vec4(pointLights[0].specular, 1.f),
-    0.7
-  );
+  vec3 matAmbient = phoonMaterial.ambient.xyz + texture(phoonMaterial.ambientTex, ambientTexCoord).xyz;
+  vec3 matDiffuse = phoonMaterial.diffuse.xyz + texture(phoonMaterial.diffuseTex, diffuseTexCoord).xyz;
+  vec3 matSpecular = phoonMaterial.specular.xyz + texture(phoonMaterial.specularTex, specularTexCoord).xyz;
+
+  ambientComponent = ambientComponent * matAmbient;
+  diffuseComponent = diffuseComponent * matDiffuse;
+  specularComponent = specularComponent * matSpecular;
+
+  FragColor = vec4(ambientComponent + diffuseComponent + specularComponent, 1.0f);
 }

@@ -78,7 +78,7 @@ public:
   // main loop functions
   virtual void draw()
   { 
-    _mScene.useLights(_mResources.shaderProgramManager);
+    _mScene.prepShaderPrograms(_mResources.shaderProgramManager);
     _onDraw(); 
     _mScene.draw(); 
   };

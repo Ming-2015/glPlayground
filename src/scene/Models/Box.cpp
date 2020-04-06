@@ -1,12 +1,12 @@
 #include "Box.h"
 #include <sstream>
 
-Box::Box(PrimitiveManager& primitiveManager, float w, float h, float d)
+Box::Box(PrimitiveManager& primitiveManager, float w, float h, float d, bool invertNormal)
   : Model(nullptr)
 {
   Primitive* boxPrimitive = nullptr;
   std::stringstream idStream;
-  idStream << "box_" << w << "_" << h << "_" << d;
+  idStream << "createBox_" << w << "_" << h << "_" << d << "_" << invertNormal;
   std::string id = idStream.str();
 
   if ( !(boxPrimitive = primitiveManager.find(PrimitiveInfo(id)))) 
@@ -64,6 +64,52 @@ Box::Box(PrimitiveManager& primitiveManager, float w, float h, float d)
       p1.x, p1.y, p1.z,
       p4.x, p4.y, p4.z
     };
+
+    boxMesh.normals = {
+      // bottom
+      0, -1, 0,
+      0, -1, 0,
+      0, -1, 0,
+      0, -1, 0,
+
+      // top
+      0, 1, 0,
+      0, 1, 0,
+      0, 1, 0,
+      0, 1, 0,
+
+      // front
+      0, 0, 1,
+      0, 0, 1,
+      0, 0, 1,
+      0, 0, 1,
+
+      // back
+      0, 0, -1,
+      0, 0, -1,
+      0, 0, -1,
+      0, 0, -1,
+
+      // right
+      1, 0, 0,
+      1, 0, 0,
+      1, 0, 0,
+      1, 0, 0,
+
+      // left
+      -1, 0, 0,
+      -1, 0, 0,
+      -1, 0, 0,
+      -1, 0, 0
+    };
+
+    if (invertNormal)
+    {
+      for (int i = 0; i < boxMesh.normals.size(); i++)
+      {
+        boxMesh.normals[i] = -boxMesh.normals[i];
+      }
+    }
 
     boxMesh.texCoords = {
       // bottom - 1 2 3 4

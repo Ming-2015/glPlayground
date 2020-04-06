@@ -1,9 +1,10 @@
 #pragma once
 #include "Node.h"
+#include "../components/ShaderProgram.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
-class CameraBase : public Node
+class CameraBase : public virtual Node
 {
 protected:
   virtual void _updateViewMatrix() = 0;
@@ -14,6 +15,7 @@ public:
   virtual const glm::mat4& getProjectionMatrix() const = 0;
   virtual const glm::mat4& forceComputeViewMatrix() = 0;
   virtual const glm::mat4& forceComputeProjectionMatrix() = 0;
+  virtual void setProgramUniform(ShaderProgram& shaderProgram) = 0;
 };
 
 class PerspectiveCamera : public CameraBase
@@ -63,6 +65,8 @@ public:
   void setMaxZ(float maxZ);
   void setFovy(float fovy);
   void setAspectRatio(float aspectRatio);
+
+  virtual void setProgramUniform(ShaderProgram& shaderProgram);
 };
 
 // always look at a particular point in world space
@@ -87,6 +91,8 @@ public:
   const glm::vec3& getPosition() const;
   const glm::vec3& getTarget() const;
   const glm::vec3& getUp() const;
+
+  virtual void setProgramUniform(ShaderProgram& shaderProgram);
 };
 
 // always looks at a certain direction
@@ -111,6 +117,8 @@ public:
   const glm::vec3& getPosition() const;
   const glm::vec3& getForwardDirection() const;
   const glm::vec3& getUp() const;
+
+  virtual void setProgramUniform(ShaderProgram& shaderProgram);
 };
 
 // has both target and forward camera, on a switch

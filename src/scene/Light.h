@@ -2,7 +2,7 @@
 #include "../components/ShaderProgram.h"
 
 #pragma once
-class Light : public Node
+class Light : public virtual Node
 {
 public:
   // set the light's uniforms in the shader

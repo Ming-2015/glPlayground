@@ -101,6 +101,18 @@ void PerspectiveCamera::setAspectRatio(float aspectRatio)
   }
 }
 
+void PerspectiveCamera::setProgramUniform(ShaderProgram& shaderProgram)
+{
+  Uniform* minZUniform = shaderProgram.getUniformByName("camera.minZ");
+  Uniform* maxZUniform = shaderProgram.getUniformByName("camera.maxZ");
+  
+  if (minZUniform)
+    minZUniform->setUniform(_mMinZ);
+
+  if (maxZUniform)
+    maxZUniform->setUniform(_mMaxZ);
+}
+
 // ------------------------ target camera ------------------------
 TargetCamera::TargetCamera()
   : _mPosition(0,0,1), _mTarget(0,0,0), _mUp(0,1,0)
@@ -158,6 +170,15 @@ const glm::vec3& TargetCamera::getUp() const
   return _mUp;
 }
 
+void TargetCamera::setProgramUniform(ShaderProgram& shaderProgram)
+{
+  PerspectiveCamera::setProgramUniform(shaderProgram);
+
+  Uniform* positionUniform = shaderProgram.getUniformByName("camera.position");
+  if (positionUniform)
+    positionUniform->setUniform(_mPosition);
+}
+
 // ----------------- forward camera ----------------------------------
 ForwardCamera::ForwardCamera()
   : _mPosition(0, 0, 1), _mForwardDirection(0, 0, -1), _mUp(0, 1, 0)
@@ -213,6 +234,15 @@ const glm::vec3& ForwardCamera::getForwardDirection() const
 const glm::vec3& ForwardCamera::getUp() const
 {
   return _mUp;
+}
+
+void ForwardCamera::setProgramUniform(ShaderProgram& shaderProgram)
+{
+  PerspectiveCamera::setProgramUniform(shaderProgram);
+
+  Uniform* positionUniform = shaderProgram.getUniformByName("camera.position");
+  if (positionUniform)
+    positionUniform->setUniform(_mPosition);
 }
 
 // --------------- free camera --------------------------

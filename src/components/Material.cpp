@@ -120,11 +120,13 @@ PhoonMaterial::PhoonMaterial(ShaderProgramManager* manager)
   normalMatUniform = _mProgram->getUniformByName("normalMat");
   projViewModelMatUniform = _mProgram->getUniformByName("projViewModelMat");
 
-  diffuseTexUniform = _mProgram->getUniformByName("diffuseTex");
-  specularTexUniform = _mProgram->getUniformByName("specularTex");
-  diffuseUniform = _mProgram->getUniformByName("diffuse");
-  specularUniform = _mProgram->getUniformByName("specular");
-  ambientUniform = _mProgram->getUniformByName("ambient");
+  diffuseTexUniform = _mProgram->getUniformByName("phoonMaterial.diffuseTex");
+  specularTexUniform = _mProgram->getUniformByName("phoonMaterial.specularTex");
+  ambientTexUniform = _mProgram->getUniformByName("phoonMaterial.ambientTex");
+  diffuseUniform = _mProgram->getUniformByName("phoonMaterial.diffuse");
+  specularUniform = _mProgram->getUniformByName("phoonMaterial.specular");
+  ambientUniform = _mProgram->getUniformByName("phoonMaterial.ambient");
+  shininessUniform = _mProgram->getUniformByName("phoonMaterial.shininess");
 }
 
 PhoonMaterial::PhoonMaterial(const PhoonMaterial& other)
@@ -135,43 +137,52 @@ PhoonMaterial::PhoonMaterial(const PhoonMaterial& other)
 {
   diffuseTexUniform = other.diffuseTexUniform;
   specularTexUniform = other.specularTexUniform;
+  ambientTexUniform = other.ambientTexUniform;
   diffuseUniform = other.diffuseUniform;
   specularUniform = other.specularUniform;
   ambientUniform = other.ambientUniform;
+  shininessUniform = other.shininessUniform;
 }
 
 PhoonMaterial::~PhoonMaterial()
 {}
 
+void bindTexUniform(Uniform* texUniform, Uniform* colorUniform, Texture* tex, glm::vec4 color, int texIdx)
+{
+  if (texUniform)
+  {
+    if (tex)
+    {
+      texUniform->setUniform(texIdx);
+      tex->bind(texIdx);
+    }
+    else
+    {
+      texUniform->setUniform(texIdx);
+      glActiveTexture(GL_TEXTURE0 + texIdx);
+      glBindTexture(GL_TEXTURE_2D, 0);
+    }
+  }
+
+  if (colorUniform)
+  {
+    if (tex)
+      colorUniform->setUniform(glm::vec4(0, 0, 0, 0));
+    else
+      colorUniform->setUniform(color);
+  }
+}
+
 void PhoonMaterial::preRender()
 {
   Material::preRender();
 
-  // setting a diffuse texture 
-  if (diffuseTex && diffuseTexUniform)
-  {
-    diffuseTexUniform->setUniform(DIFFUSE_TEX_IDX);
-    diffuseTex->bind(DIFFUSE_TEX_IDX);
-  }
+  bindTexUniform(diffuseTexUniform, diffuseUniform, diffuseTex, diffuse, DIFFUSE_TEX_IDX);
+  bindTexUniform(specularTexUniform, specularUniform, specularTex, specular, SPECULAR_TEX_IDX);
+  bindTexUniform(ambientTexUniform, ambientUniform, ambientTex, ambient, AMBIENT_TEX_IDX);
 
-  if (specularTex && specularTexUniform)
+  if (shininessUniform)
   {
-    specularTexUniform->setUniform(SPECULAR_TEX_IDX);
-    specularTex->bind(SPECULAR_TEX_IDX);
-  }
-
-  if (diffuseUniform)
-  {
-    diffuseUniform->setUniform(diffuse);
-  }
-
-  if (specularUniform)
-  {
-    specularUniform->setUniform(specular);
-  }
-
-  if (ambientUniform) 
-  {
-    ambientUniform->setUniform(ambient);
+    shininessUniform->setUniform(shininess);
   }
 }
