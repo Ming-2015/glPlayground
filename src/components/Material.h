@@ -70,9 +70,9 @@ public:
   Texture* specularTex = nullptr;
   Texture* ambientTex = nullptr;
 
-  glm::vec4 diffuse;
-  glm::vec4 specular;
-  glm::vec4 ambient;
+  glm::vec3 diffuse;
+  glm::vec3 specular;
+  glm::vec3 ambient;
 
   int shininess = 32;
 

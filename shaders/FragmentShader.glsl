@@ -20,9 +20,9 @@ uniform Camera camera;
 /* materials */
 struct PhongMaterial {
   /* colors */
-  vec4 ambient;
-  vec4 diffuse;
-  vec4 specular;
+  vec3 ambient;
+  vec3 diffuse;
+  vec3 specular;
 
   /* textures */
   sampler2D ambientTex;
@@ -77,9 +77,9 @@ void main()
     specularComponent += pointLights[i].specular * spec;
   }
 
-  vec3 matAmbient = phongMaterial.ambient.xyz + texture(phongMaterial.ambientTex, ambientTexCoord).xyz;
-  vec3 matDiffuse = phongMaterial.diffuse.xyz + texture(phongMaterial.diffuseTex, diffuseTexCoord).xyz;
-  vec3 matSpecular = phongMaterial.specular.xyz + texture(phongMaterial.specularTex, specularTexCoord).xyz;
+  vec3 matAmbient = phongMaterial.ambient + texture(phongMaterial.ambientTex, ambientTexCoord).xyz;
+  vec3 matDiffuse = phongMaterial.diffuse + texture(phongMaterial.diffuseTex, diffuseTexCoord).xyz;
+  vec3 matSpecular = phongMaterial.specular + texture(phongMaterial.specularTex, specularTexCoord).xyz;
 
   ambientComponent = ambientComponent * matAmbient;
   diffuseComponent = diffuseComponent * matDiffuse;

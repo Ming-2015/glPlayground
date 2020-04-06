@@ -76,11 +76,11 @@ void Material::setNormalMatrix(const glm::mat3& normal)
 
 // ----------- phoon material ---------------
 PhongMaterial::PhongMaterial()
-  : diffuse(1, 1, 1, 1), specular(0, 0, 0, 1), ambient(0, 0, 0, 1)
+  : diffuse(1, 1, 1), specular(0, 0, 0), ambient(0, 0, 0)
 {}
 
 PhongMaterial::PhongMaterial(ShaderProgramManager* manager)
-  : diffuse(1, 1, 1, 1), specular(0, 0, 0, 1), ambient(0, 0, 0, 1)
+  : diffuse(1, 1, 1), specular(0, 0, 0), ambient(0, 0, 0)
 {
   _mProgramManager = manager;
   if (!_mProgramManager)
@@ -147,7 +147,7 @@ PhongMaterial::PhongMaterial(const PhongMaterial& other)
 PhongMaterial::~PhongMaterial()
 {}
 
-void bindTexUniform(Uniform* texUniform, Uniform* colorUniform, Texture* tex, glm::vec4 color, int texIdx)
+void bindTexUniform(Uniform* texUniform, Uniform* colorUniform, Texture* tex, glm::vec3 color, int texIdx)
 {
   if (texUniform)
   {
@@ -167,7 +167,7 @@ void bindTexUniform(Uniform* texUniform, Uniform* colorUniform, Texture* tex, gl
   if (colorUniform)
   {
     if (tex)
-      colorUniform->setUniform(glm::vec4(0, 0, 0, 0));
+      colorUniform->setUniform(glm::vec3(0, 0, 0));
     else
       colorUniform->setUniform(color);
   }
