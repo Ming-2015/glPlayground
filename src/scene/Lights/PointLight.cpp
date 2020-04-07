@@ -4,7 +4,7 @@
 PointLight::PointLight()
   : GameObject(),
   attenuationType(AttenuationType::linear),
-  attenuationVal(1.0f),
+  attenuationVal(1.f),
   diffuse(1.f, 1.f, 1.f),
   ambient(1.f, 1.f, 1.f),
   specular(1.f, 1.f, 1.f)
@@ -49,33 +49,25 @@ void PointLight::setProgramUniform(ShaderProgram& shaderProgram, int index)
 
   if (constantUniform) 
   {
-    if (attenuationType == AttenuationType::constant) {
+    if (attenuationType == AttenuationType::constant)
       constantUniform->setUniform(attenuationVal);
-    }
-    else {
-      constantUniform->setUniform(0);
-    }
+    else 
+      constantUniform->setUniform(0.f);
   }
 
   if (linearUniform)
   {
     if (attenuationType == AttenuationType::linear) 
-    {
       linearUniform->setUniform(attenuationVal);
-    }
     else 
-    {
-      linearUniform->setUniform(0);
-    }
+      linearUniform->setUniform(0.f);
   }
 
   if (quadraticUniform) {
-    if (attenuationType == AttenuationType::quadratic) {
+    if (attenuationType == AttenuationType::quadratic)
       quadraticUniform->setUniform(attenuationVal);
-    }
-    else {
-      quadraticUniform->setUniform(0);
-    }
+    else 
+      quadraticUniform->setUniform(0.f);
   }
 }
 

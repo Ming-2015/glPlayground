@@ -6,7 +6,7 @@ TestTriangle::TestTriangle(const GameResources& resources)
   _mCamera(nullptr),
   mat(nullptr),
   model(nullptr),
-  pointLight(nullptr),
+  pointLights(),
   lightBox(nullptr)
 {}
 
@@ -42,12 +42,33 @@ void TestTriangle::_onLoad()
   _mScene.addChild(model);
   _mScene.setActiveCamera(_mCamera, true);
 
-  pointLight = new PointLight();
+  PointLight* pointLight = new PointLight();
+  pointLights.push_back(pointLight);
   pointLight->ambient = glm::vec3(0.1f);
   pointLight->specular = glm::vec3(0.7f);
   _mScene.addLight(pointLight, true);
+
+  Box* lightBox = new Box(_mResources.primitiveManager, .3f, .3f, .3f, true);
+  PhongMaterial* mat = new PhongMaterial(&_mResources.shaderProgramManager);
+  lightBox->material = mat;
+  mat->diffuse = pointLight->diffuse * .3f;
+  mat->specular = pointLight->specular * .1f;
+  mat->ambient = pointLight->ambient * .1f;
+  pointLight->addChild(lightBox);
+
+  pointLight = new PointLight();
+  pointLights.push_back(pointLight);
+  pointLight->ambient = glm::vec3(.2f);
+  pointLight->specular = glm::vec3(1.f);
+  pointLight->diffuse = glm::vec3(.7f, .6f, .1f);
+  _mScene.addLight(pointLight, true);
+
   lightBox = new Box(_mResources.primitiveManager, .3f, .3f, .3f, true);
-  lightBox->material = new PhongMaterial(&_mResources.shaderProgramManager);
+  mat = new PhongMaterial(&_mResources.shaderProgramManager);
+  lightBox->material = mat;
+  mat->diffuse = pointLight->diffuse * .3f;
+  mat->specular = pointLight->specular * .1f;
+  mat->ambient = pointLight->ambient * .1f;
   pointLight->addChild(lightBox);
 
   // some global settings
@@ -86,30 +107,24 @@ void TestTriangle::_onUpdate(float deltaT)
     _mCamera->setPosition(_mCamera->getPosition() + right);
   }
 
-  currentAngle += deltaT / 1000.0f * rotateSpeed;
-  model->setRotationQuaternion(glm::angleAxis(currentAngle, glm::vec3(0, 1, 0)));
+  //currentAngle += deltaT / 1000.0f * rotateSpeed;
+  //model->setRotationQuaternion(glm::angleAxis(currentAngle, glm::vec3(0, 1, 0)));
 
   lightAngle += deltaT / 1000.f * lightRotateSpeed;
   float x = -glm::cos(lightAngle) * distFromCenter;
   float z = glm::sin(lightAngle) * distFromCenter;
-  pointLight->setPosition(glm::vec3(x, distFromCenter, z));
+  pointLights[0]->setPosition(glm::vec3(x, .5f, z));
 
   //pointLight->diffuse = glm::normalize(glm::vec3(glm::abs(x), glm::abs(x/z), glm::abs(z)));
   //pointLight->specular = glm::vec3(0.5);
+
+  pointLights[1]->setPosition(glm::vec3(x, z, 1.f));
 }
 
 void TestTriangle::_onDraw()
 {
   glClearColor(_mClearColor.r, _mClearColor.g, _mClearColor.b, _mClearColor.a);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  PhongMaterial* lightBoxMat = dynamic_cast<PhongMaterial*> (lightBox->material);
-  if (lightBoxMat)
-  {
-    lightBoxMat->diffuse = glm::vec4(pointLight->diffuse, 1.f);
-    lightBoxMat->specular = glm::vec4(pointLight->specular, 1.f);
-    lightBoxMat->ambient = glm::vec4(pointLight->ambient * .1f, 1.f);
-  }
 }
 
 void TestTriangle::_onDestroy()

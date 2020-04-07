@@ -40,7 +40,7 @@ private:
   float rotateSpeed = glm::half_pi<float>();
 
   // point light
-  PointLight* pointLight;
+  std::vector<PointLight*> pointLights;
   Box* lightBox;
   float lightAngle = 0;
   float lightRotateSpeed = glm::half_pi<float>() / 2.f;

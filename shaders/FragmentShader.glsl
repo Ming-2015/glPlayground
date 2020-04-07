@@ -10,7 +10,8 @@ in vec2 fTex;
 in vec4 fTangent;
 
 /* camera */
-struct Camera {
+struct Camera 
+{
   float minZ;
   float maxZ;
   vec3 position;
@@ -18,7 +19,8 @@ struct Camera {
 uniform Camera camera;
 
 /* materials */
-struct PhongMaterial {
+struct PhongMaterial 
+{
   /* colors */
   vec3 ambient;
   vec3 diffuse;
@@ -36,7 +38,8 @@ uniform PhongMaterial phongMaterial;
 
 /* lights */
 #define NR_POINT_LIGHTS 4
-struct PointLight {
+struct PointLight
+{
   vec3 position;
   vec3 ambient;
   vec3 diffuse;
@@ -48,6 +51,64 @@ struct PointLight {
 };
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 
+
+#define NR_DIR_LIGHTS 2
+struct DirLight 
+{
+  vec3 direction;
+  vec3 ambient;
+  vec3 diffuse;
+  vec3 specular;
+};
+uniform DirLight dirLights[NR_DIR_LIGHTS];
+
+
+struct LightOutput 
+{
+  vec3 ambient;
+  vec3 diffuse;
+  vec3 specular;
+};
+
+LightOutput CalcPointLight(PointLight light, vec3 normal, vec3 fragPos,vec3 viewDir) 
+{
+  vec3 surfaceToLight = light.position - fragPos;
+  vec3 lightDir = normalize(surfaceToLight);
+  vec3 reflectDir = reflect(-lightDir, normal);
+  float distFromLight = length(surfaceToLight);
+  float nDotL = max(dot(normal, lightDir), 0.0);
+  float vDotR = max(dot(viewDir, reflectDir), 0.0);
+  float spec = pow(vDotR, phongMaterial.shininess);
+
+  float attenuation = light.constant
+    + light.linear * distFromLight
+    + light.quadratic * distFromLight * distFromLight;
+
+  attenuation = max(attenuation, 0.01f);
+  attenuation = 1.f / attenuation;
+
+  LightOutput ret = {
+    light.ambient * attenuation, 
+    light.diffuse * nDotL * attenuation, 
+    light.specular * spec * attenuation
+  };
+
+  return ret;
+}
+
+LightOutput CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
+{
+  // surface to source
+  vec3 lightDir = normalize(-light.direction);
+  float nDotL = max(dot(normal, lightDir), 0);
+
+  vec3 reflectDir = reflect(-lightDir, normal);
+  float vDotR = max(dot(viewDir, reflectDir), 0.0);
+  float spec = pow(vDotR, phongMaterial.shininess);
+  
+  LightOutput ret = { light.ambient, light.diffuse * nDotL, light.specular * spec };
+  return ret;
+}
 
 void main()
 {
@@ -61,29 +122,31 @@ void main()
   
   vec3 surfaceToCamera = camera.position - fPos;
   vec3 viewDir = normalize(surfaceToCamera);
-
-  for (int i = 0; i < NR_POINT_LIGHTS; i++) 
-  {
-    vec3 surfaceToLight = pointLights[i].position - fPos;
-    vec3 lightDir = normalize(surfaceToLight);
-    vec3 reflectDir = reflect(-lightDir, fNormal);
-    float distFromLight = length(surfaceToLight);
-    float nDotL = max(dot(fNormal, lightDir), 0.0);
-    float vDotR = max(dot(viewDir, reflectDir), 0.0);
-    float spec = pow(vDotR, phongMaterial.shininess);
-
-    ambientComponent += pointLights[i].ambient;
-    diffuseComponent += nDotL * pointLights[i].diffuse;
-    specularComponent += pointLights[i].specular * spec;
-  }
-
+  LightOutput total = { vec3(0), vec3(0), vec3(0) };
+  
   vec3 matAmbient = phongMaterial.ambient + texture(phongMaterial.ambientTex, ambientTexCoord).xyz;
   vec3 matDiffuse = phongMaterial.diffuse + texture(phongMaterial.diffuseTex, diffuseTexCoord).xyz;
   vec3 matSpecular = phongMaterial.specular + texture(phongMaterial.specularTex, specularTexCoord).xyz;
 
-  ambientComponent = ambientComponent * matAmbient;
-  diffuseComponent = diffuseComponent * matDiffuse;
-  specularComponent = specularComponent * matSpecular;
+  for (int i = 0; i < NR_POINT_LIGHTS; i++)
+  {
+    LightOutput o = CalcPointLight(pointLights[i], fNormal, fPos, viewDir);
+    total.ambient += o.ambient;
+    total.diffuse += o.diffuse;
+    total.specular += o.specular;
+  }
 
-  FragColor = vec4(ambientComponent + diffuseComponent + specularComponent, 1.0f);
+  for (int i = 0; i < NR_DIR_LIGHTS; i++)
+  {
+    LightOutput o = CalcDirLight(dirLights[i], fNormal, viewDir);
+    total.ambient += o.ambient;
+    total.diffuse += o.diffuse;
+    total.specular += o.specular;
+  }
+
+  total.ambient *= matAmbient;
+  total.diffuse *= matDiffuse;
+  total.specular *= matSpecular;
+
+  FragColor = vec4(total.ambient + total.diffuse + total.specular, 1.0f);
 }

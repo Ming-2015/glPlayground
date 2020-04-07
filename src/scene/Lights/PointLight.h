@@ -24,13 +24,4 @@ public:
 
   virtual void setProgramUniform(ShaderProgram& shaderProgram, int index);
   virtual std::string getUniformName() const;
-
-  //using GameObject::draw;
-  //using GameObject::update;
-  //using GameObject::addChild;
-  //using GameObject::removeChild;
-  //using GameObject::getParent;
-  //using GameObject::setParent;
-  //using GameObject::getRoot;
-  //using GameObject::getChildren;
 };

@@ -3,7 +3,7 @@ This is a project intended to further refine my skills as a graphics programmer.
 
 ![screenshot]
 
-[screenshot]: https://media.giphy.com/media/dB0lGhCWZfdaXzkvof/giphy.gif
+[screenshot]: https://media.giphy.com/media/cnWYZOmw4nojBNvWKF/giphy.gif
 
 ## Pre-installation
 Before compiling the project, you will need to:
