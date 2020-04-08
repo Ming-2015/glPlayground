@@ -71,6 +71,14 @@ void TestTriangle::_onLoad()
   mat->ambient = pointLight->ambient * .1f;
   pointLight->addChild(lightBox);
 
+  DirLight* dirLight = new DirLight();
+  dirLights.push_back(dirLight);
+  dirLight->diffuse = glm::vec3(.3f);
+  dirLight->specular = glm::vec3(.2f);
+  dirLight->ambient = glm::vec3(.1f);
+  dirLight->direction = glm::normalize(glm::vec3(1.f, -2.f, -3.f));
+  _mScene.addLight(dirLight);
+
   // some global settings
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
@@ -118,7 +126,7 @@ void TestTriangle::_onUpdate(float deltaT)
   //pointLight->diffuse = glm::normalize(glm::vec3(glm::abs(x), glm::abs(x/z), glm::abs(z)));
   //pointLight->specular = glm::vec3(0.5);
 
-  pointLights[1]->setPosition(glm::vec3(x, z, 1.f));
+  pointLights[1]->setPosition(glm::vec3(x, z, 0));
 }
 
 void TestTriangle::_onDraw()

@@ -2,6 +2,7 @@
 #include "GameState.h"
 #include <glm/gtc/constants.hpp>
 #include "../utils/Timer.h"
+#include "../scene/Lights/DirLight.h"
 #include "../scene/Lights/PointLight.h"
 #include "../scene/Models/Box.h"
 
@@ -41,10 +42,11 @@ private:
 
   // point light
   std::vector<PointLight*> pointLights;
+  std::vector<DirLight* > dirLights;
   Box* lightBox;
   float lightAngle = 0;
   float lightRotateSpeed = glm::half_pi<float>() / 2.f;
-  float distFromCenter = 2.f;
+  float distFromCenter = 4.f;
 
   virtual void _onUpdate(float deltaT);
   virtual void _onDraw();
