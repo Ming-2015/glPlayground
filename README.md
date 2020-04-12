@@ -1,9 +1,10 @@
 ## Description
 This is a project intended to further refine my skills as a graphics programmer. It uses glad as the openGL API loader.
 
-![screenshot]
+[Youtube demo](https://www.youtube.com/watch?v=osjRW0AGpv4): Current version of the application. Will update as I go.
 
-[screenshot]: https://media.giphy.com/media/cnWYZOmw4nojBNvWKF/giphy.gif
+![screenshot]
+[screenshot]: https://media.giphy.com/media/S9XS5Cv9XkzZ2sO8IP/giphy.gif
 
 ## Pre-installation
 Before compiling the project, you will need to:
