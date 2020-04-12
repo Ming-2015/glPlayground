@@ -4,6 +4,7 @@ This is a project intended to further refine my skills as a graphics programmer.
 [Youtube demo](https://www.youtube.com/watch?v=osjRW0AGpv4): Current version of the application. Will update as I go.
 
 ![screenshot]
+
 [screenshot]: https://media.giphy.com/media/S9XS5Cv9XkzZ2sO8IP/giphy.gif
 
 ## Pre-installation
