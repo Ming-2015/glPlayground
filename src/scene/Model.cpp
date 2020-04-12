@@ -6,8 +6,8 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 
-Model::Model(const Primitive* mesh)
-  : GameObject(), _mMesh(mesh), material(nullptr), renderWireMesh(false)
+Model::Model(const Primitive* primitive)
+  : GameObject(), _mPrimitive(primitive), material(nullptr), renderWireMesh(false)
 {}
 
 Model::~Model()
@@ -20,7 +20,7 @@ void Model::update(float deltaT)
 
 void Model::draw(const glm::mat4& PV, const glm::mat4& M) const
 {
-  if (_mMesh == nullptr) return;
+  if (_mPrimitive == nullptr) return;
 
   glm::mat4 model = M * _mModelMatrix;
   glm::mat4 PVM = PV * model;
@@ -41,7 +41,7 @@ void Model::draw(const glm::mat4& PV, const glm::mat4& M) const
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   }
 
-  _mMesh->render();
+  _mPrimitive->render();
 
   // revert
   if (renderWireMesh) 
@@ -50,4 +50,25 @@ void Model::draw(const glm::mat4& PV, const glm::mat4& M) const
   }
 
   GameObject::draw(PV, M);
+}
+
+void Model::copyTo(Cloneable* cloned) const
+{
+  GameObject::copyTo(cloned);
+  Model* copy = dynamic_cast<Model*>(cloned);
+  if (!copy)
+  {
+    Log.print<Severity::warning>("Failed to cast Model during clone");
+    return;
+  }
+
+  copy->material = material;
+  copy->renderWireMesh = renderWireMesh;
+}
+
+Model* Model::clone() const
+{
+  Model* model = new Model(_mPrimitive);
+  copyTo(model);
+  return model;
 }

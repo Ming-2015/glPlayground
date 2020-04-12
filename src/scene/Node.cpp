@@ -2,12 +2,19 @@
 
 Node::~Node()
 {
+  // make a copy as children will modify _mChildren
+  std::vector<Node*> childrenCopy = _mChildren;
+
   // destroy all children
-  for (Node* n : _mChildren)
+  for (Node* n : childrenCopy)
   {
     delete n;
   }
-  _mChildren.clear();
+
+  // remove from parent
+  if (_mParent) {
+    _mParent->removeChild(this);
+  }
 }
 
 void Node::draw(const glm::mat4& PV, const glm::mat4& M) const
@@ -33,6 +40,8 @@ void Node::addChild(Node* n)
     Log.print<Severity::warning>("Trying to add a null child!");
     return;
   }
+
+  if (n->_mParent == this) return;
 
   if (n->_mParent) 
   {
@@ -93,7 +102,9 @@ void Node::setParent(Node* newParent)
 {
   if (newParent == nullptr)
   {
-    _mParent->removeChild(this);
+    if (_mParent)
+      _mParent->removeChild(this);
+    
     return;
   }
 
@@ -103,4 +114,85 @@ void Node::setParent(Node* newParent)
 const std::vector<Node*>& Node::getChildren() const
 {
   return _mChildren;
+}
+
+Node::Node() {}
+
+void Node::copyTo(Cloneable* cloned) const 
+{
+  Node* clonedNode = dynamic_cast<Node*>(cloned);
+
+  if (!clonedNode)
+  {
+    Log.print<Severity::warning>("Failed to cast into Node*");
+    return;
+  }
+
+  for (auto child : _mChildren)
+  {
+    clonedNode->addChild(child->clone());
+  }
+}
+
+Node* Node::clone() const
+{
+  // note that the node won't have a parent by default
+  Node* node = new Node();
+  copyTo(node);
+  return node;
+}
+
+bool bfs(const Node* current, const Node* target, std::vector<int>& vec)
+{
+  auto children = current->getChildren();
+  for (int i = 0; i < children.size(); i++)
+  {
+    auto child = children[i];
+    if (child == target) 
+    {
+      vec.push_back(i);
+      return true;
+    }
+  }
+
+  for (int i = 0; i < children.size(); i++)
+  {
+    auto child = children[i];
+    if (bfs(child, target, vec)) 
+    {
+      vec.push_back(i);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// returns the indices of each parent in the order of child access when node is found. Empty vector if not found
+std::vector<int> Node::breadthFirstSearch(const Node* node) const
+{
+  std::vector<int> ret;
+  bfs( const_cast<const Node*>(this), node, ret);
+  std::reverse(ret.begin(), ret.end());
+  return ret;
+}
+
+// get the descendent by keep accessing the child of node
+Node* Node::getDescendentByIndices(std::vector<int> indices) const
+{
+  const Node* current = this;
+  for (int depth = 0; depth < indices.size(); depth++)
+  {
+    current = getChildByIndex(indices[depth]);
+    if (!current) break;
+  }
+
+  return const_cast<Node *>(current);
+}
+
+// get a direct child
+Node* Node::getChildByIndex(int idx) const
+{
+  if (idx < 0 || idx >= _mChildren.size()) return nullptr;
+  return _mChildren[idx];
 }

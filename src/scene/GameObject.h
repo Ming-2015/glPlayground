@@ -7,7 +7,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 
-class GameObject : public virtual Node
+class GameObjectBase
 {
 protected:
   // cached matrices for faster updates
@@ -28,12 +28,11 @@ protected:
   void _updateScaleMatrix();
   void _updateRotationMatrix();
 
+  // for convenience only...
+  void _copyTo(GameObjectBase* other) const;
+
 public:
-
-  GameObject();
-
-  virtual void draw(const glm::mat4& PV, const glm::mat4& M) const;
-  virtual void update(float deltaT);
+  GameObjectBase();
 
   virtual void setPosition(const glm::vec3& pos);
   virtual void setScale(const glm::vec3& scale);
@@ -42,4 +41,17 @@ public:
   virtual const glm::vec3& getPosition() const;
   virtual const glm::vec3& getScale() const;
   virtual const glm::quat& getRotationQuaternion() const;
+};
+
+
+class GameObject : public virtual Node, public GameObjectBase
+{
+protected:
+  virtual void copyTo(Cloneable* cloned) const override;
+
+public:
+  virtual GameObject* clone() const override;
+
+  virtual void draw(const glm::mat4& PV, const glm::mat4& M) const override;
+  virtual void update(float deltaT) override;
 };

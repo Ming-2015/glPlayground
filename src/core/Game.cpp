@@ -13,7 +13,7 @@ Game::Game() :
   _mTextureManager(),
   _mProgramManager(_mShaderManager),
   _mPrimitiveManager(),
-  _mWindow(1600, 900, "Window"),
+  _mWindow(1920, 1080, "Window"),
   _mCurrentState(nullptr),
   resources(
     _mShaderManager, 

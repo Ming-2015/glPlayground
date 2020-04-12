@@ -1,5 +1,10 @@
 #include "Camera.h"
 
+void CameraBase::copyTo(Cloneable* cloned) const
+{
+  Node::copyTo(cloned);
+}
+
 // Camera
 PerspectiveCamera::PerspectiveCamera()
   : _mShouldUpdateView(false), 
@@ -113,6 +118,28 @@ void PerspectiveCamera::setProgramUniform(ShaderProgram& shaderProgram)
     maxZUniform->setUniform(_mMaxZ);
 }
 
+void PerspectiveCamera::copyTo(Cloneable* cloned) const
+{
+  CameraBase::copyTo(cloned);
+  PerspectiveCamera* camera = dynamic_cast<PerspectiveCamera*>(cloned);
+  if (!camera) 
+  {
+    Log.print<Severity::warning>("failed to cast to perspective camera in clone");
+    return;
+  }
+
+  camera->_mMinZ = _mMinZ;
+  camera->_mMaxZ = _mMaxZ;
+  camera->_mFovy = _mFovy;
+  camera->_mAspectRatio = _mAspectRatio;
+
+  camera->_mShouldUpdateView = _mShouldUpdateView;
+  camera->_mViewMatrixCache = _mViewMatrixCache;
+
+  camera->_mShouldUpdateProjection = _mShouldUpdateProjection;
+  camera->_mProjectMatrixCache = _mProjectMatrixCache;
+}
+
 // ------------------------ target camera ------------------------
 TargetCamera::TargetCamera()
   : _mPosition(0,0,1), _mTarget(0,0,0), _mUp(0,1,0)
@@ -177,6 +204,29 @@ void TargetCamera::setProgramUniform(ShaderProgram& shaderProgram)
   Uniform* positionUniform = shaderProgram.getUniformByName("camera.position");
   if (positionUniform)
     positionUniform->setUniform(_mPosition);
+}
+
+void TargetCamera::copyTo(Cloneable* cloned) const
+{
+  PerspectiveCamera::copyTo(cloned);
+
+  TargetCamera* clonedCamera = dynamic_cast<TargetCamera*>(cloned);
+  if (!clonedCamera)
+  {
+    Log.print<Severity::warning>("Failed to cast to target camera in clone");
+    return;
+  }
+
+  clonedCamera->_mPosition = _mPosition;
+  clonedCamera->_mTarget = _mTarget;
+  clonedCamera->_mUp = _mUp;
+}
+
+TargetCamera* TargetCamera::clone() const
+{
+  TargetCamera* camera = new TargetCamera();
+  copyTo(camera);
+  return camera;
 }
 
 // ----------------- forward camera ----------------------------------
@@ -245,6 +295,29 @@ void ForwardCamera::setProgramUniform(ShaderProgram& shaderProgram)
     positionUniform->setUniform(_mPosition);
 }
 
+void ForwardCamera::copyTo(Cloneable* cloned) const
+{
+  PerspectiveCamera::copyTo(cloned);
+
+  ForwardCamera* clonedCamera = dynamic_cast<ForwardCamera*>(cloned);
+  if (!clonedCamera)
+  {
+    Log.print<Severity::warning>("Failed to cast to forward camera in clone");
+    return;
+  }
+
+  clonedCamera->_mPosition = _mPosition;
+  clonedCamera->_mForwardDirection = _mForwardDirection;
+  clonedCamera->_mUp = _mUp;
+}
+
+ForwardCamera* ForwardCamera::clone() const
+{
+  ForwardCamera* camera = new ForwardCamera();
+  copyTo(camera);
+  return camera;
+}
+
 // --------------- free camera --------------------------
 FreeCamera::FreeCamera()
   : TargetCamera(), _mForwardDirection(0,0,-1), _mUseTarget(false)
@@ -301,4 +374,27 @@ const glm::vec3& FreeCamera::getForwardDirection() const
   {
     return glm::normalize(_mTarget - _mPosition);
   }
+}
+
+
+void FreeCamera::copyTo(Cloneable* cloned) const
+{
+  TargetCamera::copyTo(cloned);
+
+  FreeCamera* clonedCamera = dynamic_cast<FreeCamera*>(cloned);
+  if (!clonedCamera)
+  {
+    Log.print<Severity::warning>("Failed to cast to free camera in clone");
+    return;
+  }
+
+  clonedCamera->_mForwardDirection = _mForwardDirection;
+  clonedCamera->_mUseTarget = _mUseTarget;
+}
+
+FreeCamera* FreeCamera::clone() const
+{
+  FreeCamera* camera = new FreeCamera();
+  copyTo(camera);
+  return camera;
 }

@@ -1,9 +1,10 @@
 #pragma once
+#include "../utils/Cloneable.hpp"
 #include "../utils/Logger.h"
 #include <glm/glm.hpp>
 #include <vector>
 
-class Node
+class Node : public Cloneable
 {
 private:
   // parent of the node
@@ -15,8 +16,12 @@ private:
   // all my own children
   std::vector<Node*> _mChildren;
 
-public:
+protected:
+  virtual void copyTo(Cloneable* cloned) const override;
 
+public:
+  
+  Node();
   virtual ~Node();
 
   // these should be inherited AND called from super class
@@ -26,11 +31,21 @@ public:
   // these should not be modified by super class
   void addChild(Node* n);
   void removeChild(Node* n);
-
   Node* getParent() const;
   void setParent(Node * n);
-
   Node* getRoot();
-
   const std::vector<Node*>& getChildren() const;
+
+  // returns the indices of each parent in the order of child access when node is found. Empty vector if not found
+  // NOTE: does not check against itself, so that has to be done manually
+  std::vector<int> breadthFirstSearch(const Node* node) const;
+
+  // get the descendent by keep accessing the child of node
+  Node* getDescendentByIndices(std::vector<int> indices) const;
+
+  // get a direct child
+  Node* getChildByIndex(int idx) const;
+
+  // clone implementation
+  virtual Node* clone() const override;
 };

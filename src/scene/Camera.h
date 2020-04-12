@@ -9,13 +9,16 @@ class CameraBase : public virtual Node
 protected:
   virtual void _updateViewMatrix() = 0;
   virtual void _updateProjectionMatrix() = 0;
+  virtual void copyTo(Cloneable* cloned) const override;
 
 public:
   virtual const glm::mat4& getViewMatrix() const = 0;
   virtual const glm::mat4& getProjectionMatrix() const = 0;
   virtual const glm::mat4& forceComputeViewMatrix() = 0;
   virtual const glm::mat4& forceComputeProjectionMatrix() = 0;
+  virtual void update(float deltaT) = 0;
   virtual void setProgramUniform(ShaderProgram& shaderProgram) = 0;
+  virtual CameraBase* clone() const override = 0;
 };
 
 class PerspectiveCamera : public CameraBase
@@ -29,31 +32,32 @@ protected:
 
   bool _mShouldUpdateView;
   glm::mat4 _mViewMatrixCache;
-  // NOTE: view matrix is not defined here
-  // virtual void _updateViewMatrix() = 0;
 
   bool _mShouldUpdateProjection;
   glm::mat4 _mProjectMatrixCache;
-  virtual void _updateProjectionMatrix();
+
+protected:
+  virtual void _updateProjectionMatrix() override;
+  virtual void copyTo(Cloneable* cloned) const override;
 
 public:
   PerspectiveCamera();
   virtual ~PerspectiveCamera();
 
   // Returns the cached camera matrix
-  const glm::mat4& getViewMatrix() const;
+  const glm::mat4& getViewMatrix() const override;
 
   // Force a re-computation of the camera matrix
-  const glm::mat4& forceComputeViewMatrix();
+  const glm::mat4& forceComputeViewMatrix() override;
 
   // Returns the cached 
-  const glm::mat4& getProjectionMatrix() const;
+  const glm::mat4& getProjectionMatrix() const override;
 
   // Force a re-computation of the projection matrix
-  const glm::mat4& forceComputeProjectionMatrix();
+  const glm::mat4& forceComputeProjectionMatrix() override;
 
   // update the camera matrices
-  void update(float deltaT);
+  virtual void update(float deltaT) override;
 
   // getters
   float getMinZ() const { return _mMinZ; }
@@ -66,7 +70,8 @@ public:
   void setFovy(float fovy);
   void setAspectRatio(float aspectRatio);
 
-  virtual void setProgramUniform(ShaderProgram& shaderProgram);
+  virtual void setProgramUniform(ShaderProgram& shaderProgram) override;
+  virtual PerspectiveCamera* clone() const override = 0;
 };
 
 // always look at a particular point in world space
@@ -77,7 +82,8 @@ protected:
   glm::vec3 _mTarget;
   glm::vec3 _mUp;
 
-  virtual void _updateViewMatrix();
+  virtual void _updateViewMatrix() override;
+  virtual void copyTo(Cloneable* cloned) const override;
 
 public:
 
@@ -92,7 +98,8 @@ public:
   const glm::vec3& getTarget() const;
   const glm::vec3& getUp() const;
 
-  virtual void setProgramUniform(ShaderProgram& shaderProgram);
+  virtual void setProgramUniform(ShaderProgram& shaderProgram) override;
+  virtual TargetCamera* clone() const override;
 };
 
 // always looks at a certain direction
@@ -103,7 +110,8 @@ protected:
   glm::vec3 _mForwardDirection;
   glm::vec3 _mUp;
 
-  virtual void _updateViewMatrix();
+  virtual void _updateViewMatrix() override;
+  virtual void copyTo(Cloneable* cloned) const override;
 
 public:
 
@@ -118,7 +126,8 @@ public:
   const glm::vec3& getForwardDirection() const;
   const glm::vec3& getUp() const;
 
-  virtual void setProgramUniform(ShaderProgram& shaderProgram);
+  virtual void setProgramUniform(ShaderProgram& shaderProgram) override;
+  virtual ForwardCamera* clone() const override;
 };
 
 // has both target and forward camera, on a switch
@@ -130,7 +139,8 @@ protected:
   glm::vec3 _mForwardDirection;
   bool _mUseTarget;
 
-  virtual void _updateViewMatrix();
+  virtual void _updateViewMatrix() override;
+  virtual void copyTo(Cloneable* cloned) const override;
 
 public:
 
@@ -142,4 +152,5 @@ public:
 
   bool isUsingTarget() const;
   const glm::vec3& getForwardDirection() const;
+  virtual FreeCamera* clone() const override;
 };

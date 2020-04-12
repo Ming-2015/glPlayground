@@ -111,7 +111,6 @@ Uniform::Uniform(int programId, int index, GLenum type, GLenum size, const std::
 : _mProgramId(programId), _mIndex(index), _mType(type), _mArraySize(size), _mName(name)
 {
   _mLocation = glGetUniformLocation(programId, name.c_str());
-  Log.print<Severity::debug>("Found uniform: name = ", name, ", size = ", size, ", location = ", _mLocation, " type = ", _mType);
 
   if (_mLocation < 0)
   {

@@ -2,11 +2,15 @@
 #include "../Light.h"
 #include "../GameObject.h"
 
-class PointLight : public Light, public GameObject
+class PointLight : public LightBase, public GameObject
 {
+protected:
+  virtual void copyTo(Cloneable* cloned) const override;
+
 public:
 
-  enum class AttenuationType {
+  enum class AttenuationType 
+  {
     constant,
     linear,
     quadratic,
@@ -22,6 +26,7 @@ public:
   PointLight();
   virtual ~PointLight();
 
-  virtual void setProgramUniform(ShaderProgram& shaderProgram, int index);
-  virtual std::string getUniformName() const;
+  virtual void setProgramUniform(ShaderProgram& shaderProgram, int index) override;
+  virtual std::string getUniformName() const override;
+  virtual PointLight* clone() const override;
 };

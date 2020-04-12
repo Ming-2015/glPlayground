@@ -1,39 +1,6 @@
 #pragma once
-#include "../components/Shader.h"
-#include "../components/ShaderProgram.h"
-#include "../components/Texture.h"
-#include "../components/Primitive.h"
-#include "../components/Window.h"
 #include "../scene/Scene.h"
-
-struct GameResources {
-  ShaderManager& shaderManager;
-  ShaderProgramManager& shaderProgramManager;
-  TextureManager& textureManager;
-  PrimitiveManager& primitiveManager;
-  Window& window;
-
-  GameResources(
-    ShaderManager& shaderManager,
-    ShaderProgramManager& shaderProgramManager,
-    TextureManager& textureManager,
-    PrimitiveManager& primitiveManager,
-    Window& window
-  ) : shaderManager(shaderManager),
-    shaderProgramManager(shaderProgramManager),
-    textureManager(textureManager),
-    primitiveManager(primitiveManager),
-    window(window)
-  {}
-
-  GameResources(const GameResources& other)
-    : shaderManager(other.shaderManager),
-    shaderProgramManager(other.shaderProgramManager),
-    textureManager(other.textureManager),
-    primitiveManager(other.primitiveManager),
-    window(other.window)
-  {}
-};
+#include "../components/GameResources.h"
 
 class GameState : public WindowObservable
 {
@@ -86,6 +53,7 @@ public:
   virtual void update(float deltaT)
   { 
     _onUpdate(deltaT); 
-    _mScene.update(deltaT); 
+    _mScene.update(deltaT);
+    _mResources.primitiveManager.update(deltaT);
   };
 };

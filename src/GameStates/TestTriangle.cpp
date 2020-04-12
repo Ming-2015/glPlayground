@@ -3,7 +3,7 @@
 TestTriangle::TestTriangle(const GameResources& resources)
   : GameState(resources),
   _mClearColor(0.5, 0.7, 0.3, 1.0),
-  _mCamera(nullptr),
+  cameraController(nullptr),
   mat(nullptr),
   model(nullptr),
   pointLights(),
@@ -35,17 +35,33 @@ void TestTriangle::_onLoad()
   mat->diffuseTex = _mResources.textureManager.getOrCreate(fujiwaraTex);
   mat->ambientTex = _mResources.textureManager.getOrCreate(fujiwaraTex);
   mat->shininess = 64.f;
+  _mScene.addChild(model);
+
+  for (int i = -60; i < 60; i++)
+  {
+    for (int j = -60; j < 60; j++) 
+    {
+      if (i == 0 && j == 0)  continue;
+      Model* clone = model->clone();
+      clone->setPosition(glm::vec3(i * 3, 0, j * 3));
+      _mScene.addChild(clone);
+    }
+  }
 
   _mCamera = new FreeCamera();
   _mCamera->setPosition(glm::vec3(0, 0, 2));
-
-  _mScene.addChild(model);
+  _mCamera->setMaxZ(1000000.0f);
+  FirstPersonFreeCameraController* c = new FirstPersonFreeCameraController(_mResources.window, _mCamera);
+  c->moveSpeed *= 10;
+  cameraController = c;
   _mScene.setActiveCamera(_mCamera, true);
 
   PointLight* pointLight = new PointLight();
   pointLights.push_back(pointLight);
-  pointLight->ambient = glm::vec3(0.1f);
-  pointLight->specular = glm::vec3(0.7f);
+  pointLight->ambient = glm::vec3(0.05f);
+  pointLight->specular = glm::vec3(0.3f);
+  pointLight->diffuse = glm::vec3(0.5f);
+  pointLight->attenuationVal = 0.25;
   _mScene.addLight(pointLight, true);
 
   Box* lightBox = new Box(_mResources.primitiveManager, .3f, .3f, .3f, true);
@@ -58,7 +74,7 @@ void TestTriangle::_onLoad()
 
   pointLight = new PointLight();
   pointLights.push_back(pointLight);
-  pointLight->ambient = glm::vec3(.2f);
+  pointLight->ambient = glm::vec3(.05f);
   pointLight->specular = glm::vec3(1.f);
   pointLight->diffuse = glm::vec3(.7f, .6f, .1f);
   _mScene.addLight(pointLight, true);
@@ -87,36 +103,10 @@ void TestTriangle::_onLoad()
 
 void TestTriangle::_onUpdate(float deltaT)
 {
-  if (goUp)
-  {
-    glm::vec3 forward = deltaT / 1000.f * _mMoveSpeed * _mCamera->getForwardDirection();
-    _mCamera->setPosition(_mCamera->getPosition() + forward);
-  }
-
-  if (goDown)
-  {
-    glm::vec3 backward = deltaT / 1000.f * -_mMoveSpeed * _mCamera->getForwardDirection();
-    _mCamera->setPosition(_mCamera->getPosition() + backward);
-  }
-
-  if (goLeft)
-  {
-    glm::vec3 left = deltaT / 1000.f * -_mMoveSpeed * glm::normalize(
-      glm::cross(_mCamera->getForwardDirection(), _mCamera->getUp())
-    );
-    _mCamera->setPosition(_mCamera->getPosition() + left);
-  }
-
-  if (goRight)
-  {
-    glm::vec3 right = deltaT / 1000.f * _mMoveSpeed * glm::normalize(
-      glm::cross(_mCamera->getForwardDirection(), _mCamera->getUp())
-    );
-    _mCamera->setPosition(_mCamera->getPosition() + right);
-  }
-
-  //currentAngle += deltaT / 1000.0f * rotateSpeed;
-  //model->setRotationQuaternion(glm::angleAxis(currentAngle, glm::vec3(0, 1, 0)));
+  cameraController->update(deltaT);
+  
+  currentAngle += deltaT / 1000.0f * rotateSpeed;
+  model->setRotationQuaternion(glm::angleAxis(currentAngle, glm::vec3(0, 1, 0)));
 
   lightAngle += deltaT / 1000.f * lightRotateSpeed;
   float x = -glm::cos(lightAngle) * distFromCenter;
@@ -142,6 +132,9 @@ void TestTriangle::_onDestroy()
 
   delete mat;
   mat = nullptr;
+
+  delete cameraController;
+  cameraController = nullptr;
 
   _mResources.primitiveManager.erase(PrimitiveInfo("test"));
   _mResources.textureManager.erase(TextureInfo(
@@ -173,91 +166,15 @@ void TestTriangle::onKey(int key, int scancode, int action, int mods)
   {
     flag = false;
   }
-
-  // key events here...
-  switch (key)
-  {
-  case GLFW_KEY_W:
-  case GLFW_KEY_UP:
-    goUp = flag;
-    break;
-
-  case GLFW_KEY_S:
-  case GLFW_KEY_DOWN:
-    goDown = flag;
-    break;
-
-  case GLFW_KEY_A:
-  case GLFW_KEY_LEFT:
-    goLeft = flag;
-    break;
-
-  case GLFW_KEY_D:
-  case GLFW_KEY_RIGHT:
-    goRight = flag;
-    break;
-  }
 }
 
 void TestTriangle::onCursorPos(double xPos, double yPos)
-{
-  if (firstTime)
-  {
-    cursorX = xPos;
-    cursorY = yPos;
-    firstTime = false;
-    return;
-  }
-
-  cursorMoveX = xPos - cursorX;
-  cursorMoveY = cursorY - yPos;
-  cursorX = xPos;
-  cursorY = yPos;
-
-
-  if (cursorMoveX)
-  {
-    float factor = cursorMoveX * _mHorizontalSpeed;
-    yaw += factor;
-    cursorMoveX = 0;
-  }
-
-  if (cursorMoveY)
-  {
-    float factor = cursorMoveY * _mVerticalSpeed;
-    pitch += factor;
-    if (pitch > 89.9f)
-    {
-      pitch = 89.9f;
-    }
-    if (pitch < -89.9f)
-    {
-      pitch = -89.9f;
-    }
-    cursorMoveY = 0;
-  }
-
-  if (!_mCamera->isUsingTarget())
-  {
-    glm::vec3 forward;
-    forward.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    forward.y = sin(glm::radians(pitch));
-    forward.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    _mCamera->setForwardDirection(forward);
-  }
-}
+{}
 
 void TestTriangle::onMouseButton(int key, int action, int mods)
-{
-
-}
+{}
 
 void TestTriangle::onResize(int width, int height)
 {
   glViewport(0, 0, width, height);
-
-  if (_mCamera) {
-    _mCamera->setAspectRatio(float(width) / float(height));
-    Log.print<Severity::debug>("Managed to change aspect ratio!");
-  }
 }

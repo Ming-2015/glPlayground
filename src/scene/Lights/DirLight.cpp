@@ -41,3 +41,27 @@ std::string DirLight::getUniformName() const
 {
   return "dirLights";
 }
+
+void DirLight::copyTo(Cloneable* other) const
+{
+  Light::copyTo(other);
+  DirLight* light = dynamic_cast<DirLight*>(other);
+
+  if (!light)
+  {
+    Log.print<Severity::warning>("Failed to cast point light in clone");
+    return;
+  }
+
+  light->diffuse = diffuse;
+  light->ambient = ambient;
+  light->specular = specular;
+  light->direction = direction;
+}
+
+DirLight* DirLight::clone() const
+{
+  DirLight* light = new DirLight();
+  copyTo(light);
+  return light;
+}

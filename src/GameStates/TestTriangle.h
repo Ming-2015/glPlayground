@@ -5,13 +5,17 @@
 #include "../scene/Lights/DirLight.h"
 #include "../scene/Lights/PointLight.h"
 #include "../scene/Models/Box.h"
+#include "../controllers/CameraController.h"
 
 class TestTriangle : public GameState
 {
 private:
 
+  Scene* clonedScene = nullptr;
+
   // clear color
   glm::vec4 _mClearColor;
+  Scene* clone;
 
   // current scene stuffs - all Temporary!! 
   FreeCamera* _mCamera;
@@ -19,26 +23,7 @@ private:
   PhongMaterial* mat;
   Timer timer;
 
-  // key movement
-  float _mMoveSpeed = 4.f; // speed = unit per second
-  bool goUp = false;
-  bool goDown = false;
-  bool goLeft = false;
-  bool goRight = false;
-
-  // cursor movement
-  bool firstTime = true;
-  float _mVerticalSpeed = .06f; // degrees per pixel moved
-  float _mHorizontalSpeed = .06f;
-  float yaw = -90, pitch = 0;
-  double cursorX = 0;
-  double cursorY = 0;
-  double cursorMoveX = 0;
-  double cursorMoveY = 0;
-
-  // model rotate speed - radians per second
-  float currentAngle = 0;
-  float rotateSpeed = glm::half_pi<float>();
+  FirstPersonFreeCameraController* cameraController;
 
   // point light
   std::vector<PointLight*> pointLights;
@@ -47,6 +32,10 @@ private:
   float lightAngle = 0;
   float lightRotateSpeed = glm::half_pi<float>() / 2.f;
   float distFromCenter = 4.f;
+
+  // rotation
+  float currentAngle = 0.f;
+  float rotateSpeed = 1.f;
 
   virtual void _onUpdate(float deltaT);
   virtual void _onDraw();

@@ -10,8 +10,7 @@
 // Contains all the info needed to initialize a shader program
 class ShaderProgramInfo : ResourceInfo<ShaderProgramInfo>
 {
-protected:
-  friend class ShaderProgramManager;
+public:
   ShaderInfo vertexShaderInfo;
   ShaderInfo fragmentShaderInfo;
   ShaderInfo geometryShaderInfo;
@@ -42,7 +41,6 @@ public:
 class ShaderProgram
 {
 protected:
-  friend class ShaderProgramManager;
   unsigned int _mId;
   bool _mIsLoaded;
 
@@ -51,6 +49,14 @@ protected:
 
   // NOTE: map may contain multiple same uniforms with different names
   std::map<std::string, Uniform*> _mUniformMap;
+
+  // called to initiate uniforms
+  void parseProgramInfo();
+
+public:
+
+  ShaderProgram();
+  virtual ~ShaderProgram();
 
   void initShaderProgram(
     const Shader& vertexShader,
@@ -63,16 +69,11 @@ protected:
     const Shader& geometryShader
   );
 
-  // called to initiate uniforms
-  void parseProgramInfo();
-
   void deleteShaderProgram();
+  
+  // SHOULD ONLY BE CALLED BY ShaderProgramManager
   void use() const;
 
-  ShaderProgram();
-  virtual ~ShaderProgram();
-
-public:
   // get uniform by its name
   Uniform* getUniformByName(const std::string& name) const;
   

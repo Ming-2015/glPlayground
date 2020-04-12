@@ -12,8 +12,7 @@
 
 // Shader Info - everything necessary to instantiate a Shader
 class ShaderInfo : ResourceInfo<ShaderInfo> {
-protected:
-  friend class ShaderManager;
+public:
   std::string shaderPath;
   GLenum shaderType;
 
@@ -33,20 +32,17 @@ public:
 // Shader - has to be instantiated by ShaderManager
 class Shader {
 protected:
-  friend class ShaderManager;
-
   unsigned int _mShaderId;
   bool _mIsShaderLoaded;
   std::string _mPath;
   GLenum _mType;
 
+public:
   Shader();
   virtual ~Shader();
 
   void load(const std::string& shaderPath, const GLenum& shaderType);
   void deleteShader();
-
-public:
 
   unsigned int getShaderId() const { return _mShaderId; }
   bool isLoaded() const { return _mShaderId; }

@@ -33,7 +33,7 @@ Timer::~Timer()
 {}
 
 // start the timer - will not do anything if timer is started already
-void Timer::startTimer()
+void Timer::startTimer(bool startPaused)
 {
   if (_mIsTimerStarted)
   {
@@ -41,7 +41,7 @@ void Timer::startTimer()
     return;
   }
 
-  _mIsTimerActive = true;
+  _mIsTimerActive = !startPaused;
   _mIsTimerStarted = true;
   _mTimeStart = GetCurrentTime();
   _mTotalTimeElapsed = SystemDurationMs(0);

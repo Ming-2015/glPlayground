@@ -4,6 +4,9 @@
 
 class DirLight : public Light
 {
+protected:
+  virtual void copyTo(Cloneable* cloned) const override;
+
 public:
 
   glm::vec3 direction;
@@ -16,4 +19,6 @@ public:
 
   virtual void setProgramUniform(ShaderProgram& shaderProgram, int index);
   virtual std::string getUniformName() const;
+
+  virtual DirLight* clone() const override;
 };

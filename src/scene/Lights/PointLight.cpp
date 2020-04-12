@@ -63,7 +63,8 @@ void PointLight::setProgramUniform(ShaderProgram& shaderProgram, int index)
       linearUniform->setUniform(0.f);
   }
 
-  if (quadraticUniform) {
+  if (quadraticUniform) 
+  {
     if (attenuationType == AttenuationType::quadratic)
       quadraticUniform->setUniform(attenuationVal);
     else 
@@ -74,4 +75,30 @@ void PointLight::setProgramUniform(ShaderProgram& shaderProgram, int index)
 std::string PointLight::getUniformName() const
 {
   return "pointLights";
+}
+
+void PointLight::copyTo(Cloneable* other) const
+{
+  GameObject::copyTo(other);
+  PointLight* light = dynamic_cast<PointLight*>(other);
+
+  if (!light)
+  {
+    Log.print<Severity::warning>("Failed to cast point light in clone");
+    return;
+  }
+
+  light->attenuationType = attenuationType;
+  light->attenuationVal = attenuationVal;
+
+  light->diffuse = diffuse;
+  light->ambient = ambient;
+  light->specular = specular;
+}
+
+PointLight* PointLight::clone() const
+{
+  PointLight* light = new PointLight();
+  copyTo(light);
+  return light;
 }

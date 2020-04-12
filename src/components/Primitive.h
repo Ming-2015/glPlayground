@@ -4,6 +4,7 @@
 #include <vector>
 #include <glad/glad.h>
 #include <iostream>
+#include <set>
 #include "../utils/Logger.h"
 #include "../utils/ResourceManager.hpp"
 
@@ -30,12 +31,10 @@ struct PrimitiveData {
 //   }
 class PrimitiveInfo : public ResourceInfo<PrimitiveInfo>
 {
-private:
-  friend class PrimitiveManager;
+public:
   std::string id;
   PrimitiveData* data;
 
-public:
   // Initialize a primitive info. Data should be allocated dynamically!
   // Data can also be nullptr since data will not be used for comparison, 
   //   but it will not be valid for creation!
@@ -59,6 +58,12 @@ public:
   const std::string toString() const;
 };
 
+class Primitive;
+class PrimitiveObservable 
+{
+public:
+  virtual void onShouldRender(const Primitive* p) = 0;
+};
 
 // NOTE: this class does not support interleaved buffer for now...
 // Only reason for an interleaved buffer would be performance gain
@@ -66,8 +71,6 @@ public:
 class Primitive
 {
 private:
-  friend class PrimitiveManager;
-
   // for keeping track of number of game objects made
   static int objectCount;
 
@@ -123,12 +126,7 @@ private:
   bool _mHasObjectVao         = false;
   unsigned int _mObjectVao    = 0;
 
-  // should be called after setting all the vertex attributes below!
-  void initArrayObject(const PrimitiveData* data);
-  void deleteArrayObject();
-
-  Primitive();
-  virtual ~Primitive();
+  std::set<PrimitiveObservable*> observers;
 
 public:
   static const int ATTRIBUTE_POSITION   = 0;
@@ -150,17 +148,32 @@ public:
   static const int SIZE_FACE = 3;
 
 public:
+  virtual void bindVao() const;
   virtual void render() const;
+
+  void addObservable(PrimitiveObservable* o);
+  void removeObservable(PrimitiveObservable* o);
+
+  // should be called after setting all the vertex attributes below!
+  void initArrayObject(const PrimitiveData* data);
+  void deleteArrayObject();
+
+  Primitive();
+  virtual ~Primitive();
 };
 
-
-class PrimitiveManager : public ResourceManager<PrimitiveInfo, Primitive>
+class PrimitiveManager : public ResourceManager<PrimitiveInfo, Primitive>, public PrimitiveObservable
 {
 protected:
   Primitive* const create(const PrimitiveInfo& key);
   void destroy(Primitive* const value);
 
+  // manages when a primitive is drawn...
+  const Primitive* _lastDrawnPrimitive = nullptr;
+
 public:
   PrimitiveManager();
   virtual ~PrimitiveManager() { clear(); }
+  virtual void onShouldRender(const Primitive* p) override;
+  virtual void update(float deltaT);
 };

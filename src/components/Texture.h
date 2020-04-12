@@ -8,7 +8,7 @@
 // information needed to initialize a texture
 class TextureInfo : public ResourceInfo<TextureInfo>
 {
-protected:
+public:
   std::string _mTexPath;
   bool _mGenerateMipMap;
 
@@ -32,8 +32,6 @@ public:
 // internal implementation of texture
 class Texture
 {
-  friend class TextureManager;
-
 protected:
 
   int _mWidth = 0;
@@ -45,12 +43,13 @@ protected:
   std::string _mPath;
   bool _mUseMipMap = false;
 
-  virtual bool loadFromFile(std::string path, bool generateMipmap = false);
-
 public:
 
   Texture();
   virtual ~Texture();
+  virtual bool loadFromFile(std::string path, bool generateMipmap = false);
+
+  // getters
   glm::ivec2 getDimension() const;
   unsigned int getId() const { return _mId; }
 

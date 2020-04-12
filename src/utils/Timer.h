@@ -30,7 +30,7 @@ public:
   virtual ~Timer();
   
   // start the timer
-  void startTimer();
+  void startTimer(bool startPaused = false);
 
   // pause the timer
   float pauseTimer();

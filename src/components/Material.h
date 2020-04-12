@@ -1,9 +1,10 @@
 #pragma once
 #include "../components/ShaderProgram.h"
 #include "../components/Texture.h"
+#include "../utils/Cloneable.hpp"
 
 // an interface for all materials
-class MaterialBase
+class MaterialBase : public Cloneable
 {
 protected:
   ShaderProgram* _mProgram = nullptr;
@@ -11,9 +12,11 @@ protected:
 
   // this should prep a program to be used before a draw call
   virtual void preRender() = 0;
+  virtual void copyTo(Cloneable* cloned) const override;
 
 public:
   void use() { preRender(); }
+  virtual MaterialBase* clone() const override = 0;
 };
 
 
@@ -27,7 +30,8 @@ protected:
 protected:
   // not public: has to generated with a factory method!
   Material();
-  virtual void preRender();
+  virtual void preRender() override;
+  virtual void copyTo(Cloneable* cloned) const override;
 
 public:
   Material(ShaderProgramManager* manager);
@@ -38,6 +42,8 @@ public:
   void setModelMatrix(const glm::mat4& model);
   void setProjViewModelMatrix(const glm::mat4& projViewModel);
   void setNormalMatrix(const glm::mat3& normal);
+
+  virtual Material* clone() const override;
 };
 
 
@@ -63,6 +69,7 @@ private:
 protected:
   PhongMaterial();
   virtual void preRender();
+  virtual void copyTo(Cloneable* cloned) const override;
 
 public:
   // diffuse texture of the material
@@ -80,4 +87,6 @@ public:
   PhongMaterial(ShaderProgramManager* manager);
   PhongMaterial(const PhongMaterial& other);
   virtual ~PhongMaterial();
+
+  virtual PhongMaterial* clone() const override;
 };

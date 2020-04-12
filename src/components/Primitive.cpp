@@ -325,7 +325,7 @@ void Primitive::initArrayObject(const PrimitiveData* data)
   glBindVertexArray(0);
 }
 
-void Primitive::render() const
+void Primitive::bindVao() const
 {
   if (!_mHasObjectVao)
   {
@@ -334,6 +334,24 @@ void Primitive::render() const
   }
 
   glBindVertexArray(_mObjectVao);
+}
+
+void Primitive::addObservable(PrimitiveObservable* o)
+{
+  observers.insert(o);
+}
+
+void Primitive::removeObservable(PrimitiveObservable* o)
+{
+  observers.erase(o);
+}
+
+void Primitive::render() const
+{
+  for (auto observer : observers)
+  {
+    observer->onShouldRender(this);
+  }
 
   if (_mHasIndicesEbo) 
   {
@@ -353,8 +371,6 @@ void Primitive::render() const
   {
     Log.print<Severity::warning>("Encountered a GL error: ", err);
   }
-
-  glBindVertexArray(0);
 }
 
 void Primitive::deleteArrayObject()
@@ -430,6 +446,7 @@ Primitive* const PrimitiveManager::create(const PrimitiveInfo& key)
 
   Primitive* p = new Primitive();
   p->initArrayObject(key.data);
+  p->addObservable(this);
   return p;
 }
 
@@ -441,3 +458,18 @@ void PrimitiveManager::destroy(Primitive* const value)
 
 PrimitiveManager::PrimitiveManager()
 {}
+
+void PrimitiveManager::onShouldRender(const Primitive* d)
+{
+  if (_lastDrawnPrimitive != d)
+  {
+    _lastDrawnPrimitive = d;
+    _lastDrawnPrimitive->bindVao();
+  }
+}
+
+void PrimitiveManager::update(float deltaT)
+{
+  // resets the last drawn primitive to prevent errors
+  _lastDrawnPrimitive = nullptr;
+}

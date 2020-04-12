@@ -32,6 +32,13 @@ int Application::runMainLoop()
   fpsPrintTimer.startTimer();
   updateTimer.startTimer();
 
+  Timer updateElapsed;
+  updateElapsed.startTimer(true);
+  Timer renderElapsed;
+  renderElapsed.startTimer(true);
+
+  float numFrames = 0;
+
   while(!game.shouldClose())
   {
     float timeElapsedF = updateTimer.stopTimer();
@@ -46,12 +53,26 @@ int Application::runMainLoop()
       }
       fpsPrintTimer.stopTimer();
       fpsPrintTimer.startTimer();
-      Log.print<Severity::debug>("FPS: ", fps);
+
+      Log.print<Severity::debug>("FPS of last frame: ", fps);
+      Log.print<Severity::debug>("Number of frames passed since last report: ", numFrames);
+      Log.print<Severity::debug>("Update Time Elapsed: ", updateElapsed.stopTimer(), "ms");
+      Log.print<Severity::debug>("Render Time Elapsed: ", renderElapsed.stopTimer(), "ms");
+
+      updateElapsed.startTimer(true);
+      renderElapsed.startTimer(true);
     }
 
     // update the game
+    updateElapsed.resumeTimer();
     game.update(timeElapsedF);
+    updateElapsed.pauseTimer();
+
+    renderElapsed.resumeTimer();
     game.render();
+    renderElapsed.pauseTimer();
+
+    numFrames++;
   }
 
   return 0;

@@ -179,7 +179,7 @@ Box::Box(PrimitiveManager& primitiveManager, float w, float h, float d, bool inv
     boxPrimitive = primitiveManager.getOrCreate(info);
   }
 
-  _mMesh = boxPrimitive;
+  _mPrimitive = boxPrimitive;
 }
 
 Box::~Box() 

@@ -62,7 +62,7 @@ struct DirLight
 };
 uniform DirLight dirLights[NR_DIR_LIGHTS];
 
-
+/* custom structs to pass around data */
 struct LightOutput 
 {
   vec3 ambient;

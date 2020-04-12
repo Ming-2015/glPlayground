@@ -1,4 +1,18 @@
 #include "Material.h"
+
+void MaterialBase::copyTo(Cloneable* cloned) const
+{
+  MaterialBase* mat = dynamic_cast<MaterialBase*>(cloned);
+  if (!cloned)
+  {
+    Log.print<Severity::warning>("Failed to cast Material Base in clone");
+    return;
+  }
+
+  mat->_mProgram = _mProgram;
+  mat->_mProgramManager = _mProgramManager;
+}
+
 // normal material...
 Material::Material()
 {}
@@ -22,8 +36,6 @@ Material::Material(ShaderProgramManager* manager)
     vertexShaderInfo,
     fragmentShaderInfo
   );
-
-  Log.print<Severity::debug>("Creating a normal material...");
 
   // get the shader program
   ShaderProgram* program = _mProgramManager->getOrCreate(programInfo);
@@ -74,6 +86,24 @@ void Material::setNormalMatrix(const glm::mat3& normal)
     normalMatUniform->setUniform(normal);
 }
 
+void Material::copyTo(Cloneable* cloned) const
+{
+  MaterialBase::copyTo(cloned);
+  Material* clonedMaterial = dynamic_cast<Material*>(cloned);
+  if (!clonedMaterial)
+  {
+    Log.print<Severity::warning>("Failed to cast to Material in clone");
+    return;
+  }
+}
+
+Material* Material::clone() const
+{
+  Material* material = new Material(_mProgramManager);
+  copyTo(material);
+  return material;
+}
+
 // ----------- phoon material ---------------
 PhongMaterial::PhongMaterial()
   : diffuse(1, 1, 1), specular(0, 0, 0), ambient(0, 0, 0)
@@ -104,8 +134,6 @@ PhongMaterial::PhongMaterial(ShaderProgramManager* manager)
     vertexShaderInfo,
     fragmentShaderInfo
   );
-
-  Log.print<Severity::debug>("Creating a phoon material...");
 
   // get the shader program
   ShaderProgram* program = manager->getOrCreate(programInfo);
@@ -185,4 +213,31 @@ void PhongMaterial::preRender()
   {
     shininessUniform->setUniform(shininess);
   }
+}
+
+void PhongMaterial::copyTo(Cloneable* cloned) const
+{
+  Material::copyTo(cloned);
+  PhongMaterial* clonedMaterial = dynamic_cast<PhongMaterial*>(cloned);
+  if (!clonedMaterial)
+  {
+    Log.print<Severity::warning>("Failed to cast to PhongMaterial in clone");
+    return;
+  }
+
+  clonedMaterial->ambient = ambient;
+  clonedMaterial->diffuseTex = diffuseTex;
+  clonedMaterial->specularTex = specularTex;
+  clonedMaterial->ambientTex = ambientTex;
+  clonedMaterial->diffuse = diffuse;
+  clonedMaterial->specular = specular;
+  clonedMaterial->ambient = ambient;
+  clonedMaterial->shininess = shininess;
+}
+
+PhongMaterial* PhongMaterial::clone() const
+{
+  PhongMaterial* material = new PhongMaterial(_mProgramManager);
+  copyTo(material);
+  return material;
 }
