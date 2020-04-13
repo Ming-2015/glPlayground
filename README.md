@@ -5,7 +5,7 @@ This is a project intended to further refine my skills as a graphics programmer.
 
 ![screenshot]
 
-[screenshot]: https://media.giphy.com/media/S9XS5Cv9XkzZ2sO8IP/giphy.gif
+[screenshot]: https://i.imgur.com/ER8lE4b.png
 
 ## Pre-installation
 Before compiling the project, you will need to:
