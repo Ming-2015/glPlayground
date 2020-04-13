@@ -153,7 +153,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\controllers\CameraController.cpp" />
-    <ClCompile Include="src\importers\importer.cpp" />
+    <ClCompile Include="src\importers\AssetImporter.cpp" />
     <ClCompile Include="src\scene\Asset.cpp" />
     <ClCompile Include="src\scene\Lights\DirLight.cpp" />
     <ClCompile Include="src\scene\Lights\PointLight.cpp" />
@@ -182,7 +182,7 @@
   <ItemGroup>
     <ClInclude Include="src\components\GameResources.h" />
     <ClInclude Include="src\controllers\CameraController.h" />
-    <ClInclude Include="src\importers\importer.h" />
+    <ClInclude Include="src\importers\AssetImporter.h" />
     <ClInclude Include="src\scene\Asset.h" />
     <ClInclude Include="src\scene\Lights\DirLight.h" />
     <ClInclude Include="src\scene\Lights\PointLight.h" />

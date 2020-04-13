@@ -12,50 +12,19 @@
 struct PrimitiveData {
   std::vector<float> vertices;
   std::vector<float> normals;
-  std::vector<float> texCoords;
-  std::vector<float> texCoords_2;
-  std::vector<float> texCoords_3;
   std::vector<float> tangents;
+  std::vector<float> bitangents;
+
+  unsigned int numComponents = 2;
+  std::vector<float> texCoords;
+  unsigned int numComponents_2 = 2;
+  std::vector<float> texCoords_2;
+  unsigned int numComponents_3 = 2;
+  std::vector<float> texCoords_3;
+
   std::vector<float> weights;
   std::vector<unsigned int> joints;
   std::vector<unsigned int> indices;
-};
-
-// Used for managing primitive information
-// PrimitiveData loaders should generate a unique ID to help identification
-// @example: 
-//   Primitive* primitive = PrimitiveManager.find(PrimitiveInfo(id));
-//   if (!primitive) {
-//     PrimitiveData data; // get the data somehow
-//     primitive = PrimitiveManager.getOrCreate(id, &data);
-//   }
-class PrimitiveInfo : public ResourceInfo<PrimitiveInfo>
-{
-public:
-  std::string id;
-  PrimitiveData* data;
-
-  // Initialize a primitive info. Data should be allocated dynamically!
-  // Data can also be nullptr since data will not be used for comparison, 
-  //   but it will not be valid for creation!
-  PrimitiveInfo(const std::string& id, PrimitiveData* data = nullptr);
-  PrimitiveInfo(const PrimitiveInfo& other) = default;
-  PrimitiveInfo& operator=(const PrimitiveInfo&) = default;
-
-  // Will not manage or delete the data!
-  ~PrimitiveInfo() {}
-
-  // getters
-  bool operator< (const PrimitiveInfo& other) const;
-  bool operator== (const PrimitiveInfo& other) const;
-  bool isValidForCreation() const;
-  
-  // const state getters
-  const PrimitiveData* getPrimitiveData() const { return data; }
-  const std::string& getId() const { return id; }
-
-  // convert to string (for debug/comparison)
-  const std::string toString() const;
 };
 
 class Primitive;
@@ -107,6 +76,11 @@ private:
   bool _mHasTangentsVbo       = false;
   unsigned int _mTangentsVbo  = 0;
 
+  // vertex bitangent
+  unsigned int numBitangents  = 0;
+  bool _mHasBitangentsVbo     = false;
+  unsigned int _mBitangentsVbo = 0;
+
   // bone weights
   unsigned int numWeights     = 0;
   bool _mHasWeightsVbo        = false;
@@ -133,19 +107,22 @@ public:
   static const int ATTRIBUTE_NORMAL     = 1;
   static const int ATTRIBUTE_TEX        = 2;
   static const int ATTRIBUTE_TANGENT    = 3;
-  static const int ATTRIBUTE_JOINT      = 4;
-  static const int ATTRIBUTE_WEIGHT     = 5;
-  static const int ATTRIBUTE_TEX_2      = 6;
-  static const int ATTRIBUTE_TEX_3      = 7;
+  static const int ATTRIBUTE_BITANGENT  = 4;
+  static const int ATTRIBUTE_JOINT      = 5;
+  static const int ATTRIBUTE_WEIGHT     = 6;
+  static const int ATTRIBUTE_TEX_2      = 7;
+  static const int ATTRIBUTE_TEX_3      = 8;
 
   static const int SIZE_POSITION = 3;
   static const int SIZE_NORMAL = 3;
-  static const int SIZE_TEX = 2;
-  static const int SIZE_TANGENT = 4;
+  //static const int SIZE_TEX = 2;
+  static const int SIZE_TANGENT = 3;
+  static const int SIZE_BITANGENT = 3;
   static const int SIZE_JOINT = 4;
   static const int SIZE_WEIGHT = 4;
 
   static const int SIZE_FACE = 3;
+  static const int MAX_TEX_COORDINATE_SUPPORTED = 3;
 
 public:
   virtual void bindVao() const;
@@ -162,10 +139,10 @@ public:
   virtual ~Primitive();
 };
 
-class PrimitiveManager : public ResourceManager<PrimitiveInfo, Primitive>, public PrimitiveObservable
+class PrimitiveManager : public ResourceManager<std::string, PrimitiveData, Primitive>, public PrimitiveObservable
 {
 protected:
-  Primitive* const create(const PrimitiveInfo& key);
+  Primitive* const create(const std::string& key, const PrimitiveData& data) override;
   void destroy(Primitive* const value);
 
   // manages when a primitive is drawn...

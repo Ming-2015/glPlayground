@@ -17,6 +17,8 @@ protected:
 public:
   void use() { preRender(); }
   virtual MaterialBase* clone() const override = 0;
+
+  std::string name;
 };
 
 
@@ -60,8 +62,13 @@ private:
   Uniform* diffuseTexUniform = nullptr;
   static const int DIFFUSE_TEX_IDX = 0;
 
+  Uniform* diffuseUVIndexUniform = nullptr;
   Uniform* diffuseUniform = nullptr;
+
+  Uniform* specularUVIndexUniform = nullptr;
   Uniform* specularUniform = nullptr;
+
+  Uniform* ambientUVIndexUniform = nullptr;
   Uniform* ambientUniform = nullptr;
 
   Uniform* shininessUniform = nullptr;
@@ -73,8 +80,13 @@ protected:
 
 public:
   // diffuse texture of the material
+  int diffuseUVIndex = 0;
   Texture* diffuseTex = nullptr;
+  
+  int specularUVIndex = 0;
   Texture* specularTex = nullptr;
+
+  int ambientUVIndex = 0;
   Texture* ambientTex = nullptr;
 
   glm::vec3 diffuse;

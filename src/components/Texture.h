@@ -2,30 +2,36 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <glad/glad.h>
+#include <assimp/scene.h>
 #include "../utils/ResourceManager.hpp"
 #include "../utils/Logger.h"
 
 // information needed to initialize a texture
-class TextureInfo : public ResourceInfo<TextureInfo>
+class TextureData
 {
 public:
-  std::string _mTexPath;
-  bool _mGenerateMipMap;
+  enum class TextureDataType {
+    path,
+    assimpBuffer
+  };
+
+  TextureDataType type = TextureDataType::path;
+
+  // for texture type buffer
+  const aiTexture* assimpTexture = nullptr;
+
+  // for texture type path
+  std::string texPath;
+
+  // generate mip map?
+  bool generateMipMap;
 
 public:
+  TextureData(const std::string& texPath, bool generateMipMap = true);
+  TextureData(const aiTexture* tex, bool generateMipMip = true);
 
-  TextureInfo();
-  TextureInfo(const std::string& texPath, bool generateMipMap);
-  TextureInfo(const TextureInfo& other);
-  ~TextureInfo() = default;
-
-  bool operator< (const TextureInfo& other) const;
-  bool operator== (const TextureInfo& other) const;
-  bool isValidForCreation() const;
-
-  const std::string toString() const;
-  const std::string& getTexPath() const { return _mTexPath; }
-  const bool shouldGenMipMap() const { return _mGenerateMipMap; }
+  TextureData(const TextureData& other) = default;
+  ~TextureData() = default;
 };
 
 
@@ -43,11 +49,14 @@ protected:
   std::string _mPath;
   bool _mUseMipMap = false;
 
+  bool processStbiData(unsigned char* data);
+
 public:
 
   Texture();
   virtual ~Texture();
   virtual bool loadFromFile(std::string path, bool generateMipmap = false);
+  virtual bool loadFromAssimpTexture(const aiTexture* tex, bool generateMipMap = false);
 
   // getters
   glm::ivec2 getDimension() const;
@@ -59,11 +68,11 @@ public:
 
 
 // manages creation and deletion of textures
-class TextureManager : public ResourceManager<TextureInfo, Texture>
+class TextureManager : public ResourceManager<std::string, TextureData, Texture>
 {
 protected:
-  Texture* const create(const TextureInfo& key);
-  void destroy(Texture* const value);
+  Texture* const create(const std::string& key, const TextureData& data) override;
+  void destroy(Texture* const value) override;
 
 public:
   TextureManager();

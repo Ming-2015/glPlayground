@@ -48,4 +48,7 @@ public:
 
   // clone implementation
   virtual Node* clone() const override;
+
+  // an optional, public name, for convenience
+  std::string name;
 };

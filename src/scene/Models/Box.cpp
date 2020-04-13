@@ -9,7 +9,7 @@ Box::Box(PrimitiveManager& primitiveManager, float w, float h, float d, bool inv
   idStream << "createBox_" << w << "_" << h << "_" << d << "_" << invertNormal;
   std::string id = idStream.str();
 
-  if ( !(boxPrimitive = primitiveManager.find(PrimitiveInfo(id)))) 
+  if ( !(boxPrimitive = primitiveManager.find(id)) )
   {
     PrimitiveData boxMesh;
 
@@ -175,8 +175,7 @@ Box::Box(PrimitiveManager& primitiveManager, float w, float h, float d, bool inv
       22, 23, 20
     };
 
-    PrimitiveInfo info(id, &boxMesh);
-    boxPrimitive = primitiveManager.getOrCreate(info);
+    boxPrimitive = primitiveManager.insert(id, boxMesh);
   }
 
   _mPrimitive = boxPrimitive;

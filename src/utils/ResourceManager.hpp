@@ -5,18 +5,6 @@
 #include <mutex>
 #include <type_traits>
 
-// Information that can be used to initialize some kind of resource
-// This should be extended for any resource class that extends ResourceManager
-template<typename Derived>
-class ResourceInfo
-{
-public:
-  virtual bool operator< (const Derived& other) const = 0;
-  virtual bool operator== (const Derived& other) const = 0;
-  virtual const std::string toString() const = 0;
-  virtual bool isValidForCreation() const = 0;
-};
-
 // Intended for avoiding duplicate resource allocation. 
 // K must be a struct or class that contains all info needed to create V. 
 // K must implement operator< and operator==. 
@@ -25,27 +13,24 @@ public:
 //   will automatically deallocate the heap resource when done. 
 // Key and Value will be exactly one-to-one mapping
 // Use Public Inheritance!
-template<typename K, typename V>
+template<typename Key, typename Data, typename Resource>
 class ResourceManager
 {
-  // ensure inheritance
-  static_assert(std::is_base_of<ResourceInfo<K>, K>::value, "K must be inherit ResourceInfo");
-
 protected:
   // a resource storage map
-  std::map<K, V*> resources;
+  std::map<Key, Resource*> resources;
   std::mutex resourceMutex;
 
   // define how the resource V is created from key K
-  virtual V* const create(const K& key) = 0;
+  virtual Resource* const create(const Key& key, const Data& data) = 0;
 
   // define how the resource V is destroyed
-  virtual void destroy(V* const value) = 0;
+  virtual void destroy(Resource* const value) = 0;
 
 public:
 
   // get the resource, or create it if not found
-  virtual V* const getOrCreate(const K& key)
+  virtual Resource* const insert(const Key& key, const Data& data)
   {
     resourceMutex.lock();
     auto it = resources.find(key);
@@ -56,22 +41,17 @@ public:
       resourceMutex.unlock();
       return it->second;
     }
-    else if (!key.isValidForCreation())
-    {
-      resourceMutex.unlock();
-      return nullptr;
-    }
     else {
       try 
       {
-        V* const resource = create(key);
+        Resource* const resource = create(key, data);
         auto it = resources.insert({ key, resource });
         resourceMutex.unlock();
         return resource;
       }
       catch (std::exception e) 
       {
-        Log.print<Severity::error>("Failed to create resource: ", key.toString());
+        Log.print<Severity::error>("Failed to create resource: ", key);
         resourceMutex.unlock();
         throw e;
       }
@@ -79,7 +59,7 @@ public:
   }
 
   // find the resource without creating it
-  virtual V* const find(const K& key)
+  virtual Resource* const find(const Key& key)
   {
     resourceMutex.lock();
     auto it = resources.find(key);
@@ -91,7 +71,7 @@ public:
   }
 
   // remove one resource
-  virtual bool erase(const K& key)
+  virtual bool erase(const Key& key)
   {
     resourceMutex.lock();
     auto it = resources.find(key);
@@ -108,7 +88,7 @@ public:
       }
       catch (std::exception e)
       {
-        Log.print<Severity::error>("Failed to destroy resource: ", key.toString());
+        Log.print<Severity::error>("Failed to destroy resource: ", key);
         resourceMutex.unlock();
         throw e;
       }
@@ -138,7 +118,7 @@ public:
         err = e;
         Log.print<Severity::error>(
           "Failed to clear resources: ", 
-          it.first.toString()
+          it.first
         );
       }
     }
@@ -152,7 +132,7 @@ public:
     }
   }
 
-  const std::map<K, V*>& getAllResources() {
+  const std::map<Key, Resource*>& getAllResources() {
     return resources; 
   }
 

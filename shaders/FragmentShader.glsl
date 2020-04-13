@@ -3,11 +3,12 @@
 /* final output */
 out vec4 FragColor;
 
-/* inputs, world coordinates */
+/* inputs, world coordinates where applicable */
 in vec3 fPos;
 in vec3 fNormal;
 in vec2 fTex;
-in vec4 fTangent;
+in vec2 fTex_2;
+in vec2 fTex_3;
 
 /* camera */
 struct Camera 
@@ -27,8 +28,13 @@ struct PhongMaterial
   vec3 specular;
 
   /* textures */
+  int ambientUVIndex;
   sampler2D ambientTex;
+
+  int diffuseUVIndex;
   sampler2D diffuseTex;
+  
+  int specularUVIndex;
   sampler2D specularTex;
   
   /* others */
@@ -110,15 +116,23 @@ LightOutput CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
   return ret;
 }
 
+vec2 getTexCoord(int uvIndex)
+{
+  if (uvIndex == 0) return fTex;
+  if (uvIndex == 1) return fTex_2;
+  if (uvIndex == 2) return fTex_3;
+  return fTex;
+}
+
 void main()
 {
   vec3 ambientComponent = vec3(0);
   vec3 diffuseComponent = vec3(0);
   vec3 specularComponent = vec3(0);
 
-  vec2 diffuseTexCoord = fTex;
-  vec2 specularTexCoord = fTex;
-  vec2 ambientTexCoord = fTex;
+  vec2 diffuseTexCoord  = getTexCoord(phongMaterial.diffuseUVIndex);
+  vec2 specularTexCoord = getTexCoord(phongMaterial.specularUVIndex);
+  vec2 ambientTexCoord  = getTexCoord(phongMaterial.ambientUVIndex);
   
   vec3 surfaceToCamera = camera.position - fPos;
   vec3 viewDir = normalize(surfaceToCamera);

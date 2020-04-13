@@ -8,31 +8,27 @@
 #include "Uniform.h"
 
 // Contains all the info needed to initialize a shader program
-class ShaderProgramInfo : ResourceInfo<ShaderProgramInfo>
+class ShaderProgramData
 {
 public:
-  ShaderInfo vertexShaderInfo;
-  ShaderInfo fragmentShaderInfo;
-  ShaderInfo geometryShaderInfo;
+  std::string vertexShaderKey;
+  std::string fragmentShaderKey;
+  std::string geometryShaderKey;
 
 public:
-  ShaderProgramInfo();
-  ShaderProgramInfo(
-    const ShaderInfo& pVertexShaderInfo,
-    const ShaderInfo& pFragmentShader
+  ShaderProgramData();
+  ShaderProgramData(
+    const std::string& pVertexShaderKey,
+    const std::string& pFragmentShaderKey
   );
-  ShaderProgramInfo(
-    const ShaderInfo& pVertexShader,
-    const ShaderInfo& pFragmentShader,
-    const ShaderInfo& pGeometryShader
+  ShaderProgramData(
+    const std::string& pVertexShaderKey,
+    const std::string& pFragmentShaderKey,
+    const std::string& pGeometryShaderKey
   );
-  ShaderProgramInfo(const ShaderProgramInfo& other) = default;
+  ShaderProgramData(const ShaderProgramData& other) = default;
 
-  bool operator< (const ShaderProgramInfo& other) const;
-  bool operator== (const ShaderProgramInfo& other) const;
-  bool isValidForCreation() const;
   const std::string toString() const;
-
   bool hasGeometryShader() const;
 };
 
@@ -85,15 +81,15 @@ public:
 };
 
 // encapsulate and manages shader program instances
-class ShaderProgramManager : public ResourceManager<ShaderProgramInfo, ShaderProgram>
+class ShaderProgramManager : public ResourceManager<std::string, ShaderProgramData, ShaderProgram>
 {
 private:
   ShaderManager& _mShaderManager;
   ShaderProgram* _mProgramInUse;
 
 protected:
-  ShaderProgram* const create(const ShaderProgramInfo& key);
-  void destroy(ShaderProgram* const value);
+  ShaderProgram* const create(const std::string& key, const ShaderProgramData& data) override;
+  void destroy(ShaderProgram* const value) override;
 
 public:
   ShaderProgramManager(ShaderManager& shaderManager);
@@ -101,4 +97,6 @@ public:
 
   void useProgram(ShaderProgram* program);
   ShaderProgram* getProgramInUse() const;
+
+  ShaderManager& getShaderManager() { return _mShaderManager; }
 };

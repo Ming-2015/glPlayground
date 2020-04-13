@@ -62,3 +62,14 @@ Asset* Asset::clone() const
   copyTo(a);
   return a;
 }
+
+
+void Asset::removeModel(const std::string& name)
+{
+  _mModels.erase(name);
+}
+
+std::map<std::string, Model*> Asset::getAllModels() const
+{
+  return _mModels;
+}

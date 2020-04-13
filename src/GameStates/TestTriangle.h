@@ -6,54 +6,50 @@
 #include "../scene/Lights/PointLight.h"
 #include "../scene/Models/Box.h"
 #include "../controllers/CameraController.h"
+#include "../importers/AssetImporter.h"
 
 class TestTriangle : public GameState
 {
-private:
-
-  Scene* clonedScene = nullptr;
-
+protected:
   // clear color
   glm::vec4 _mClearColor;
-  Scene* clone;
 
   // current scene stuffs - all Temporary!! 
   FreeCamera* _mCamera;
   Model* model;
-  PhongMaterial* mat;
-  Timer timer;
 
-  FirstPersonFreeCameraController* cameraController;
+  // need to be deleted!
+  FirstPersonFreeCameraController* cameraController = nullptr;
+  PhongMaterial* mat = nullptr;
 
-  // point light
+  AssetImporter* importer = nullptr;
+
+  // lights
   std::vector<PointLight*> pointLights;
   std::vector<DirLight* > dirLights;
-  Box* lightBox;
   float lightAngle = 0;
   float lightRotateSpeed = glm::half_pi<float>() / 2.f;
-  float distFromCenter = 4.f;
+  float distFromCenter = 40.f;
 
   // rotation
   float currentAngle = 0.f;
   float rotateSpeed = 1.f;
 
-  virtual void _onUpdate(float deltaT);
-  virtual void _onDraw();
+  virtual void _onUpdate(float deltaT) override;
+  virtual void _onDraw() override;
+  virtual void _onLoad() override;
+  virtual void _onDestroy() override;
 
 public:
 
   TestTriangle(const GameResources& resources);
   virtual ~TestTriangle();
 
-  // resouce allocation/deallocation
-  virtual void _onLoad();
-  virtual void _onDestroy();
-
   // returns a non-empty string if the next state should be rendered
-  virtual const std::string& nextState() const;
+  virtual const std::string& nextState() const override;
 
-  virtual void onKey(int key, int scancode, int action, int mods);
-  virtual void onCursorPos(double xPos, double yPos);
-  virtual void onMouseButton(int key, int action, int mods);
-  virtual void onResize(int width, int height);
+  virtual void onKey(int key, int scancode, int action, int mods) override;
+  virtual void onCursorPos(double xPos, double yPos) override;
+  virtual void onMouseButton(int key, int action, int mods) override;
+  virtual void onResize(int width, int height) override;
 };

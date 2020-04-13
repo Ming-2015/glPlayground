@@ -11,19 +11,19 @@
 
 
 // Shader Info - everything necessary to instantiate a Shader
-class ShaderInfo : ResourceInfo<ShaderInfo> {
+class ShaderData {
 public:
   std::string shaderPath;
   GLenum shaderType;
 
 public:
-  ShaderInfo() : shaderPath(""), shaderType(0) {}
-  ShaderInfo(std::string path, GLenum type) : shaderPath(path), shaderType(type) {}
-  ShaderInfo(const ShaderInfo& other) = default;
-  virtual ~ShaderInfo() = default;
+  ShaderData() : shaderPath(""), shaderType(0) {}
+  ShaderData(std::string path, GLenum type) : shaderPath(path), shaderType(type) {}
+  ShaderData(const ShaderData& other) = default;
+  virtual ~ShaderData() = default;
 
-  bool operator< (const ShaderInfo& other) const;
-  bool operator== (const ShaderInfo& other) const;
+  bool operator< (const ShaderData& other) const;
+  bool operator== (const ShaderData& other) const;
   bool isValidForCreation() const;
 
   const std::string toString() const;
@@ -51,11 +51,11 @@ public:
 };
 
 // ShaderManager is an encapsulation of Shader - allows the creation and lookup of shader
-class ShaderManager : public ResourceManager<ShaderInfo, Shader>
+class ShaderManager : public ResourceManager<std::string, ShaderData, Shader>
 {
 protected:
-  Shader* const create(const ShaderInfo& key);
-  void destroy(Shader* const value);
+  Shader* const create(const std::string& key, const ShaderData& data) override;
+  void destroy(Shader* const value) override;
 
 public:
   ShaderManager();

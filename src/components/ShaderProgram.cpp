@@ -1,79 +1,39 @@
 #include "ShaderProgram.h"
 
 // ShaderProgramInfo
-ShaderProgramInfo::ShaderProgramInfo(
-  const ShaderInfo& pVertexShaderInfo,
-  const ShaderInfo& pFragmentShader
-) : vertexShaderInfo(pVertexShaderInfo),
-    fragmentShaderInfo(pFragmentShader),
-    geometryShaderInfo()
+ShaderProgramData::ShaderProgramData(
+  const std::string& pVertexShader,
+  const std::string& pFragmentShader
+) : vertexShaderKey(pVertexShader),
+    fragmentShaderKey(pFragmentShader),
+    geometryShaderKey()
 {}
 
-ShaderProgramInfo::ShaderProgramInfo(
-  const ShaderInfo& pVertexShader,
-  const ShaderInfo& pFragmentShader,
-  const ShaderInfo& pGeometryShader
-) : vertexShaderInfo(pVertexShader),
-    fragmentShaderInfo(pFragmentShader),
-    geometryShaderInfo(pGeometryShader)
+ShaderProgramData::ShaderProgramData(
+  const std::string& pVertexShader,
+  const std::string& pFragmentShader,
+  const std::string& pGeometryShader
+) : vertexShaderKey(pVertexShader),
+    fragmentShaderKey(pFragmentShader),
+    geometryShaderKey(pGeometryShader)
 {}
 
-ShaderProgramInfo::ShaderProgramInfo()
-  : vertexShaderInfo(), 
-  fragmentShaderInfo(), 
-  geometryShaderInfo()
+ShaderProgramData::ShaderProgramData()
+  : vertexShaderKey(), 
+  fragmentShaderKey(), 
+  geometryShaderKey()
 {}
 
-bool ShaderProgramInfo::operator< (const ShaderProgramInfo& other) const {
-  std::vector< std::pair<const ShaderInfo*, const ShaderInfo*> > pairs = {
-    { &vertexShaderInfo, &other.vertexShaderInfo },
-    { &fragmentShaderInfo, &other.fragmentShaderInfo },
-    { &geometryShaderInfo, &other.geometryShaderInfo }
-  };
-
-  for (auto pair : pairs)
-  {
-    const ShaderInfo& first = *(pair.first);
-    const ShaderInfo& second = *(pair.second);
-
-    if (first < second) {
-      return true;
-    }
-    else if (first == second) {
-      continue;
-    }
-    else
-    {
-      return false;
-    }
-  }
-
-  return false;
-}
-
-bool ShaderProgramInfo::operator== (const ShaderProgramInfo& other) const {
-  bool eq1 = vertexShaderInfo == other.vertexShaderInfo;
-  bool eq2 = fragmentShaderInfo == other.fragmentShaderInfo;
-  bool eq3 = geometryShaderInfo == other.geometryShaderInfo;
-
-  return eq1 && eq2 && eq3;
-}
-
-bool ShaderProgramInfo::isValidForCreation() const
+const std::string ShaderProgramData::toString() const
 {
-  return vertexShaderInfo.isValidForCreation() && fragmentShaderInfo.isValidForCreation();
+  return "{ vs: " + vertexShaderKey + ",\n"
+    " fs: " + fragmentShaderKey + ",\n" 
+    " gs: " + geometryShaderKey + "\n" + " }";
 }
 
-const std::string ShaderProgramInfo::toString() const
+bool ShaderProgramData::hasGeometryShader() const
 {
-  return "{ vs: " + vertexShaderInfo.toString() + ",\n"
-    " fs: " + fragmentShaderInfo.toString() + ",\n" 
-    " gs: " + geometryShaderInfo.toString() + "\n" + " }";
-}
-
-bool ShaderProgramInfo::hasGeometryShader() const
-{
-  return geometryShaderInfo.isValidForCreation();
+  return geometryShaderKey.size() > 0;
 }
 
 // ShaderProgram
@@ -267,22 +227,47 @@ ShaderProgramManager::ShaderProgramManager(ShaderManager& shaderManager)
   : _mShaderManager(shaderManager), _mProgramInUse(nullptr)
 {}
 
-ShaderProgram* const ShaderProgramManager::create(const ShaderProgramInfo& key)
+ShaderProgram* const ShaderProgramManager::create(const std::string& key, const ShaderProgramData& data)
 {
-  ShaderProgram* program = new ShaderProgram();
+  ShaderProgram* program = nullptr;
 
-  auto vs = _mShaderManager.getOrCreate(key.vertexShaderInfo);
-  auto fs = _mShaderManager.getOrCreate(key.fragmentShaderInfo);
-  if (key.hasGeometryShader()) {
-    auto gs = _mShaderManager.getOrCreate(key.geometryShaderInfo);
+  auto vs = _mShaderManager.find(data.vertexShaderKey);
+  auto fs = _mShaderManager.find(data.fragmentShaderKey);
+
+  if (!vs)
+  {
+    Log.print<Severity::error>("Failed to retrieve Vertex Shader: ", data.vertexShaderKey);
+    throw std::runtime_error("Unable to find Vertex Shader: " + data.vertexShaderKey);
+  }
+
+  if (!fs)
+  {
+    Log.print<Severity::error>("Failed to retrieve Fragment Shader: ", data.fragmentShaderKey);
+    throw std::runtime_error("Unable to find Fragment Shader: " + data.fragmentShaderKey);
+  }
+
+  if (data.hasGeometryShader()) 
+  {
+    auto gs = _mShaderManager.find(data.geometryShaderKey);
+
+    if (!gs)
+    {
+      Log.print<Severity::error>("Failed to retrieve Geometry Shader: ", data.geometryShaderKey);
+      throw std::runtime_error("Unable to find Geometry Shader: " + data.geometryShaderKey);
+    }
+
+    program = new ShaderProgram();
     program->initShaderProgram(*vs, *fs, *gs);
   }
-  else {
+  else 
+  {
+    program = new ShaderProgram();
     program->initShaderProgram(*vs, *fs);
   }
 
   return program;
 }
+
 void ShaderProgramManager::destroy(ShaderProgram* const value)
 {
   delete value;

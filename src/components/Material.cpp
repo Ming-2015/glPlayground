@@ -17,35 +17,69 @@ void MaterialBase::copyTo(Cloneable* cloned) const
 Material::Material()
 {}
 
-Material::Material(ShaderProgramManager* manager)
-{
-  _mProgramManager = manager;
+ShaderProgram* getShaderProgram(
+  ShaderProgramManager& programManager,
+  const std::string& programKey, 
+  const std::string& vsPath, 
+  const std::string& fsPath
+) {
+  ShaderProgram* program = programManager.find(programKey);
+  if (!program)
+  {
+    ShaderManager& shaderManager = programManager.getShaderManager();
+    Shader* vs = shaderManager.find(vsPath);
+    Shader* fs = shaderManager.find(fsPath);
 
-  // initialize the material
-  ShaderInfo vertexShaderInfo(
-    "./shaders/VertexShader.glsl",
-    GL_VERTEX_SHADER
-  );
+    if (!vs)
+    {
+      ShaderData vsData(
+        vsPath,
+        GL_VERTEX_SHADER
+      );
 
-  ShaderInfo fragmentShaderInfo(
-    "./shaders/FragmentShader.glsl",
-    GL_FRAGMENT_SHADER
-  );
+      vs = shaderManager.insert(vsPath, vsData);
+    }
 
-  ShaderProgramInfo programInfo(
-    vertexShaderInfo,
-    fragmentShaderInfo
-  );
+    if (!fs)
+    {
+      ShaderData fsData(
+        fsPath,
+        GL_FRAGMENT_SHADER
+      );
 
-  // get the shader program
-  ShaderProgram* program = _mProgramManager->getOrCreate(programInfo);
+      fs = shaderManager.insert(fsPath, fsData);
+    }
+
+    ShaderProgramData programData(
+      vsPath,
+      fsPath
+    );
+
+    program = programManager.insert(programKey, programData);
+  }
+
+  if (!program)
+  {
+    Log.print<Severity::error>("Failed to retrieve shader program!");
+    throw std::runtime_error("Program is not found!");
+  }
 
   if (!program->isLoaded()) {
     Log.print<Severity::error>("Trying to initialize material with unloaded program!");
     throw std::runtime_error("Program is not loaded!");
   }
-  
-  _mProgram = program;
+
+  return program;
+}
+
+Material::Material(ShaderProgramManager* manager)
+{
+  _mProgramManager = manager;
+  static std::string vsPath = "./shaders/VertexShader.glsl";
+  static std::string fsPath = "./shaders/FragmentShader.glsl";
+  static std::string programKey = vsPath + "___" + fsPath;
+  _mProgram = getShaderProgram(*_mProgramManager, programKey, vsPath, fsPath);
+
   modelMatUniform = _mProgram->getUniformByName("modelMat");
   normalMatUniform = _mProgram->getUniformByName("normalMat");
   projViewModelMatUniform = _mProgram->getUniformByName("projViewModelMat");
@@ -113,37 +147,11 @@ PhongMaterial::PhongMaterial(ShaderProgramManager* manager)
   : diffuse(1, 1, 1), specular(0, 0, 0), ambient(0, 0, 0)
 {
   _mProgramManager = manager;
-  if (!_mProgramManager)
-  {
-    Log.print<Severity::warning>("Trying to create material with null manager");
-    return;
-  }
+  static std::string vsPath = "./shaders/VertexShader.glsl";
+  static std::string fsPath = "./shaders/FragmentShader.glsl";
+  static std::string programKey = vsPath + "___" + fsPath;
+  _mProgram = getShaderProgram(*_mProgramManager, programKey, vsPath, fsPath);
 
-  // initialize the material
-  ShaderInfo vertexShaderInfo(
-    "./shaders/VertexShader.glsl",
-    GL_VERTEX_SHADER
-  );
-
-  ShaderInfo fragmentShaderInfo(
-    "./shaders/FragmentShader.glsl",
-    GL_FRAGMENT_SHADER
-  );
-
-  ShaderProgramInfo programInfo(
-    vertexShaderInfo,
-    fragmentShaderInfo
-  );
-
-  // get the shader program
-  ShaderProgram* program = manager->getOrCreate(programInfo);
-
-  if (!program->isLoaded()) {
-    Log.print<Severity::error>("Trying to initialize material with unloaded program!");
-    throw std::runtime_error("Program is not loaded!");
-  }
-
-  _mProgram = program;
   modelMatUniform = _mProgram->getUniformByName("modelMat");
   normalMatUniform = _mProgram->getUniformByName("normalMat");
   projViewModelMatUniform = _mProgram->getUniformByName("projViewModelMat");
@@ -155,6 +163,10 @@ PhongMaterial::PhongMaterial(ShaderProgramManager* manager)
   specularUniform = _mProgram->getUniformByName("phongMaterial.specular");
   ambientUniform = _mProgram->getUniformByName("phongMaterial.ambient");
   shininessUniform = _mProgram->getUniformByName("phongMaterial.shininess");
+
+  diffuseUVIndexUniform = _mProgram->getUniformByName("phongMaterial.diffuseUVIndex");
+  specularUVIndexUniform = _mProgram->getUniformByName("phongMaterial.specularUVIndex");
+  ambientUVIndexUniform = _mProgram->getUniformByName("phongMaterial.ambientUVIndex");
 }
 
 PhongMaterial::PhongMaterial(const PhongMaterial& other)
@@ -170,6 +182,9 @@ PhongMaterial::PhongMaterial(const PhongMaterial& other)
   specularUniform = other.specularUniform;
   ambientUniform = other.ambientUniform;
   shininessUniform = other.shininessUniform;
+  diffuseUVIndexUniform = other.diffuseUVIndexUniform;
+  specularUVIndexUniform = other.specularUVIndexUniform;
+  ambientUVIndexUniform = other.ambientUVIndexUniform;
 }
 
 PhongMaterial::~PhongMaterial()
@@ -209,10 +224,17 @@ void PhongMaterial::preRender()
   bindTexUniform(specularTexUniform, specularUniform, specularTex, specular, SPECULAR_TEX_IDX);
   bindTexUniform(ambientTexUniform, ambientUniform, ambientTex, ambient, AMBIENT_TEX_IDX);
 
+  if (diffuseUVIndexUniform)
+    diffuseUVIndexUniform->setUniform(diffuseUVIndex);
+
+  if (specularUVIndexUniform)
+    specularUVIndexUniform->setUniform(specularUVIndex);
+
+  if (ambientUVIndexUniform)
+    ambientUVIndexUniform->setUniform(ambientUVIndex);
+
   if (shininessUniform)
-  {
     shininessUniform->setUniform(shininess);
-  }
 }
 
 void PhongMaterial::copyTo(Cloneable* cloned) const

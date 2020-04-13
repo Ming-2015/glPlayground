@@ -2,7 +2,7 @@
 #include <stdexcept>
 
 // ShaderInfo
-bool ShaderInfo::operator< (const ShaderInfo& other) const 
+bool ShaderData::operator< (const ShaderData& other) const 
 {
   if (shaderType != other.shaderType)
   {
@@ -14,17 +14,17 @@ bool ShaderInfo::operator< (const ShaderInfo& other) const
   }
 }
 
-bool ShaderInfo::operator== (const ShaderInfo& other) const 
+bool ShaderData::operator== (const ShaderData& other) const 
 {
   return shaderPath == other.shaderPath && shaderType == other.shaderType;
 }
 
-bool ShaderInfo::isValidForCreation() const
+bool ShaderData::isValidForCreation() const
 {
   return !shaderPath.empty() && shaderType;
 }
 
-const std::string ShaderInfo::toString() const 
+const std::string ShaderData::toString() const 
 {
   return shaderPath + " " + std::to_string(shaderType);
 }
@@ -107,16 +107,10 @@ void Shader::load(const std::string& shaderPath, const GLenum& shaderType)
 // ShaderManager
 ShaderManager::ShaderManager() {}
 
-Shader* const ShaderManager::create(const ShaderInfo& info)
+Shader* const ShaderManager::create(const std::string& key, const ShaderData& data)
 {
-  if (!info.isValidForCreation())
-  {
-    Log.print<Severity::error>("Trying to load shader with invalid info: ", info.toString());
-    throw std::runtime_error("Failed to load shader with invalid info");
-  }
-
   Shader* shader = new Shader();
-  shader->load(info.shaderPath, info.shaderType);
+  shader->load(data.shaderPath, data.shaderType);
   return shader;
 }
 

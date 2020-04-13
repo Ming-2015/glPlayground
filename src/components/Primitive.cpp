@@ -1,30 +1,5 @@
 #include "Primitive.h"
 
-// PrimitiveInfo implementation
-PrimitiveInfo::PrimitiveInfo(const std::string& id, PrimitiveData* data)
-  : id(id), data(data)
-{}
-
-const std::string PrimitiveInfo::toString() const
-{
-  return id;
-}
-
-bool PrimitiveInfo::operator< (const PrimitiveInfo& other) const
-{
-  return id < other.id;
-}
-
-bool PrimitiveInfo::operator== (const PrimitiveInfo& other) const
-{
-  return id == other.id;
-}
-
-bool PrimitiveInfo::isValidForCreation() const
-{
-  return !id.empty() && data != nullptr;
-}
-
 // Primitive implementation
 int Primitive::objectCount = 0;
 Primitive::Primitive()
@@ -38,11 +13,12 @@ void Primitive::initArrayObject(const PrimitiveData* data)
 {
   // assuming all triangles
   numVertices = data->vertices.size() / SIZE_POSITION;
-  numTexCoords = data->texCoords.size() / SIZE_TEX;
-  numTexCoords_2 = data->texCoords_2.size() / SIZE_TEX;
-  numTexCoords_3 = data->texCoords_3.size() / SIZE_TEX;
+  numTexCoords = data->texCoords.size() / data->numComponents;
+  numTexCoords_2 = data->texCoords_2.size() / data->numComponents_2;
+  numTexCoords_3 = data->texCoords_3.size() / data->numComponents_3;
   numNormals = data->normals.size() / SIZE_NORMAL;
   numTangents = data->tangents.size() / SIZE_TANGENT;
+  numBitangents = data->bitangents.size() / SIZE_BITANGENT;
   numFaces = data->indices.size() / SIZE_FACE;
   numWeights = data->weights.size() / SIZE_WEIGHT;
   numJoints = data->joints.size() / SIZE_JOINT;
@@ -75,6 +51,11 @@ void Primitive::initArrayObject(const PrimitiveData* data)
   if (numTangents > 0 && numVertices != numTangents) 
   {
     Log.print<Severity::warning>("Trying to initialize tangents with different size!");
+  }
+
+  if (numBitangents > 0 && numVertices != numBitangents)
+  {
+    Log.print<Severity::warning>("Trying to initialize bitangents with different size!");
   }
 
   if (numWeights > 0 && numVertices != numWeights)
@@ -162,10 +143,10 @@ void Primitive::initArrayObject(const PrimitiveData* data)
     // define texture vertex attribute
     glVertexAttribPointer(
       Primitive::ATTRIBUTE_TEX,
-      Primitive::SIZE_TEX,
+      data->numComponents,
       GL_FLOAT,
       GL_FALSE,
-      Primitive::SIZE_TEX * sizeof(data->texCoords[0]),
+      data->numComponents * sizeof(data->texCoords[0]),
       (void*)0
     );
     glEnableVertexAttribArray(Primitive::ATTRIBUTE_TEX);
@@ -188,10 +169,10 @@ void Primitive::initArrayObject(const PrimitiveData* data)
     // define texture vertex attribute
     glVertexAttribPointer(
       Primitive::ATTRIBUTE_TEX_2,
-      Primitive::SIZE_TEX,
+      data->numComponents_2,
       GL_FLOAT,
       GL_FALSE,
-      Primitive::SIZE_TEX * sizeof(data->texCoords_2[0]),
+      data->numComponents_2 * sizeof(data->texCoords_2[0]),
       (void*)0
     );
     glEnableVertexAttribArray(Primitive::ATTRIBUTE_TEX_2);
@@ -214,10 +195,10 @@ void Primitive::initArrayObject(const PrimitiveData* data)
     // define texture vertex attribute
     glVertexAttribPointer(
       Primitive::ATTRIBUTE_TEX_3,
-      Primitive::SIZE_TEX,
+      data->numComponents_3,
       GL_FLOAT,
       GL_FALSE,
-      Primitive::SIZE_TEX * sizeof(data->texCoords_3[0]),
+      data->numComponents_3 * sizeof(data->texCoords_3[0]),
       (void*)0
     );
     glEnableVertexAttribArray(Primitive::ATTRIBUTE_TEX_3);
@@ -249,6 +230,32 @@ void Primitive::initArrayObject(const PrimitiveData* data)
     glEnableVertexAttribArray(Primitive::ATTRIBUTE_TANGENT);
 
     _mHasTangentsVbo = true;
+  }
+
+  if (numBitangents)
+  {
+    // generate buffer object
+    glGenBuffers(1, &_mBitangentsVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, _mBitangentsVbo);
+    glBufferData(
+      GL_ARRAY_BUFFER,
+      sizeof(data->bitangents[0]) * data->bitangents.size(),
+      static_cast<const void*>(data->bitangents.data()),
+      GL_STATIC_DRAW
+    );
+
+    // define texture vertex attribute
+    glVertexAttribPointer(
+      Primitive::ATTRIBUTE_BITANGENT,
+      Primitive::SIZE_BITANGENT,
+      GL_FLOAT,
+      GL_FALSE,
+      Primitive::SIZE_BITANGENT * sizeof(data->bitangents[0]),
+      (void*)0
+    );
+    glEnableVertexAttribArray(Primitive::ATTRIBUTE_BITANGENT);
+
+    _mHasBitangentsVbo = true;
   }
 
   if (numWeights)
@@ -390,7 +397,13 @@ void Primitive::deleteArrayObject()
   if (_mHasTangentsVbo)
   {
     glDeleteBuffers(1, &_mTangentsVbo);
-    _mTangentsVbo = false;
+    _mHasTangentsVbo = false;
+  }
+
+  if (_mHasBitangentsVbo)
+  {
+    glDeleteBuffers(1, &_mBitangentsVbo);
+    _mHasBitangentsVbo = false;
   }
 
   if (_mHasTexVbo)
@@ -436,16 +449,10 @@ void Primitive::deleteArrayObject()
   }
 }
 
-Primitive* const PrimitiveManager::create(const PrimitiveInfo& key)
+Primitive* const PrimitiveManager::create(const std::string& key, const PrimitiveData& data)
 {
-  if (!key.data)
-  {
-    Log.print<Severity::error>("Trying to create a primitive without data");
-    throw std::runtime_error("Failed to create primitive with no data!");
-  }
-
   Primitive* p = new Primitive();
-  p->initArrayObject(key.data);
+  p->initArrayObject(&data);
   p->addObservable(this);
   return p;
 }
