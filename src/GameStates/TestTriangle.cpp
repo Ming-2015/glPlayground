@@ -41,7 +41,7 @@ void TestTriangle::_onLoad()
   model->setPosition(glm::vec3(2, 0, 0));
 
   _mCamera = new FreeCamera();
-  _mCamera->setPosition(glm::vec3(0, 0, 2));
+  _mCamera->setPosition(glm::vec3(0, 0, -12.f));
   _mCamera->setMaxZ(1000000.0f);
   FirstPersonFreeCameraController* c = new FirstPersonFreeCameraController(_mResources.window, _mCamera);
   cameraController = c;
@@ -51,9 +51,8 @@ void TestTriangle::_onLoad()
   pointLights.push_back(pointLight);
   pointLight->ambient = glm::vec3(0.05f);
   pointLight->specular = glm::vec3(0.3f);
-  pointLight->diffuse = glm::vec3(0.5f);
-  pointLight->attenuationVal = 0.01;
-  //_mScene.addLight(pointLight, true);
+  pointLight->diffuse = glm::vec3(0.7f);
+  _mScene.addLight(pointLight, true);
 
   Box* lightBox = new Box(_mResources.primitiveManager, .3f, .3f, .3f, true);
   PhongMaterial* mat = new PhongMaterial(&_mResources.shaderProgramManager);
@@ -68,17 +67,16 @@ void TestTriangle::_onLoad()
   pointLight->ambient = glm::vec3(.05f);
   pointLight->specular = glm::vec3(1.f);
   pointLight->diffuse = glm::vec3(.7f, .6f, .1f);
-  pointLight->attenuationVal = 0.05;
-  //_mScene.addLight(pointLight, true);
+  _mScene.addLight(pointLight, true);
 
   Model* boxClone = lightBox->clone();
   pointLight->addChild(boxClone);
 
   DirLight* dirLight = new DirLight();
   dirLights.push_back(dirLight);
-  dirLight->diffuse = glm::vec3(0.7f);
-  dirLight->specular = glm::vec3(.5f);
-  dirLight->ambient = glm::vec3(.05f);
+  dirLight->diffuse = glm::vec3(0.4f);
+  dirLight->specular = glm::vec3(1.f);
+  dirLight->ambient = glm::vec3(.16f);
   dirLight->direction = glm::normalize(glm::vec3(1.f, -.5f, 1.f));
   _mScene.addLight(dirLight);
 
@@ -104,21 +102,6 @@ void TestTriangle::_onLoad()
   asset->setPosition(glm::vec3(-2, 0, 0));
   _mScene.addChild(asset);
 
-  importer = new AssetImporter(_mResources, "./assets/black/scene.gltf");
-  importer->load();
-  asset = importer->getOriginal();
-  asset->setScale(glm::vec3(.1f));
-  asset->setRotationQuaternion(glm::angleAxis(glm::radians(-90.f), glm::vec3(1,0,0)));
-  _mScene.addChild(asset);
-
-  importer = new AssetImporter(_mResources, "./assets/saber/scene.gltf");
-  importer->load();
-  asset = importer->getOriginal();
-  asset->setPosition(glm::vec3(-1, 0, 0));
-  asset->setScale(glm::vec3(0.01));
-  asset->setRotationQuaternion(glm::angleAxis(glm::radians(180.f), glm::vec3(0, 1, 0)));
-  _mScene.addChild(asset);
-
   // some global settings
   glEnable(GL_DEPTH_TEST);
 }
@@ -127,8 +110,8 @@ void TestTriangle::_onUpdate(float deltaT)
 {
   cameraController->update(deltaT);
   
-  //currentAngle += deltaT / 1000.0f * rotateSpeed;
-  //model->setRotationQuaternion(glm::angleAxis(currentAngle, glm::vec3(0, 1, 0)));
+  currentAngle += deltaT / 1000.0f * rotateSpeed;
+  model->setRotationQuaternion(glm::angleAxis(currentAngle, glm::vec3(0, 1, 0)));
 
   lightAngle += deltaT / 1000.f * lightRotateSpeed;
   float x = -glm::cos(lightAngle) * distFromCenter;
@@ -139,6 +122,7 @@ void TestTriangle::_onUpdate(float deltaT)
   //pointLight->specular = glm::vec3(0.5);
 
   pointLights[1]->setPosition(glm::vec3(x, z, 0));
+  auto pos = pointLights[1]->getAbsolutePosition();
 }
 
 void TestTriangle::_onDraw()

@@ -59,6 +59,7 @@ const glm::mat4& PerspectiveCamera::forceComputeProjectionMatrix()
 // update the camera
 void PerspectiveCamera::update(float deltaT)
 {
+  Node::update(deltaT);
   if (_mShouldUpdateView)
   {
     _updateViewMatrix();
@@ -142,7 +143,7 @@ void PerspectiveCamera::copyTo(Cloneable* cloned) const
 
 // ------------------------ target camera ------------------------
 TargetCamera::TargetCamera()
-  : _mPosition(0,0,1), _mTarget(0,0,0), _mUp(0,1,0)
+  : _mTarget(0,0,0), _mUp(0,1,0)
 {
   _updateViewMatrix();
 }
@@ -152,16 +153,7 @@ TargetCamera::~TargetCamera()
 
 void TargetCamera::_updateViewMatrix()
 {
-  _mViewMatrixCache = glm::lookAt(_mPosition, _mTarget, _mUp);
-}
-
-void TargetCamera::setPosition(const glm::vec3& pos)
-{
-  if (pos != _mPosition)
-  {
-    _mPosition = pos;
-    _mShouldUpdateView = true;
-  }
+  _mViewMatrixCache = glm::lookAt(getAbsolutePosition(), _mTarget, _mUp);
 }
 
 void TargetCamera::setTarget(const glm::vec3& target)
@@ -182,11 +174,6 @@ void TargetCamera::setUp(const glm::vec3& up)
   }
 }
 
-const glm::vec3& TargetCamera::getPosition() const
-{
-  return _mPosition;
-}
-
 const glm::vec3& TargetCamera::getTarget() const
 {
   return _mTarget;
@@ -203,7 +190,7 @@ void TargetCamera::setProgramUniform(ShaderProgram& shaderProgram)
 
   Uniform* positionUniform = shaderProgram.getUniformByName("camera.position");
   if (positionUniform)
-    positionUniform->setUniform(_mPosition);
+    positionUniform->setUniform(getAbsolutePosition());
 }
 
 void TargetCamera::copyTo(Cloneable* cloned) const
@@ -217,7 +204,6 @@ void TargetCamera::copyTo(Cloneable* cloned) const
     return;
   }
 
-  clonedCamera->_mPosition = _mPosition;
   clonedCamera->_mTarget = _mTarget;
   clonedCamera->_mUp = _mUp;
 }
@@ -231,7 +217,7 @@ TargetCamera* TargetCamera::clone() const
 
 // ----------------- forward camera ----------------------------------
 ForwardCamera::ForwardCamera()
-  : _mPosition(0, 0, 1), _mForwardDirection(0, 0, -1), _mUp(0, 1, 0)
+  : _mForwardDirection(0, 0, -1), _mUp(0, 1, 0)
 {
   _updateViewMatrix();
 }
@@ -241,16 +227,8 @@ ForwardCamera::~ForwardCamera()
 
 void ForwardCamera::_updateViewMatrix()
 {
-  _mViewMatrixCache = glm::lookAt(_mPosition, _mPosition + _mForwardDirection, _mUp);
-}
-
-void ForwardCamera::setPosition(const glm::vec3& pos)
-{
-  if (pos != _mPosition)
-  {
-    _mPosition = pos;
-    _mShouldUpdateView = true;
-  }
+  auto pos = getAbsolutePosition();
+  _mViewMatrixCache = glm::lookAt(pos, pos + _mForwardDirection, _mUp);
 }
 
 void ForwardCamera::setForwardDirection(const glm::vec3& forward)
@@ -271,11 +249,6 @@ void ForwardCamera::setUp(const glm::vec3& up)
   }
 }
 
-const glm::vec3& ForwardCamera::getPosition() const
-{
-  return _mPosition;
-}
-
 const glm::vec3& ForwardCamera::getForwardDirection() const
 {
   return _mForwardDirection;
@@ -292,7 +265,7 @@ void ForwardCamera::setProgramUniform(ShaderProgram& shaderProgram)
 
   Uniform* positionUniform = shaderProgram.getUniformByName("camera.position");
   if (positionUniform)
-    positionUniform->setUniform(_mPosition);
+    positionUniform->setUniform(getAbsolutePosition());
 }
 
 void ForwardCamera::copyTo(Cloneable* cloned) const
@@ -306,7 +279,6 @@ void ForwardCamera::copyTo(Cloneable* cloned) const
     return;
   }
 
-  clonedCamera->_mPosition = _mPosition;
   clonedCamera->_mForwardDirection = _mForwardDirection;
   clonedCamera->_mUp = _mUp;
 }
@@ -334,7 +306,8 @@ void FreeCamera::_updateViewMatrix()
   }
   else
   {
-    _mViewMatrixCache = glm::lookAt(_mPosition, _mPosition + _mForwardDirection, _mUp);
+    auto pos = getAbsolutePosition();
+    _mViewMatrixCache = glm::lookAt(pos, pos + _mForwardDirection, _mUp);
   }
 }
 
@@ -364,7 +337,7 @@ bool FreeCamera::isUsingTarget() const
 }
 
 // returns the normalized forward direction; works for both target and forward mode
-const glm::vec3& FreeCamera::getForwardDirection() const
+const glm::vec3& FreeCamera::getForwardDirection()
 {
   if (!_mUseTarget)
   {
@@ -372,7 +345,7 @@ const glm::vec3& FreeCamera::getForwardDirection() const
   }
   else 
   {
-    return glm::normalize(_mTarget - _mPosition);
+    return glm::normalize(_mTarget - getAbsolutePosition());
   }
 }
 

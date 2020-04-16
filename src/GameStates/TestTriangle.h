@@ -29,7 +29,7 @@ protected:
   std::vector<DirLight* > dirLights;
   float lightAngle = 0;
   float lightRotateSpeed = glm::half_pi<float>() / 2.f;
-  float distFromCenter = 40.f;
+  float distFromCenter = 4.f;
 
   // rotation
   float currentAngle = 0.f;

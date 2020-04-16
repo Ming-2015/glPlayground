@@ -41,6 +41,7 @@ void FirstPersonFreeCameraController::update(float deltaT)
     );
     _mCamera->setPosition(_mCamera->getPosition() + right);
   }
+  _mCamera->update(deltaT);
 }
 
 void FirstPersonFreeCameraController::onKey(int key, int scancode, int action, int mods)

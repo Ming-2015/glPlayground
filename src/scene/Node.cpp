@@ -1,4 +1,5 @@
 #include "Node.h"
+#include <glm/gtx/matrix_decompose.hpp>
 
 Node::Node(): GameObjectBase(), _mParentGlobalTransform(1.0f), _mGlobalTransformCache(1.0f) {}
 
@@ -238,4 +239,19 @@ void Node::_setParentGlobalTransform(const glm::mat4& transform)
 {
   _mParentGlobalTransform = transform;
   _mIsGlobalTransformDirty = true;
+}
+
+void Node::decomposeGlobalMatrix(glm::vec3& position, glm::quat& rotation, glm::vec3& scale)
+{
+  auto& matrix = getGlobalTransform();
+  glm::vec3 skew;
+  glm::vec4 perspective;
+  glm::decompose(matrix, scale, rotation, position, skew, perspective);
+}
+
+glm::vec3 Node::getAbsolutePosition() 
+{
+  auto& matrix = getGlobalTransform();
+  glm::vec4 pos = matrix * glm::vec4(0, 0, 0, 1.f);
+  return glm::vec3(pos);
 }

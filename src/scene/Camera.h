@@ -16,7 +16,7 @@ public:
   virtual const glm::mat4& getProjectionMatrix() const = 0;
   virtual const glm::mat4& forceComputeViewMatrix() = 0;
   virtual const glm::mat4& forceComputeProjectionMatrix() = 0;
-  virtual void update(float deltaT) = 0;
+  virtual void update(float deltaT) override = 0;
   virtual void setProgramUniform(ShaderProgram& shaderProgram) = 0;
   virtual CameraBase* clone() const override = 0;
 };
@@ -78,7 +78,6 @@ public:
 class TargetCamera : public PerspectiveCamera
 {
 protected:
-  glm::vec3 _mPosition;
   glm::vec3 _mTarget;
   glm::vec3 _mUp;
 
@@ -90,11 +89,9 @@ public:
   TargetCamera();
   virtual ~TargetCamera();
 
-  void setPosition(const glm::vec3& pos);
   void setTarget(const glm::vec3& target);
   void setUp(const glm::vec3& up);
 
-  const glm::vec3& getPosition() const;
   const glm::vec3& getTarget() const;
   const glm::vec3& getUp() const;
 
@@ -106,7 +103,6 @@ public:
 class ForwardCamera : public PerspectiveCamera
 {
 protected:
-  glm::vec3 _mPosition;
   glm::vec3 _mForwardDirection;
   glm::vec3 _mUp;
 
@@ -118,11 +114,9 @@ public:
   ForwardCamera();
   virtual ~ForwardCamera();
 
-  void setPosition(const glm::vec3& pos);
   void setForwardDirection(const glm::vec3& direction);
   void setUp(const glm::vec3& up);
 
-  const glm::vec3& getPosition() const;
   const glm::vec3& getForwardDirection() const;
   const glm::vec3& getUp() const;
 
@@ -151,6 +145,6 @@ public:
   void setForwardDirection(const glm::vec3& forwardDirection);
 
   bool isUsingTarget() const;
-  const glm::vec3& getForwardDirection() const;
+  const glm::vec3& getForwardDirection();
   virtual FreeCamera* clone() const override;
 };

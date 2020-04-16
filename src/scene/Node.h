@@ -68,4 +68,8 @@ public:
 
   // force recompute current transform - as well as parents
   void forceComputeTransform();
+
+  // decompose global transform
+  void decomposeGlobalMatrix(glm::vec3& position, glm::quat& rotation, glm::vec3& scale);
+  glm::vec3 getAbsolutePosition();
 };
