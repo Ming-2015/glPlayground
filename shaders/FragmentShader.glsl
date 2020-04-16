@@ -58,7 +58,7 @@ struct PointLight
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 
 
-#define NR_DIR_LIGHTS 2
+#define NR_DIR_LIGHTS 4
 struct DirLight 
 {
   vec3 direction;
@@ -71,9 +71,9 @@ uniform DirLight dirLights[NR_DIR_LIGHTS];
 /* custom structs to pass around data */
 struct LightOutput 
 {
+  vec3 specular;
   vec3 ambient;
   vec3 diffuse;
-  vec3 specular;
 };
 
 LightOutput CalcPointLight(PointLight light, vec3 normal, vec3 fragPos,vec3 viewDir) 
@@ -83,7 +83,7 @@ LightOutput CalcPointLight(PointLight light, vec3 normal, vec3 fragPos,vec3 view
   vec3 reflectDir = reflect(-lightDir, normal);
   float distFromLight = length(surfaceToLight);
   float nDotL = max(dot(normal, lightDir), 0.0);
-  float vDotR = max(dot(viewDir, reflectDir), 0.0);
+  float vDotR = max(dot(viewDir, reflectDir), 0.0001);
   float spec = pow(vDotR, phongMaterial.shininess);
 
   float attenuation = light.constant
@@ -93,11 +93,10 @@ LightOutput CalcPointLight(PointLight light, vec3 normal, vec3 fragPos,vec3 view
   attenuation = max(attenuation, 0.01f);
   attenuation = 1.f / attenuation;
 
-  LightOutput ret = {
-    light.ambient * attenuation, 
-    light.diffuse * nDotL * attenuation, 
-    light.specular * spec * attenuation
-  };
+  LightOutput ret;
+  ret.ambient = light.ambient * attenuation;
+  ret.diffuse = light.diffuse * nDotL * attenuation;
+  ret.specular = light.specular * spec * attenuation;
 
   return ret;
 }
@@ -109,10 +108,14 @@ LightOutput CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
   float nDotL = max(dot(normal, lightDir), 0);
 
   vec3 reflectDir = reflect(-lightDir, normal);
-  float vDotR = max(dot(viewDir, reflectDir), 0.0);
+  float vDotR = max(dot(viewDir, reflectDir), 0.0001);
   float spec = pow(vDotR, phongMaterial.shininess);
   
-  LightOutput ret = { light.ambient, light.diffuse * nDotL, light.specular * spec };
+  LightOutput ret;
+  ret.ambient = light.ambient;
+  ret.diffuse = light.diffuse * nDotL;
+  ret.specular = light.specular * spec;
+
   return ret;
 }
 
@@ -130,10 +133,14 @@ void main()
   vec3 diffuseComponent = vec3(0);
   vec3 specularComponent = vec3(0);
 
-  vec2 diffuseTexCoord  = getTexCoord(phongMaterial.diffuseUVIndex);
-  vec2 specularTexCoord = getTexCoord(phongMaterial.specularUVIndex);
-  vec2 ambientTexCoord  = getTexCoord(phongMaterial.ambientUVIndex);
+  // vec2 diffuseTexCoord  = getTexCoord(phongMaterial.diffuseUVIndex);
+  // vec2 specularTexCoord = getTexCoord(phongMaterial.specularUVIndex);
+  // vec2 ambientTexCoord  = getTexCoord(phongMaterial.ambientUVIndex);
   
+  vec2 diffuseTexCoord  = fTex;
+  vec2 specularTexCoord = fTex;
+  vec2 ambientTexCoord  = fTex;
+
   vec3 surfaceToCamera = camera.position - fPos;
   vec3 viewDir = normalize(surfaceToCamera);
   LightOutput total = { vec3(0), vec3(0), vec3(0) };

@@ -76,27 +76,51 @@ void TestTriangle::_onLoad()
 
   DirLight* dirLight = new DirLight();
   dirLights.push_back(dirLight);
-  dirLight->diffuse = glm::vec3(1.2f);
-  dirLight->specular = glm::vec3(.8f);
+  dirLight->diffuse = glm::vec3(0.7f);
+  dirLight->specular = glm::vec3(.5f);
   dirLight->ambient = glm::vec3(.05f);
-  dirLight->direction = glm::normalize(glm::vec3(1.f, -2.f, 3.f));
+  dirLight->direction = glm::normalize(glm::vec3(1.f, -.5f, 1.f));
   _mScene.addLight(dirLight);
 
   dirLight = dirLight->clone();
-  dirLight->direction = glm::normalize(glm::vec3(1.f, -2.f, -3.f));
+  dirLight->direction = glm::normalize(glm::vec3(0, 0, -1.f));
+  _mScene.addLight(dirLight);
+
+  dirLight = dirLight->clone();
+  dirLight->direction = glm::normalize(glm::vec3(-1.f, -0.2f, 0));
   _mScene.addLight(dirLight);
 
   // import the hell of this shit!
   importer = new AssetImporter(_mResources, "./assets/crysis_nano_suit_2/scene.gltf");
   importer->load();
   Asset* asset = importer->getOriginal();
-  _mScene.addChild(asset);
   asset->setScale(glm::vec3(0.2f));
+  asset->setPosition(glm::vec3(-4, 0, 0));
+  _mScene.addChild(asset);
+
+  importer = new AssetImporter(_mResources, "./assets/miku_gltf/scene.gltf");
+  importer->load();
+  asset = importer->getOriginal();
+  asset->setPosition(glm::vec3(-2, 0, 0));
+  _mScene.addChild(asset);
+
+  importer = new AssetImporter(_mResources, "./assets/black/scene.gltf");
+  importer->load();
+  asset = importer->getOriginal();
+  asset->setScale(glm::vec3(.1f));
+  asset->setRotationQuaternion(glm::angleAxis(glm::radians(-90.f), glm::vec3(1,0,0)));
+  _mScene.addChild(asset);
+
+  importer = new AssetImporter(_mResources, "./assets/saber/scene.gltf");
+  importer->load();
+  asset = importer->getOriginal();
+  asset->setPosition(glm::vec3(-1, 0, 0));
+  asset->setScale(glm::vec3(0.01));
+  asset->setRotationQuaternion(glm::angleAxis(glm::radians(180.f), glm::vec3(0, 1, 0)));
+  _mScene.addChild(asset);
 
   // some global settings
   glEnable(GL_DEPTH_TEST);
-  //glEnable(GL_CULL_FACE);
-  //glCullFace(GL_BACK);
 }
 
 void TestTriangle::_onUpdate(float deltaT)

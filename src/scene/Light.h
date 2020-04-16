@@ -18,4 +18,5 @@ protected:
   }
 public:
   virtual Light* clone() const override = 0;
+  Light() : Node() {}
 };

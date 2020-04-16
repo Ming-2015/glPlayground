@@ -1,10 +1,11 @@
 #pragma once
 #include "../utils/Cloneable.hpp"
 #include "../utils/Logger.h"
+#include "./GameObject.h"
 #include <glm/glm.hpp>
 #include <vector>
 
-class Node : public Cloneable
+class Node : public Cloneable, public GameObjectBase
 {
 private:
   // parent of the node
@@ -19,13 +20,23 @@ private:
 protected:
   virtual void copyTo(Cloneable* cloned) const override;
 
+  // a cache of the parent's transform in the previous draw call
+  glm::mat4 _mParentGlobalTransform;
+  glm::mat4 _mGlobalTransformCache;
+  bool _mIsGlobalTransformDirty = true;
+
+  void _setParentGlobalTransform(const glm::mat4& transform);
+
 public:
-  
+  // an optional, public name, for convenience
+  std::string name;
+
+public:
   Node();
   virtual ~Node();
 
   // these should be inherited AND called from super class
-  virtual void draw(const glm::mat4& PV, const glm::mat4& M) const;
+  virtual void draw(const glm::mat4& PV);
   virtual void update(float deltaT);
 
   // these should not be modified by super class
@@ -35,6 +46,9 @@ public:
   void setParent(Node * n);
   Node* getRoot();
   const std::vector<Node*>& getChildren() const;
+
+  // find a node based on its name
+  Node* findByName(const std::string& name) const;
 
   // returns the indices of each parent in the order of child access when node is found. Empty vector if not found
   // NOTE: does not check against itself, so that has to be done manually
@@ -49,6 +63,9 @@ public:
   // clone implementation
   virtual Node* clone() const override;
 
-  // an optional, public name, for convenience
-  std::string name;
+  // get the absolute position of the node. Not guaranteed to be sync-ed to current frame unless forceComputeTransform is called.
+  const glm::mat4& getGlobalTransform();
+
+  // force recompute current transform - as well as parents
+  void forceComputeTransform();
 };

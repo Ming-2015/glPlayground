@@ -1,7 +1,7 @@
 #pragma once
 #include "./Model.h"
 
-class Asset : public GameObject {
+class Asset : public Node {
 protected:
   std::map<std::string, Model*> _mModels;
   void copyTo(Cloneable* cloned) const override;

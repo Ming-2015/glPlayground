@@ -135,7 +135,8 @@ void FirstPersonFreeCameraController::onMouseButton(int key, int action, int mod
 void FirstPersonFreeCameraController::onResize(int width, int height)
 {
   if (_mCamera) {
-    _mCamera->setAspectRatio(float(width) / float(height));
-    Log.print<Severity::debug>("Managed to change aspect ratio!");
+    if (width > 0 && height > 0)
+      Log.print<Severity::debug>("Managed to change aspect ratio, width: ", width, " height: ", height);
+      _mCamera->setAspectRatio(float(width) / float(height));
   }
 }

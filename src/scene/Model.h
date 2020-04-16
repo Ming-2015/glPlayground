@@ -1,9 +1,9 @@
 #pragma once
 #include "../components/Primitive.h"
-#include "GameObject.h"
 #include "../components/Material.h"
+#include "Node.h"
 
-class Model : public GameObject
+class Model : public Node
 {
 protected:
   const Primitive* _mPrimitive;
@@ -19,8 +19,7 @@ public:
 
   Model(const Primitive* primitive = nullptr);
   virtual ~Model();
-  virtual void update(float deltaT);
-  virtual void draw(const glm::mat4& PV, const glm::mat4& M) const;
+  virtual void draw(const glm::mat4& PV) override;
 
   virtual Model* clone() const override;
 };

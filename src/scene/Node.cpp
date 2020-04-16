@@ -1,5 +1,7 @@
 #include "Node.h"
 
+Node::Node(): GameObjectBase(), _mParentGlobalTransform(1.0f), _mGlobalTransformCache(1.0f) {}
+
 Node::~Node()
 {
   // make a copy as children will modify _mChildren
@@ -14,22 +16,6 @@ Node::~Node()
   // remove from parent
   if (_mParent) {
     _mParent->removeChild(this);
-  }
-}
-
-void Node::draw(const glm::mat4& PV, const glm::mat4& M) const
-{
-  for (Node* n : _mChildren)
-  {
-    n->draw(PV, M);
-  }
-}
-
-void Node::update(float deltaT)
-{
-  for (Node* n : _mChildren)
-  {
-    n->update(deltaT);
   }
 }
 
@@ -51,6 +37,8 @@ void Node::addChild(Node* n)
   _mChildren.push_back(n);
   n->_mParentIdx = _mChildren.size() - 1;
   n->_mParent = this;
+
+  n->_setParentGlobalTransform(getGlobalTransform());
 }
 
 void Node::removeChild(Node* n)
@@ -77,6 +65,7 @@ void Node::removeChild(Node* n)
   _mChildren.erase(_mChildren.begin() + idx);
   n->_mParent = nullptr;
   n->_mParentIdx = -1;
+  n->_setParentGlobalTransform(glm::mat4(1.f));
 
   for (auto it = _mChildren.begin() + idx; it != _mChildren.end(); it++)
   {
@@ -116,18 +105,16 @@ const std::vector<Node*>& Node::getChildren() const
   return _mChildren;
 }
 
-Node::Node() {}
-
 void Node::copyTo(Cloneable* cloned) const 
 {
   Node* clonedNode = dynamic_cast<Node*>(cloned);
-
   if (!clonedNode)
   {
     Log.print<Severity::warning>("Failed to cast into Node*");
     return;
   }
 
+  GameObjectBase::_copyTo(clonedNode);
   for (auto child : _mChildren)
   {
     clonedNode->addChild(child->clone());
@@ -195,4 +182,60 @@ Node* Node::getChildByIndex(int idx) const
 {
   if (idx < 0 || idx >= _mChildren.size()) return nullptr;
   return _mChildren[idx];
+}
+
+Node* _findByName(const std::string& name, Node* current)
+{
+  if (current->name == name) return current;
+  auto children = current->getChildren();
+  for (auto child : children)
+  {
+    Node* found = _findByName(name, child);
+    if (found) return found;
+  }
+  return nullptr;
+}
+
+Node* Node::findByName(const std::string& name) const
+{
+  return _findByName(name, const_cast<Node *>(this));
+}
+
+void Node::draw(const glm::mat4& PV)
+{
+  for (Node* n : _mChildren)
+  {
+    n->draw(PV);
+  }
+}
+
+void Node::update(float deltaT)
+{
+  forceComputeTransform();
+  for (auto& n : _mChildren)
+    n->update(deltaT);
+}
+
+void Node::forceComputeTransform()
+{
+  if (_mShouldUpdateModelMatrix)
+  {
+    _updateWorldMatrix();
+    _mIsGlobalTransformDirty = true;
+    _mShouldUpdateModelMatrix = false;
+    for (auto& child : _mChildren) 
+      child->_setParentGlobalTransform(getGlobalTransform());
+  }
+}
+
+const glm::mat4& Node::getGlobalTransform() {
+  if (_mIsGlobalTransformDirty) 
+    _mGlobalTransformCache = _mParentGlobalTransform * _mModelMatrix;
+  return _mGlobalTransformCache;
+}
+
+void Node::_setParentGlobalTransform(const glm::mat4& transform)
+{
+  _mParentGlobalTransform = transform;
+  _mIsGlobalTransformDirty = true;
 }

@@ -27,7 +27,7 @@ Model* Asset::getModel(const std::string& key) const
 
 void Asset::copyTo(Cloneable* cloned) const
 {
-  GameObject::copyTo(cloned);
+  Node::copyTo(cloned);
   Asset* clonedAsset = dynamic_cast<Asset*>(cloned);
   if (!clonedAsset)
   {

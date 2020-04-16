@@ -1,6 +1,4 @@
 #pragma once
-#include "Node.h"
-
 #include <vector>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -34,24 +32,14 @@ protected:
 public:
   GameObjectBase();
 
-  virtual void setPosition(const glm::vec3& pos);
-  virtual void setScale(const glm::vec3& scale);
-  virtual void setRotationQuaternion(const glm::quat& rotationQuaternion);
+  void setPosition(const glm::vec3& pos);
+  void setScale(const glm::vec3& scale);
+  void setRotationQuaternion(const glm::quat& rotationQuaternion);
 
-  virtual const glm::vec3& getPosition() const;
-  virtual const glm::vec3& getScale() const;
-  virtual const glm::quat& getRotationQuaternion() const;
-};
+  const glm::vec3& getPosition() const;
+  const glm::vec3& getScale() const;
+  const glm::quat& getRotationQuaternion() const;
 
-
-class GameObject : public virtual Node, public GameObjectBase
-{
-protected:
-  virtual void copyTo(Cloneable* cloned) const override;
-
-public:
-  virtual GameObject* clone() const override;
-
-  virtual void draw(const glm::mat4& PV, const glm::mat4& M) const override;
-  virtual void update(float deltaT) override;
+  const glm::mat4& getTransform() const;
+  const bool& isTransformDirty() const;
 };

@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "../utils/Logger.h"
 
 GameObjectBase::GameObjectBase()
   : _mModelMatrix( glm::mat4(1.0f) ),
@@ -84,39 +85,12 @@ void GameObjectBase::_copyTo(GameObjectBase* c) const
   c->_mRotationQuaternion = _mRotationQuaternion;
 }
 
-void GameObject::copyTo(Cloneable* cloned) const
+const glm::mat4& GameObjectBase::getTransform() const
 {
-  Node::copyTo(cloned);
-  GameObject* c = dynamic_cast<GameObject*>(cloned);
-
-  if (!c)
-  {
-    Log.print<Severity::warning>("Failed to cast to game object in clone");
-    return;
-  }
-
-  _copyTo(c);
+  return _mModelMatrix;
 }
 
-GameObject* GameObject::clone() const
+const bool& GameObjectBase::isTransformDirty() const
 {
-  GameObject* clone = new GameObject();
-  copyTo(clone);
-  return clone;
-}
-
-void GameObject::update(float deltaT)
-{
-  if (_mShouldUpdateModelMatrix)
-  {
-    _updateWorldMatrix();
-    _mShouldUpdateModelMatrix = false;
-  }
-
-   Node::update(deltaT);
-}
-
-void GameObject::draw(const glm::mat4& PV, const glm::mat4& M) const
-{
-   Node::draw(PV, M * _mModelMatrix);
+  return _mShouldUpdateModelMatrix;
 }

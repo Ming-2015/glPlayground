@@ -7,22 +7,17 @@
 #include <glm/gtx/transform.hpp>
 
 Model::Model(const Primitive* primitive)
-  : GameObject(), _mPrimitive(primitive), material(nullptr), renderWireMesh(false)
+  : Node(), _mPrimitive(primitive), material(nullptr), renderWireMesh(false)
 {}
 
 Model::~Model()
 {}
 
-void Model::update(float deltaT)
-{
-  GameObject::update(deltaT);
-}
-
-void Model::draw(const glm::mat4& PV, const glm::mat4& M) const
+void Model::draw(const glm::mat4& PV)
 {
   if (_mPrimitive == nullptr) return;
 
-  glm::mat4 model = M * _mModelMatrix;
+  const glm::mat4& model = getGlobalTransform();
   glm::mat4 PVM = PV * model;
   glm::mat3 modelMat3(model);
   glm::mat3 normal = glm::inverseTranspose(modelMat3);
@@ -49,12 +44,12 @@ void Model::draw(const glm::mat4& PV, const glm::mat4& M) const
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   }
 
-  GameObject::draw(PV, M);
+  Node::draw(PV);
 }
 
 void Model::copyTo(Cloneable* cloned) const
 {
-  GameObject::copyTo(cloned);
+  Node::copyTo(cloned);
   Model* copy = dynamic_cast<Model*>(cloned);
   if (!copy)
   {

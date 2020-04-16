@@ -1,6 +1,7 @@
 metadata
 bin/
 tmp/
+assets/*
 *.tmp
 *.bak
 *.swp

@@ -46,7 +46,7 @@ void Scene::removeLight(LightBase* light, bool removeFromScene)
   }
 }
 
-void Scene::draw() const
+void Scene::draw()
 {
   glClear(GL_COLOR_BUFFER_BIT);
   if (_mActiveCamera == nullptr) return;
@@ -54,7 +54,7 @@ void Scene::draw() const
   glm::mat4 V = _mActiveCamera->getViewMatrix();
   glm::mat4 P = _mActiveCamera->getProjectionMatrix();
 
-  Node::draw(P * V, glm::mat4(1.f));
+  Node::draw(P * V);
 }
 
 void Scene::prepShaderPrograms(ShaderProgramManager& manager)

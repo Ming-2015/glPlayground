@@ -2,7 +2,7 @@
 #include "../../utils/Logger.h"
 
 PointLight::PointLight()
-  : GameObject(),
+  : Light(),
   attenuationType(AttenuationType::linear),
   attenuationVal(1.f),
   diffuse(1.f, 1.f, 1.f),
@@ -79,7 +79,7 @@ std::string PointLight::getUniformName() const
 
 void PointLight::copyTo(Cloneable* other) const
 {
-  GameObject::copyTo(other);
+  Node::copyTo(other);
   PointLight* light = dynamic_cast<PointLight*>(other);
 
   if (!light)

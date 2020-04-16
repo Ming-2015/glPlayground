@@ -34,8 +34,8 @@ public:
   void prepShaderPrograms(ShaderProgramManager& manager);
 
   // NOTE: for scenes, PV and M will have no effect at all
-  virtual void draw(const glm::mat4& PV, const glm::mat4& M) const override { draw(); }
-  virtual void draw() const;
+  virtual void draw(const glm::mat4& PV) override { draw(); }
+  virtual void draw();
 
   virtual Scene* clone() const override;
 };

@@ -15,12 +15,12 @@ AssetImporter::~AssetImporter()
   }
 }
 
-void AssetImporter::load()
+void AssetImporter::load(unsigned int flags)
 {
   Assimp::Importer importer;
   const aiScene* scene = importer.ReadFile(
     _mPath, 
-    aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_GenUVCoords
+    aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_GenUVCoords | flags
   );
 
   if (!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) 
@@ -43,6 +43,7 @@ void AssetImporter::processNode(aiNode* node, const aiScene* scene, Asset* asset
   assetNode->setPosition(glm::vec3(position.x, position.y, position.z));
   assetNode->setRotationQuaternion(glm::quat(rotation.x, rotation.y, rotation.z, rotation.w));
   assetNode->setScale(glm::vec3(scaling.x, scaling.y, scaling.z));
+  assetNode->name = node->mName.C_Str();
 
   // meshes
   for (unsigned int i = 0; i < node->mNumMeshes; i++) 
@@ -131,9 +132,9 @@ std::string AssetImporter::processMesh(aiMesh* mesh, const aiScene* scene, Asset
         if (hasBitangents)
         {
           aiVector3D bitangent = mesh->mBitangents[i];
-          data.tangents.push_back(bitangent.x);
-          data.tangents.push_back(bitangent.y);
-          data.tangents.push_back(bitangent.z);
+          data.bitangents.push_back(bitangent.x);
+          data.bitangents.push_back(bitangent.y);
+          data.bitangents.push_back(bitangent.z);
         }
 
         // process multi tex coords
@@ -186,25 +187,25 @@ std::string AssetImporter::processMesh(aiMesh* mesh, const aiScene* scene, Asset
       PhongMaterial* phongMat = new PhongMaterial(&_mResources.shaderProgramManager);
       if (diffuseMaps.size() > 0)
       {
-        phongMat->diffuseTex = diffuseMaps[diffuseMaps.size() - 1];
-        phongMat->ambientTex = diffuseMaps[diffuseMaps.size() - 1];
+        phongMat->diffuseTex = diffuseMaps[0];
+        phongMat->ambientTex = diffuseMaps[0];
         
         if (diffuseMaps.size() > 1)
-          Log.print<Severity::warning>("Multiple diffuse maps is not supported yet!");
+          Log.print<Severity::warning>("Multiple diffuse maps is not supported!");
       }
 
       if (specularMaps.size() > 0)
       {
         phongMat->specularTex = specularMaps[0];
         if (specularMaps.size() > 1)
-          Log.print <Severity::warning>("Multiple specular maps is not supported yet!");
+          Log.print <Severity::warning>("Multiple specular maps is not supported!");
       }
 
       if (ambientMaps.size() > 0)
       {
         phongMat->ambientTex = ambientMaps[0];
         if (ambientMaps.size() > 1)
-          Log.print<Severity::warning>("Multiple ambient maps is not supported yet!");
+          Log.print<Severity::warning>("Multiple ambient maps is not supported!");
       }
 
       aiString name;
@@ -229,6 +230,7 @@ std::string AssetImporter::processMesh(aiMesh* mesh, const aiScene* scene, Asset
       phongMat->specular = glm::vec3(specular.r, specular.g, specular.b) * shininessStrength;
       phongMat->ambient = glm::vec3(ambient.r, ambient.g, ambient.b);
       phongMat->shininess = shininess;
+      phongMat->name = name.C_Str();
 
       _mMaterials[primitiveName] = phongMat;
     }

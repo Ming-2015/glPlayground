@@ -2,7 +2,7 @@
 #include "../Light.h"
 #include "../GameObject.h"
 
-class PointLight : public LightBase, public GameObject
+class PointLight : public Light
 {
 protected:
   virtual void copyTo(Cloneable* cloned) const override;

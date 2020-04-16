@@ -32,7 +32,7 @@ public:
   AssetImporter(GameResources& resources, const std::string& path);
   AssetImporter(const AssetImporter& other) = delete;
   virtual ~AssetImporter();
-  void load();
+  void load(unsigned int flags = 0);
 
   // create a brand new asset instance (will not be managed internally, caller responsible for deleting it)
   Asset* createInstance(bool cloneMaterial = false) const;
