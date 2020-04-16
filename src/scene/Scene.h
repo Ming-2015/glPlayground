@@ -16,7 +16,7 @@ protected:
   // activeCamera needs to be added to the scene separately to be part of the scene
   // i.e. scene->addCamera(cam); scene->addChild(cam);
   CameraBase* _mActiveCamera = nullptr;
-  std::set<LightBase *> _mLights;
+  std::set<Light* > _mLights;
 
   virtual void copyTo(Cloneable* cloned) const override;
 public:
@@ -26,9 +26,9 @@ public:
   CameraBase* getActiveCamera() const;
 
   // lights
-  void addLight(LightBase* light, bool addToScene = true);
-  void removeLight(LightBase* light, bool removeFromScene = true);
-  const std::set<LightBase*>& getLights() { return _mLights; }
+  void addLight(Light* light, bool addToScene = true);
+  void removeLight(Light* light, bool removeFromScene = true);
+  const std::set<Light*>& getLights() { return _mLights; }
 
   // this should be called before a draw call to activate lights!
   void prepShaderPrograms(ShaderProgramManager& manager);

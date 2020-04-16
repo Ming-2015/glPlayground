@@ -16,7 +16,7 @@ CameraBase* Scene::getActiveCamera() const
   return _mActiveCamera;
 }
 
-void Scene::addLight(LightBase* light, bool addToScene) 
+void Scene::addLight(Light* light, bool addToScene) 
 {
   if (!light) return;
   _mLights.insert(light);
@@ -31,7 +31,7 @@ void Scene::addLight(LightBase* light, bool addToScene)
   }
 }
 
-void Scene::removeLight(LightBase* light, bool removeFromScene)
+void Scene::removeLight(Light* light, bool removeFromScene)
 {
   if (!light) return;
   _mLights.erase(light);
@@ -128,7 +128,7 @@ void Scene::copyTo(Cloneable* cloned) const
     }
   }
 
-  for (LightBase* light : _mLights)
+  for (Light* light : _mLights)
   {
     Node* lightNode = dynamic_cast<Node*>(light);
     if (!lightNode)
@@ -140,7 +140,7 @@ void Scene::copyTo(Cloneable* cloned) const
     auto findLight = breadthFirstSearch(lightNode);
     if (findLight.size() > 0)
     {
-      LightBase* clonedLight = dynamic_cast<LightBase*>(clonedScene->getDescendentByIndices(findLight));
+      Light* clonedLight = dynamic_cast<Light*>(clonedScene->getDescendentByIndices(findLight));
       if (clonedLight)
         clonedScene->_mLights.insert(clonedLight);
       else
@@ -148,7 +148,7 @@ void Scene::copyTo(Cloneable* cloned) const
     }
     else
     {
-      clonedScene->_mLights.insert(dynamic_cast<LightBase*>(lightNode->clone()));
+      clonedScene->_mLights.insert(dynamic_cast<Light*>(lightNode->clone()));
     }
   }
 }

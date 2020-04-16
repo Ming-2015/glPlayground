@@ -24,7 +24,6 @@ protected:
   glm::mat4 _mParentGlobalTransform;
   glm::mat4 _mGlobalTransformCache;
   bool _mIsGlobalTransformDirty = true;
-
   void _setParentGlobalTransform(const glm::mat4& transform);
 
 public:
