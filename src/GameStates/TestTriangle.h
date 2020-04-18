@@ -51,5 +51,4 @@ public:
   virtual void onKey(int key, int scancode, int action, int mods) override;
   virtual void onCursorPos(double xPos, double yPos) override;
   virtual void onMouseButton(int key, int action, int mods) override;
-  virtual void onResize(int width, int height) override;
 };

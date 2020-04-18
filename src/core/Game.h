@@ -19,7 +19,6 @@
 #include "../components/Texture.h"
 #include "../components/Primitive.h"
 #include "../components/Window.h"
-
 #include "../GameStates/TestTriangle.h"
 
 class Game : public WindowObservable {

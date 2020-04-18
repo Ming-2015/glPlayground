@@ -22,6 +22,8 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{8065970B-6D6C-4F1D-B41A-40E6C8C841A4}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>glPlayground</ProjectName>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -149,6 +151,7 @@
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <XMLDocumentationFileName>$(IntDir)</XMLDocumentationFileName>
+      <PreprocessorDefinitions>NDEBUG</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -160,6 +163,7 @@
     <ClCompile Include="src\scene\Models\Box.cpp" />
     <ClCompile Include="src\scene\GameObject.cpp" />
     <ClCompile Include="src\scene\Camera.cpp" />
+    <ClCompile Include="src\scene\Models\Plane.cpp" />
     <ClCompile Include="src\scene\Node.cpp" />
     <ClCompile Include="src\scene\Scene.cpp" />
     <ClCompile Include="src\components\Material.cpp" />
@@ -190,6 +194,7 @@
     <ClInclude Include="src\scene\Light.h" />
     <ClInclude Include="src\scene\GameObject.h" />
     <ClInclude Include="src\scene\Camera.h" />
+    <ClInclude Include="src\scene\Models\Plane.h" />
     <ClInclude Include="src\scene\Scene.h" />
     <ClInclude Include="src\components\Material.h" />
     <ClInclude Include="src\utils\Cloneable.hpp" />
@@ -214,8 +219,10 @@
   <ItemGroup>
     <None Include=".gitignore" />
     <None Include="README.md" />
-    <None Include="shaders\FragmentShader.glsl" />
-    <None Include="shaders\VertexShader.glsl" />
+    <None Include="shaders\Phong.fs" />
+    <None Include="shaders\ScreenShader.fs" />
+    <None Include="shaders\ScreenShader.vs" />
+    <None Include="shaders\Phong.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

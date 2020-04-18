@@ -38,41 +38,27 @@ bool Texture::processStbiData(unsigned char* data)
     imageType = GL_RGBA;
 
   // generate texture
-  glGenTextures(1, &_mId);
-  glBindTexture(GL_TEXTURE_2D, _mId);
+  glCreateTextures(GL_TEXTURE_2D, 1, &_mId);
 
   // set the texture wrapping/filtering options... default options for now
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTextureParameteri(_mId, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTextureParameteri(_mId, GL_TEXTURE_WRAP_T, GL_REPEAT);
   if (_mUseMipMap)
   {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTextureParameteri(_mId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
   }
   else
   {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTextureParameteri(_mId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   }
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTextureParameteri(_mId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-  // buffer the image into gl
-  glTexImage2D(
-    GL_TEXTURE_2D,      // buffer image to a 2D texture 
-    0,                  // mipmap level, if this is a pre-generated mipmap
-    GL_RGB,             // save as RGB format
-    _mWidth,              // width of image
-    _mHeight,             // height of image
-    0,                  // always 0 (legacy stuff)
-    imageType,          // input data format
-    GL_UNSIGNED_BYTE,   // data primitive type
-    data                // data buffer
-  );
+  glTextureStorage2D(_mId, 1, GL_RGBA8, _mWidth, _mHeight);
+  glTextureSubImage2D(_mId, 0, 0, 0, _mWidth, _mHeight, imageType, GL_UNSIGNED_BYTE, data);
 
   // generate mipmap
   if (_mUseMipMap) 
-    glGenerateMipmap(GL_TEXTURE_2D);
-  
-  // unbind
-  glBindTexture(GL_TEXTURE_2D, 0);
+    glGenerateTextureMipmap(_mId);
 
   // de-alloc data
   stbi_image_free(data);
@@ -151,6 +137,7 @@ bool Texture::loadFromFile(std::string path, bool generateMipmap)
 
   _mPath = path;
   _mUseMipMap = generateMipmap;
+
   return processStbiData(data);
 }
 
@@ -161,8 +148,9 @@ glm::ivec2 Texture::getDimension() const
 
 void Texture::bind(GLenum activeTarget) const 
 {
-  glActiveTexture(GL_TEXTURE0 + activeTarget);
-  glBindTexture(GL_TEXTURE_2D, _mId);
+  glBindTextureUnit(activeTarget, _mId);
+  //glActiveTexture(GL_TEXTURE0 + activeTarget);
+  //glBindTexture(GL_TEXTURE_2D, _mId);
 }
 
 // texture manager implementation
@@ -177,11 +165,13 @@ Texture* const TextureManager::create(const std::string& key, const TextureData&
   if (data.type == TextureData::TextureDataType::path) 
   {
     success = tex->loadFromFile(data.texPath, data.generateMipMap);
+    Log.print<Severity::debug>("Loading file texture from: ", data.texPath);
   }
 
   if (data.type == TextureData::TextureDataType::assimpBuffer)
   {
     success = tex->loadFromAssimpTexture(data.assimpTexture, data.generateMipMap);
+    Log.print<Severity::debug>("Loading assimp texture");
   }
   
   if (!success)

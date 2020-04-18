@@ -17,6 +17,8 @@ AssetImporter::~AssetImporter()
 
 void AssetImporter::load(unsigned int flags)
 {
+  Log.print<Severity::info>("Start parsing asset ", _mPath);
+
   Assimp::Importer importer;
   const aiScene* scene = importer.ReadFile(
     _mPath, 
@@ -44,6 +46,8 @@ void AssetImporter::processNode(aiNode* node, const aiScene* scene, Asset* asset
   assetNode->setRotationQuaternion(glm::quat(rotation.x, rotation.y, rotation.z, rotation.w));
   assetNode->setScale(glm::vec3(scaling.x, scaling.y, scaling.z));
   assetNode->name = node->mName.C_Str();
+
+  Log.print<Severity::debug>("Processing node: ", assetNode->name);
 
   // meshes
   for (unsigned int i = 0; i < node->mNumMeshes; i++) 
@@ -211,14 +215,18 @@ std::string AssetImporter::processMesh(aiMesh* mesh, const aiScene* scene, Asset
       aiString name;
       material->Get(AI_MATKEY_NAME, name);
 
-      aiColor3D diffuse(0, 0, 0);
+      aiColor3D diffuse(1, 1, 1);
       material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
 
-      aiColor3D specular(0, 0, 0);
+      // not all materials have specular and ambient!
+      aiColor3D specular(1, 1, 1);
       material->Get(AI_MATKEY_COLOR_SPECULAR, specular);
 
-      aiColor3D ambient(0, 0, 0);
+      aiColor3D ambient(1, 1, 1);
       material->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
+      if (ambient.r == ambient.g == ambient.b == 0) {
+        ambient = diffuse;
+      }
 
       float shininess = 0.f;
       material->Get(AI_MATKEY_SHININESS, shininess);
@@ -226,11 +234,24 @@ std::string AssetImporter::processMesh(aiMesh* mesh, const aiScene* scene, Asset
       float shininessStrength = 1.f;
       material->Get(AI_MATKEY_SHININESS_STRENGTH, shininessStrength);
 
-      phongMat->diffuse = glm::vec3(diffuse.r, diffuse.g, diffuse.b);
-      phongMat->specular = glm::vec3(specular.r, specular.g, specular.b) * shininessStrength;
-      phongMat->ambient = glm::vec3(ambient.r, ambient.g, ambient.b);
+      int blendMode;
+      material->Get(AI_MATKEY_BLEND_FUNC, blendMode);
+
+      phongMat->diffuse = glm::vec4(diffuse.r, diffuse.g, diffuse.b, 1.f);
+      phongMat->specular = glm::vec4(specular.r, specular.g, specular.b, 0) * shininessStrength;
+      phongMat->specular.a = 1.f;
+      phongMat->ambient = glm::vec4(ambient.r, ambient.g, ambient.b, 1.f);
       phongMat->shininess = shininess;
       phongMat->name = name.C_Str();
+      
+      if (blendMode == aiBlendMode::aiBlendMode_Default) {
+        phongMat->alphaCutoff = 0;
+        phongMat->useAlphaBlending = true;
+      }
+      else {
+        phongMat->alphaCutoff = 0.5f;
+        phongMat->useAlphaBlending = false;
+      }
 
       _mMaterials[primitiveName] = phongMat;
     }

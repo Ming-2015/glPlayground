@@ -15,12 +15,11 @@ protected:
   virtual void copyTo(Cloneable* cloned) const override;
 
 public:
-  void use() { preRender(); }
+  void use();
   virtual MaterialBase* clone() const override = 0;
 
   std::string name;
 };
-
 
 class Material : public MaterialBase
 {
@@ -28,6 +27,7 @@ protected:
   Uniform* modelMatUniform = nullptr;
   Uniform* normalMatUniform = nullptr;
   Uniform* projViewModelMatUniform = nullptr;
+  Uniform* alphaCutoffUniform = nullptr;
 
 protected:
   // not public: has to generated with a factory method!
@@ -45,9 +45,31 @@ public:
   void setProjViewModelMatrix(const glm::mat4& projViewModel);
   void setNormalMatrix(const glm::mat3& normal);
 
+  // alpha cutoff of the material
+  float alphaCutoff = 0.f;
+  bool useAlphaBlending = false;
+
   virtual Material* clone() const override;
 };
 
+class ScreenShader : public Material {
+protected:
+  Uniform* _mScreenTextureUniform = nullptr;
+
+protected:
+  virtual void preRender() override;
+  virtual void copyTo(Cloneable* cloned) const override;
+
+public:
+  GLuint screenTextureId = 0;
+
+public:
+  ScreenShader(ShaderProgramManager* manager);
+  ScreenShader(const ScreenShader& other);
+  virtual ~ScreenShader();
+
+  virtual ScreenShader* clone() const override;
+};
 
 class PhongMaterial : public Material 
 {
@@ -89,9 +111,9 @@ public:
   int ambientUVIndex = 0;
   Texture* ambientTex = nullptr;
 
-  glm::vec3 diffuse;
-  glm::vec3 specular;
-  glm::vec3 ambient;
+  glm::vec4 diffuse;
+  glm::vec4 specular;
+  glm::vec4 ambient;
 
   int shininess = 32;
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "../scene/Scene.h"
 #include "../components/GameResources.h"
+#include "../scene/Models/Plane.h"
 
 class GameState : public WindowObservable
 {
@@ -10,50 +11,34 @@ protected:
   Scene _mScene;
   bool _mIsLoaded = false;
 
+  // main loop functions - based on each state
   virtual void _onUpdate(float deltaT) = 0;
   virtual void _onDraw() = 0;
 
-  // resouce allocation/deallocation
+  // resource allocation/deallocation - based on each state
   virtual void _onLoad() = 0;
   virtual void _onDestroy() = 0;
+
+  // for drawing out to the window frame buffer
+  ScreenShader* screenShader = nullptr;
+  Plane* plane = nullptr;
 
 public:
 
   GameState(const GameResources& resources);
   virtual ~GameState();
 
-  virtual void load() 
-  {
-    if (_mIsLoaded) return;
-
-    _onLoad();
-    _mIsLoaded = true;
-  }
-
-  virtual void destroy()
-  {
-    if (!_mIsLoaded) return;
-
-    _onDestroy();
-    _mIsLoaded = false;
-  }
+  void load();
+  void destroy();
 
   // returns a non-empty string if the next state should be rendered
   virtual const std::string& nextState() const = 0;
   virtual bool isLoaded() const { return _mIsLoaded; }
 
   // main loop functions
-  virtual void draw()
-  { 
-    _mScene.prepShaderPrograms(_mResources.shaderProgramManager);
-    _onDraw(); 
-    _mScene.draw(); 
-  };
+  void draw();
+  void update(float deltaT);
 
-  virtual void update(float deltaT)
-  { 
-    _onUpdate(deltaT); 
-    _mScene.update(deltaT);
-    _mResources.primitiveManager.update(deltaT);
-  };
+  // override window's resize function
+  void onResize(int width, int height) override;
 };

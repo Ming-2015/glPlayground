@@ -38,11 +38,12 @@ void TestTriangle::_onLoad()
   mat->ambientTex = mat->diffuseTex;
   mat->shininess = 64.f;
   _mScene.addChild(model);
-  model->setPosition(glm::vec3(2, 0, 0));
+  model->setPosition(glm::vec3(2, 0.5f, 0));
 
   _mCamera = new FreeCamera();
-  _mCamera->setPosition(glm::vec3(0, 0, -12.f));
+  _mCamera->setPosition(glm::vec3(0, 0, -2.f));
   _mCamera->setMaxZ(1000000.0f);
+  _mCamera->setForwardDirection(glm::vec3(0, 1, 0));
   FirstPersonFreeCameraController* c = new FirstPersonFreeCameraController(_mResources.window, _mCamera);
   cameraController = c;
   _mScene.setActiveCamera(_mCamera, true);
@@ -52,14 +53,14 @@ void TestTriangle::_onLoad()
   pointLight->ambient = glm::vec3(0.05f);
   pointLight->specular = glm::vec3(0.3f);
   pointLight->diffuse = glm::vec3(0.7f);
-  _mScene.addLight(pointLight, true);
+  // _mScene.addLight(pointLight, true);
 
   Box* lightBox = new Box(_mResources.primitiveManager, .3f, .3f, .3f, true);
   PhongMaterial* mat = new PhongMaterial(&_mResources.shaderProgramManager);
   lightBox->material = mat;
-  mat->diffuse = pointLight->diffuse * .3f;
-  mat->specular = pointLight->specular * .1f;
-  mat->ambient = pointLight->ambient * .1f;
+  mat->diffuse = glm::vec4(pointLight->diffuse * .3f, 1.f);
+  mat->specular = glm::vec4(pointLight->specular * .1f, 1.f);
+  mat->ambient = glm::vec4(pointLight->ambient * .1f, 1.f);
   pointLight->addChild(lightBox);
 
   pointLight = new PointLight();
@@ -67,16 +68,16 @@ void TestTriangle::_onLoad()
   pointLight->ambient = glm::vec3(.05f);
   pointLight->specular = glm::vec3(1.f);
   pointLight->diffuse = glm::vec3(.7f, .6f, .1f);
-  _mScene.addLight(pointLight, true);
+  // _mScene.addLight(pointLight, true);
 
   Model* boxClone = lightBox->clone();
   pointLight->addChild(boxClone);
 
   DirLight* dirLight = new DirLight();
   dirLights.push_back(dirLight);
-  dirLight->diffuse = glm::vec3(0.4f);
-  dirLight->specular = glm::vec3(1.f);
-  dirLight->ambient = glm::vec3(.16f);
+  dirLight->diffuse = glm::vec3(0.6f);
+  dirLight->specular = glm::vec3(0.4f);
+  dirLight->ambient = glm::vec3(.1f);
   dirLight->direction = glm::normalize(glm::vec3(1.f, -.5f, 1.f));
   _mScene.addLight(dirLight);
 
@@ -102,8 +103,12 @@ void TestTriangle::_onLoad()
   asset->setPosition(glm::vec3(-2, 0, 0));
   _mScene.addChild(asset);
 
-  // some global settings
-  glEnable(GL_DEPTH_TEST);
+  importer = new AssetImporter(_mResources, "./assets/sponza/sponza.obj");
+  importer->load();
+  asset = importer->getOriginal();
+  asset->setScale(glm::vec3(0.02f));
+  _mScene.addChild(asset);
+
 }
 
 void TestTriangle::_onUpdate(float deltaT)
@@ -129,6 +134,9 @@ void TestTriangle::_onDraw()
 {
   glClearColor(_mClearColor.r, _mClearColor.g, _mClearColor.b, _mClearColor.a);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  //glEnable(GL_BLEND);
+  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void TestTriangle::_onDestroy()
@@ -160,8 +168,3 @@ void TestTriangle::onCursorPos(double xPos, double yPos)
 
 void TestTriangle::onMouseButton(int key, int action, int mods)
 {}
-
-void TestTriangle::onResize(int width, int height)
-{
-  glViewport(0, 0, width, height);
-}

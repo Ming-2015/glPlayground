@@ -43,6 +43,9 @@ private:
   static void onMouseButtonCb(GLFWwindow* w, int key, int action, int mods);
   static void onResizeCb(GLFWwindow* w, int width, int height);
 
+  void setupFrameBuffer(int width, int height);
+  GLuint color = 0, depthStencil = 0, fbo = 0;
+
 public:
   Window(int width, int height, std::string title);
   ~Window();
@@ -69,6 +72,9 @@ public:
   void removeObservable(WindowObservable* observable);
 
   GLFWwindow* getWindowHandle() const { return _mWindow; }
+  GLuint getFrameBuffer() const { return fbo; }
+  GLuint getColorBuffer() const { return color; }
+  GLuint getDepthStencilBuffer() const { return depthStencil; }
 };
 
 #endif /* SRC_WINDOW_H_ */

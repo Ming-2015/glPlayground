@@ -29,8 +29,8 @@ Game::~Game()
   if (_mCurrentState)
   {
     _mCurrentState->destroy();
+    delete _mCurrentState;
   }
-  delete _mCurrentState;
 }
 
 void Game::init() 
@@ -42,6 +42,7 @@ void Game::init()
 
   _mCurrentState = new TestTriangle(resources);
   _mCurrentState->load();
+
 }
 
 void Game::render() 
@@ -68,21 +69,13 @@ bool Game::shouldClose() const
 }
 
 void Game::onKey(int key, int scancode, int action, int mods)
-{
-
-}
+{}
 
 void Game::onCursorPos(double xPos, double yPos)
-{
-
-}
+{}
 
 void Game::onMouseButton(int key, int action, int mods)
-{
-
-}
+{}
 
 void Game::onResize(int width, int height)
-{
-
-}
+{}

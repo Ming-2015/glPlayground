@@ -1,7 +1,7 @@
+#pragma once
 #include "../Model.h"
 #include "../../components/Primitive.h"
 
-#pragma once
 class Box : public Model
 {
 public:

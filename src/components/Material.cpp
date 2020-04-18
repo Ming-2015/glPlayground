@@ -13,9 +13,15 @@ void MaterialBase::copyTo(Cloneable* cloned) const
   mat->_mProgramManager = _mProgramManager;
 }
 
-// normal material...
-Material::Material()
-{}
+void MaterialBase::use() {
+  if (_mProgramManager && _mProgram) {
+    _mProgramManager->useProgram(_mProgram);
+    preRender();
+  }
+  else {
+    Log.print<Severity::warning>("Failed to render material since program is not initialized!");
+  }
+}
 
 ShaderProgram* getShaderProgram(
   ShaderProgramManager& programManager,
@@ -72,17 +78,20 @@ ShaderProgram* getShaderProgram(
   return program;
 }
 
+Material::Material() {}
+
 Material::Material(ShaderProgramManager* manager)
 {
   _mProgramManager = manager;
-  static std::string vsPath = "./shaders/VertexShader.glsl";
-  static std::string fsPath = "./shaders/FragmentShader.glsl";
+  static std::string vsPath = "./shaders/Phong.vs";
+  static std::string fsPath = "./shaders/Phong.fs";
   static std::string programKey = vsPath + "___" + fsPath;
   _mProgram = getShaderProgram(*_mProgramManager, programKey, vsPath, fsPath);
 
   modelMatUniform = _mProgram->getUniformByName("modelMat");
   normalMatUniform = _mProgram->getUniformByName("normalMat");
   projViewModelMatUniform = _mProgram->getUniformByName("projViewModelMat");
+  alphaCutoffUniform = _mProgram->getUniformByName("alphaCutoff");
 }
 
 Material::Material(const Material& other)
@@ -92,6 +101,8 @@ Material::Material(const Material& other)
   modelMatUniform = other.modelMatUniform;
   normalMatUniform = other.normalMatUniform;
   projViewModelMatUniform = other.projViewModelMatUniform;
+  alphaCutoff = other.alphaCutoff;
+  alphaCutoffUniform = other.alphaCutoffUniform;
 }
 
 Material::~Material()
@@ -99,7 +110,8 @@ Material::~Material()
 
 void Material::preRender()
 {
-  _mProgramManager->useProgram(_mProgram);
+  if (alphaCutoffUniform)
+    alphaCutoffUniform->setUniform(.5f);
 }
 
 void Material::setModelMatrix(const glm::mat4& model)
@@ -140,18 +152,19 @@ Material* Material::clone() const
 
 // ----------- phoon material ---------------
 PhongMaterial::PhongMaterial()
-  : diffuse(1, 1, 1), specular(0, 0, 0), ambient(0, 0, 0)
+  : diffuse(1), specular(1), ambient(1)
 {}
 
 PhongMaterial::PhongMaterial(ShaderProgramManager* manager)
-  : diffuse(1, 1, 1), specular(0, 0, 0), ambient(0, 0, 0)
+  : diffuse(1), specular(1), ambient(1)
 {
   _mProgramManager = manager;
-  static std::string vsPath = "./shaders/VertexShader.glsl";
-  static std::string fsPath = "./shaders/FragmentShader.glsl";
+  static std::string vsPath = "./shaders/Phong.vs";
+  static std::string fsPath = "./shaders/Phong.fs";
   static std::string programKey = vsPath + "___" + fsPath;
   _mProgram = getShaderProgram(*_mProgramManager, programKey, vsPath, fsPath);
 
+  alphaCutoffUniform = _mProgram->getUniformByName("alphaCutoff");
   modelMatUniform = _mProgram->getUniformByName("modelMat");
   normalMatUniform = _mProgram->getUniformByName("normalMat");
   projViewModelMatUniform = _mProgram->getUniformByName("projViewModelMat");
@@ -190,7 +203,7 @@ PhongMaterial::PhongMaterial(const PhongMaterial& other)
 PhongMaterial::~PhongMaterial()
 {}
 
-void bindTexUniform(Uniform* texUniform, Uniform* colorUniform, Texture* tex, glm::vec3 color, int texIdx)
+void bindTexUniform(Uniform* texUniform, Uniform* colorUniform, Texture* tex, glm::vec4 color, int texIdx)
 {
   if (texUniform)
   {
@@ -209,10 +222,7 @@ void bindTexUniform(Uniform* texUniform, Uniform* colorUniform, Texture* tex, gl
 
   if (colorUniform)
   {
-    if (tex)
-      colorUniform->setUniform(glm::vec3(0, 0, 0));
-    else
-      colorUniform->setUniform(color);
+    colorUniform->setUniform(color);
   }
 }
 
@@ -224,14 +234,27 @@ void PhongMaterial::preRender()
   bindTexUniform(specularTexUniform, specularUniform, specularTex, specular, SPECULAR_TEX_IDX);
   bindTexUniform(ambientTexUniform, ambientUniform, ambientTex, ambient, AMBIENT_TEX_IDX);
 
-  if (diffuseUVIndexUniform)
-    diffuseUVIndexUniform->setUniform(diffuseUVIndex);
+  if (diffuseUVIndexUniform) {
+    if (!diffuseTex)
+      diffuseUVIndexUniform->setUniform(-1);
+    else
+      diffuseUVIndexUniform->setUniform(diffuseUVIndex);
+  }
 
-  if (specularUVIndexUniform)
-    specularUVIndexUniform->setUniform(specularUVIndex);
+  if (specularUVIndexUniform) {
+    if (!specularTex)
+      specularUVIndexUniform->setUniform(-1);
+    else
+      specularUVIndexUniform->setUniform(specularUVIndex);
+  }
 
-  if (ambientUVIndexUniform)
-    ambientUVIndexUniform->setUniform(ambientUVIndex);
+  if (ambientUVIndexUniform) 
+  {
+    if (!ambientTex)
+      ambientUVIndexUniform->setUniform(-1);
+    else
+      ambientUVIndexUniform->setUniform(ambientUVIndex);
+  }
 
   if (shininessUniform)
     shininessUniform->setUniform(shininess);
@@ -262,4 +285,57 @@ PhongMaterial* PhongMaterial::clone() const
   PhongMaterial* material = new PhongMaterial(_mProgramManager);
   copyTo(material);
   return material;
+}
+
+// ----------------- Screen shader -----------------------
+ScreenShader::ScreenShader(ShaderProgramManager* manager)
+{
+  _mProgramManager = manager;
+  static std::string vsPath = "./shaders/ScreenShader.vs";
+  static std::string fsPath = "./shaders/ScreenShader.fs";
+  static std::string programKey = vsPath + "___" + fsPath;
+  _mProgram = getShaderProgram(*_mProgramManager, programKey, vsPath, fsPath);
+
+  _mScreenTextureUniform = _mProgram->getUniformByName("screenTexture");
+}
+
+ScreenShader::ScreenShader(const ScreenShader& other)
+  : Material(other)
+{
+  _mProgramManager = other._mProgramManager;
+  _mProgram = other._mProgram;
+  _mScreenTextureUniform = other._mScreenTextureUniform;
+  screenTextureId = other.screenTextureId;
+}
+
+ScreenShader::~ScreenShader()
+{}
+
+void ScreenShader::copyTo(Cloneable* cloned) const
+{
+  Material::copyTo(cloned);
+
+  ScreenShader* clonedMaterial = dynamic_cast<ScreenShader*>(cloned);
+  if (!clonedMaterial)
+  {
+    Log.print<Severity::warning>("Failed to cast to PhongMaterial in clone");
+    return;
+  }
+
+  clonedMaterial->_mScreenTextureUniform = _mScreenTextureUniform;
+}
+
+ScreenShader* ScreenShader::clone() const
+{
+  ScreenShader* material = new ScreenShader(_mProgramManager);
+  copyTo(material);
+  return material;
+}
+
+void ScreenShader::preRender()
+{
+  if (_mScreenTextureUniform) {
+    _mScreenTextureUniform->setUniform(0);
+    glBindTextureUnit(0, screenTextureId);
+  }
 }

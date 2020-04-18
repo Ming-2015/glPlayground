@@ -93,6 +93,9 @@
     <ClCompile Include="src\importers\AssetImporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene\Models\Plane.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\Application.h">
@@ -185,11 +188,16 @@
     <ClInclude Include="src\importers\AssetImporter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\scene\Models\Plane.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
     <None Include=".gitignore" />
-    <None Include="shaders\FragmentShader.glsl" />
-    <None Include="shaders\VertexShader.glsl" />
+    <None Include="shaders\Phong.fs" />
+    <None Include="shaders\Phong.vs" />
+    <None Include="shaders\ScreenShader.vs" />
+    <None Include="shaders\ScreenShader.fs" />
   </ItemGroup>
 </Project>

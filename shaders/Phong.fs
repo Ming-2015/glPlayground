@@ -10,6 +10,9 @@ in vec2 fTex;
 in vec2 fTex_2;
 in vec2 fTex_3;
 
+/* basic uniforms */
+uniform float alphaCutoff;
+
 /* camera */
 struct Camera 
 {
@@ -23,9 +26,9 @@ uniform Camera camera;
 struct PhongMaterial 
 {
   /* colors */
-  vec3 ambient;
-  vec3 diffuse;
-  vec3 specular;
+  vec4 ambient;
+  vec4 diffuse;
+  vec4 specular;
 
   /* textures */
   int ambientUVIndex;
@@ -129,26 +132,42 @@ vec2 getTexCoord(int uvIndex)
 
 void main()
 {
-  vec3 ambientComponent = vec3(0);
-  vec3 diffuseComponent = vec3(0);
-  vec3 specularComponent = vec3(0);
-
   // vec2 diffuseTexCoord  = getTexCoord(phongMaterial.diffuseUVIndex);
   // vec2 specularTexCoord = getTexCoord(phongMaterial.specularUVIndex);
   // vec2 ambientTexCoord  = getTexCoord(phongMaterial.ambientUVIndex);
   
-  vec2 diffuseTexCoord  = fTex;
-  vec2 specularTexCoord = fTex;
-  vec2 ambientTexCoord  = fTex;
+  float alpha = phongMaterial.diffuse.w;
+  vec3 matDiffuse = phongMaterial.diffuse.xyz;
+  vec3 matSpecular = phongMaterial.specular.xyz;
+  vec3 matAmbient = phongMaterial.ambient.xyz;
+
+   if (phongMaterial.diffuseUVIndex != -1) {
+    vec2 diffuseTexCoord = fTex;
+    vec4 texDiffuse = texture(phongMaterial.diffuseTex, diffuseTexCoord);
+    matDiffuse *= texDiffuse.xyz;
+    alpha *= texDiffuse.w;
+   }
+
+  if (phongMaterial.specularUVIndex != -1) {
+    vec2 specularTexCoord = fTex;
+    vec4 texSpecular = texture(phongMaterial.specularTex, specularTexCoord);
+    matSpecular *= texSpecular.xyz;
+  }
+  
+  if (phongMaterial.ambientUVIndex != -1) {
+    vec2 ambientTexCoord  = fTex;
+    vec4 texAmbient = texture(phongMaterial.ambientTex, ambientTexCoord);
+    matAmbient *= texAmbient.xyz;
+  }
+
+  if (alpha < alphaCutoff) {
+    discard;
+  }
 
   vec3 surfaceToCamera = camera.position - fPos;
   vec3 viewDir = normalize(surfaceToCamera);
   LightOutput total = { vec3(0), vec3(0), vec3(0) };
   
-  vec3 matAmbient = phongMaterial.ambient + texture(phongMaterial.ambientTex, ambientTexCoord).xyz;
-  vec3 matDiffuse = phongMaterial.diffuse + texture(phongMaterial.diffuseTex, diffuseTexCoord).xyz;
-  vec3 matSpecular = phongMaterial.specular + texture(phongMaterial.specularTex, specularTexCoord).xyz;
-
   for (int i = 0; i < NR_POINT_LIGHTS; i++)
   {
     LightOutput o = CalcPointLight(pointLights[i], fNormal, fPos, viewDir);
@@ -169,5 +188,5 @@ void main()
   total.diffuse *= matDiffuse;
   total.specular *= matSpecular;
 
-  FragColor = vec4(total.ambient + total.diffuse + total.specular, 1.0f);
+  FragColor = vec4(total.ambient + total.diffuse + total.specular, alpha);
 }
