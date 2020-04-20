@@ -46,7 +46,7 @@ public:
   virtual ~TestTriangle();
 
   // returns a non-empty string if the next state should be rendered
-  virtual const std::string& nextState() const override;
+  virtual std::string nextState() const override;
 
   virtual void onKey(int key, int scancode, int action, int mods) override;
   virtual void onCursorPos(double xPos, double yPos) override;

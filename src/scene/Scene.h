@@ -33,7 +33,7 @@ public:
   // this should be called before a draw call to activate lights!
   void prepShaderPrograms(ShaderProgramManager& manager);
 
-  // NOTE: for scenes, PV and M will have no effect at all
+  // NOTE: for scenes, PV will have no effect at all
   virtual void draw(const glm::mat4& PV) override { draw(); }
   virtual void draw();
 

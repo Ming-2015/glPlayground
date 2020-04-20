@@ -2,6 +2,7 @@
 #include "../components/Primitive.h"
 #include "../components/Material.h"
 #include "Node.h"
+#include "./Skeleton.h"
 
 class Model : public Node
 {
@@ -10,7 +11,8 @@ protected:
 
 public:
   // material to render the model...
-  Material* material;
+  Material* material = nullptr;
+  Skeleton* skeleton = nullptr;
   virtual void copyTo(Cloneable* cloned) const override;
 
 public:

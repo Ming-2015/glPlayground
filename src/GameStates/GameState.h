@@ -32,7 +32,7 @@ public:
   void destroy();
 
   // returns a non-empty string if the next state should be rendered
-  virtual const std::string& nextState() const = 0;
+  virtual std::string nextState() const = 0;
   virtual bool isLoaded() const { return _mIsLoaded; }
 
   // main loop functions

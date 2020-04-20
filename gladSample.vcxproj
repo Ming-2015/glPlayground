@@ -22,7 +22,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{8065970B-6D6C-4F1D-B41A-40E6C8C841A4}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>glPlayground</ProjectName>
+    <ProjectName>gladSample</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClCompile Include="src\controllers\CameraController.cpp" />
     <ClCompile Include="src\importers\AssetImporter.cpp" />
+    <ClCompile Include="src\importers\VertexBoneData.cpp" />
     <ClCompile Include="src\scene\Asset.cpp" />
     <ClCompile Include="src\scene\Lights\DirLight.cpp" />
     <ClCompile Include="src\scene\Lights\PointLight.cpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="src\core\Game.cpp" />
     <ClCompile Include="src\components\Shader.cpp" />
     <ClCompile Include="src\components\Window.cpp" />
+    <ClCompile Include="src\scene\Skeleton.cpp" />
     <ClCompile Include="src\utils\Logger.cpp" />
     <ClCompile Include="src\utils\Timer.cpp" />
     <ClCompile Include="src\components\Uniform.cpp" />
@@ -187,6 +189,7 @@
     <ClInclude Include="src\components\GameResources.h" />
     <ClInclude Include="src\controllers\CameraController.h" />
     <ClInclude Include="src\importers\AssetImporter.h" />
+    <ClInclude Include="src\importers\VertexBoneData.h" />
     <ClInclude Include="src\scene\Asset.h" />
     <ClInclude Include="src\scene\Lights\DirLight.h" />
     <ClInclude Include="src\scene\Lights\PointLight.h" />
@@ -197,6 +200,7 @@
     <ClInclude Include="src\scene\Models\Plane.h" />
     <ClInclude Include="src\scene\Scene.h" />
     <ClInclude Include="src\components\Material.h" />
+    <ClInclude Include="src\scene\Skeleton.h" />
     <ClInclude Include="src\utils\Cloneable.hpp" />
     <ClInclude Include="src\utils\Logger.h" />
     <ClInclude Include="src\scene\Node.h" />

@@ -28,6 +28,8 @@ protected:
   Uniform* normalMatUniform = nullptr;
   Uniform* projViewModelMatUniform = nullptr;
   Uniform* alphaCutoffUniform = nullptr;
+  Uniform* boneMatricesUniform = nullptr;
+  Uniform* useBoneMatricesUniform = nullptr;
 
 protected:
   // not public: has to generated with a factory method!
@@ -37,13 +39,17 @@ protected:
 
 public:
   Material(ShaderProgramManager* manager);
-  Material(const Material& other);
+  Material(const Material& other) = default;
   virtual ~Material();
 
   // these matrices need to be set before a model can be rendered!
   void setModelMatrix(const glm::mat4& model);
   void setProjViewModelMatrix(const glm::mat4& projViewModel);
   void setNormalMatrix(const glm::mat3& normal);
+
+  // for skeletal animation
+  void setBoneMatrices(const std::vector<glm::mat4>& matrices);
+  void setUseBoneTransform(bool use);
 
   // alpha cutoff of the material
   float alphaCutoff = 0.f;
@@ -65,7 +71,7 @@ public:
 
 public:
   ScreenShader(ShaderProgramManager* manager);
-  ScreenShader(const ScreenShader& other);
+  ScreenShader(const ScreenShader& other) = default;
   virtual ~ScreenShader();
 
   virtual ScreenShader* clone() const override;
@@ -119,7 +125,7 @@ public:
 
 public:
   PhongMaterial(ShaderProgramManager* manager);
-  PhongMaterial(const PhongMaterial& other);
+  PhongMaterial(const PhongMaterial& other) = default;
   virtual ~PhongMaterial();
 
   virtual PhongMaterial* clone() const override;

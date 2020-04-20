@@ -20,7 +20,6 @@ void Uniform::setUniform(int i, unsigned int index)
     && _mType != GL_SAMPLER_2D
   )
   {
-    Log.print<Severity::warning>("Type is ", _mType);
     Log.print<Severity::warning>("Trying to write Uniform \"", _mName, "\" with an invalid type!");
     return;
   }
@@ -30,7 +29,7 @@ void Uniform::setUniform(int i, unsigned int index)
 }
 
 // write a vec2 into the uniform location
-void Uniform::setUniform(glm::vec2 vector, unsigned int index)
+void Uniform::setUniform(const glm::vec2& vector, unsigned int index)
 {
   if (_mType != GL_FLOAT_VEC2)
   {
@@ -43,7 +42,7 @@ void Uniform::setUniform(glm::vec2 vector, unsigned int index)
 }
 
 // write a vec3 into the uniform location
-void Uniform::setUniform(glm::vec3 vector, unsigned int index)
+void Uniform::setUniform(const glm::vec3& vector, unsigned int index)
 {
   if (_mType != GL_FLOAT_VEC3)
   {
@@ -56,7 +55,7 @@ void Uniform::setUniform(glm::vec3 vector, unsigned int index)
 }
 
 // write a vec3 into the uniform location
-void Uniform::setUniform(glm::vec4 vector, unsigned int index)
+void Uniform::setUniform(const glm::vec4& vector, unsigned int index)
 {
   if (_mType != GL_FLOAT_VEC4)
   {
@@ -69,7 +68,7 @@ void Uniform::setUniform(glm::vec4 vector, unsigned int index)
 }
 
 // write a mat4 into the uniform location
-void Uniform::setUniform(glm::mat4 mat, unsigned int index)
+void Uniform::setUniform(const glm::mat4& mat, unsigned int index)
 {
   if (_mType != GL_FLOAT_MAT4)
   {
@@ -81,8 +80,29 @@ void Uniform::setUniform(glm::mat4 mat, unsigned int index)
     glProgramUniformMatrix4fv(_mProgramId, _mLocation + index, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
+void Uniform::setUniform(const std::vector<glm::mat4>& mats, unsigned int index)
+{
+  if (_mType != GL_FLOAT_MAT4)
+  {
+    Log.print<Severity::warning>("Trying to write Uniform \"", _mName, "\" with an invalid type!");
+    return;
+  }
+
+  bool dataChanged = false;
+  for (int i = 0; i < mats.size(); i++)
+  {
+    if (_registerData(mats[i], index + i))
+    {
+      dataChanged = true;
+    }
+  }
+
+  if (dataChanged)
+    glProgramUniformMatrix4fv(_mProgramId, _mLocation + index, mats.size(), GL_FALSE, glm::value_ptr(mats.at(0)));
+}
+
 // write a mat3 into the uniform location
-void Uniform::setUniform(glm::mat3 mat, unsigned int index)
+void Uniform::setUniform(const glm::mat3& mat, unsigned int index)
 {
   if (_mType != GL_FLOAT_MAT3)
   {
@@ -95,7 +115,7 @@ void Uniform::setUniform(glm::mat3 mat, unsigned int index)
 }
 
 // write a mat2 into the uniform location
-void Uniform::setUniform(glm::mat2 mat, unsigned int index)
+void Uniform::setUniform(const glm::mat2& mat, unsigned int index)
 {
   if (_mType != GL_FLOAT_MAT2)
   {

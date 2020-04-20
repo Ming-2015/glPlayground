@@ -155,7 +155,7 @@ void TestTriangle::_onDestroy()
 }
 
 // returns a non-empty string if the next state should be rendered
-const std::string& TestTriangle::nextState() const
+std::string TestTriangle::nextState() const
 {
   return "";
 }

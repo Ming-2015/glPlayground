@@ -26,12 +26,28 @@ uniform mat3 normalMat;
 // projectionMat * viewMat * modelMat
 uniform mat4 projViewModelMat;
 
+#define MAX_BONE_MATRICES 64
+uniform mat4 boneMatrices[MAX_BONE_MATRICES];
+uniform int useBoneMatrices;
+
 void main()
 {
-    gl_Position = projViewModelMat * vec4(aPos, 1.0);
-    fPos = vec3(modelMat * vec4(aPos, 1.0));
-    fNormal = normalize(normalMat * aNormal);
-    fTex = aTex;
-    fTex_2 = aTex_2;
-    fTex_3 = aTex_3;
+  mat4 skinMat = mat4(1.f);
+
+  if (useBoneMatrices == 1)
+  {
+    skinMat      = aWeight.x * boneMatrices[aJoint.x];
+    skinMat     += aWeight.y * boneMatrices[aJoint.y];
+    skinMat     += aWeight.w * boneMatrices[aJoint.z];
+    skinMat     += aWeight.z * boneMatrices[aJoint.w];
+  }
+
+  gl_Position = projViewModelMat * skinMat * vec4(aPos, 1.0);
+  fPos = vec3(modelMat * skinMat * vec4(aPos, 1.0));
+
+  fNormal = normalize(normalMat * mat3(skinMat) * aNormal);
+
+  fTex = aTex;
+  fTex_2 = aTex_2;
+  fTex_3 = aTex_3;
 }

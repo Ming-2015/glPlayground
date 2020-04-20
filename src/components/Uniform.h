@@ -108,23 +108,29 @@ public:
   // write a int into the uniform location
   void setUniform(int i, unsigned int index = 0);
 
+  // write a bool into the uniform location
+  void setUniform(bool v, unsigned int index = 0);
+
   // write a vec2 into the uniform location
-  void setUniform(glm::vec2 vector, unsigned int index = 0);
+  void setUniform(const glm::vec2& vector, unsigned int index = 0);
 
   // write a vec3 into the uniform location
-  void setUniform(glm::vec3 vector, unsigned int index = 0);
+  void setUniform(const glm::vec3& vector, unsigned int index = 0);
 
   // write a vec4 into the uniform location
-  void setUniform(glm::vec4 vector, unsigned int index = 0);
+  void setUniform(const glm::vec4& vector, unsigned int index = 0);
 
   // write a mat4 into the uniform location
-  void setUniform(glm::mat4 mat, unsigned int index = 0);
+  void setUniform(const glm::mat4& mat, unsigned int index = 0);
+
+  // write an array of mat4 into the uniform location
+  void setUniform(const std::vector<glm::mat4>& mats, unsigned int index = 0);
 
   // write a mat3 into the uniform location
-  void setUniform(glm::mat3 mat, unsigned int index = 0);
+  void setUniform(const glm::mat3& mat, unsigned int index = 0);
 
   // write a mat2 into the uniform location
-  void setUniform(glm::mat2 mat, unsigned int index = 0);
+  void setUniform(const glm::mat2& mat, unsigned int index = 0);
 
   // Return the data that the user has set.
   // NOTE: this will not check for type of data, 

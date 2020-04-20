@@ -8,6 +8,8 @@
 #include "../components/Material.h"
 #include "../scene/Model.h"
 #include "../scene/Asset.h"
+#include "../scene/Skeleton.h"
+
 
 class AssetImporter {
 private:
@@ -20,12 +22,17 @@ private:
   std::map<std::string, Texture*> _mTextures; // texturePath to texture
 
   Asset* _mRoot = nullptr;
+  Skeleton* _mSkeleton = nullptr;
 
 private:
+  void processBones(const aiScene* scene);
+  void processAnimations(const aiScene* scene);
   void processNode(aiNode* node, const aiScene* scene, Asset* assetNode);
 
   // process mesh, then returns the name of the mesh, which must be inserted into _mPrimitives and _mMaterials
   std::string processMesh(aiMesh* mesh, const aiScene* scene, Asset* assetNode);
+  Primitive* createPrimitiveFromAiMesh(const std::string& name, aiMesh* mesh, const aiScene* scene);
+  Material* createMaterialFromAiMesh(aiMesh* mesh, const aiScene* scene);
   std::vector<Texture*> loadMaterialTextures(aiMaterial* mat, aiTextureType type, const aiScene* scene);
 
 public:
@@ -36,7 +43,6 @@ public:
 
   // create a brand new asset instance (will not be managed internally, caller responsible for deleting it)
   Asset* createInstance(bool cloneMaterial = false) const;
-
   Asset* getOriginal() const { return _mRoot; }
 
   // Note: this will remove the asset from memory, so don't call it until done using it.

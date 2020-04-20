@@ -92,17 +92,8 @@ Material::Material(ShaderProgramManager* manager)
   normalMatUniform = _mProgram->getUniformByName("normalMat");
   projViewModelMatUniform = _mProgram->getUniformByName("projViewModelMat");
   alphaCutoffUniform = _mProgram->getUniformByName("alphaCutoff");
-}
-
-Material::Material(const Material& other)
-{
-  _mProgramManager = other._mProgramManager;
-  _mProgram = other._mProgram;
-  modelMatUniform = other.modelMatUniform;
-  normalMatUniform = other.normalMatUniform;
-  projViewModelMatUniform = other.projViewModelMatUniform;
-  alphaCutoff = other.alphaCutoff;
-  alphaCutoffUniform = other.alphaCutoffUniform;
+  boneMatricesUniform = _mProgram->getUniformByName("boneMatrices");
+  useBoneMatricesUniform = _mProgram->getUniformByName("useBoneMatrices");
 }
 
 Material::~Material()
@@ -132,6 +123,23 @@ void Material::setNormalMatrix(const glm::mat3& normal)
     normalMatUniform->setUniform(normal);
 }
 
+// for skeletal animation
+void Material::setBoneMatrices(const std::vector<glm::mat4>& matrices)
+{
+  if (boneMatricesUniform)
+  {
+    boneMatricesUniform->setUniform(matrices);
+  }
+}
+
+void Material::setUseBoneTransform(bool use)
+{
+  if (useBoneMatricesUniform)
+  {
+    useBoneMatricesUniform->setUniform(use ? 1 : 0);
+  }
+}
+
 void Material::copyTo(Cloneable* cloned) const
 {
   MaterialBase::copyTo(cloned);
@@ -141,12 +149,14 @@ void Material::copyTo(Cloneable* cloned) const
     Log.print<Severity::warning>("Failed to cast to Material in clone");
     return;
   }
+
+  // TODO: implement the copyTo function
 }
 
 Material* Material::clone() const
 {
-  Material* material = new Material(_mProgramManager);
-  copyTo(material);
+  Material* material = new Material(*this);
+  // copyTo(material);
   return material;
 }
 
@@ -164,10 +174,11 @@ PhongMaterial::PhongMaterial(ShaderProgramManager* manager)
   static std::string programKey = vsPath + "___" + fsPath;
   _mProgram = getShaderProgram(*_mProgramManager, programKey, vsPath, fsPath);
 
-  alphaCutoffUniform = _mProgram->getUniformByName("alphaCutoff");
   modelMatUniform = _mProgram->getUniformByName("modelMat");
   normalMatUniform = _mProgram->getUniformByName("normalMat");
   projViewModelMatUniform = _mProgram->getUniformByName("projViewModelMat");
+  boneMatricesUniform = _mProgram->getUniformByName("boneMatrices");
+  useBoneMatricesUniform = _mProgram->getUniformByName("useBoneMatrices");
 
   diffuseTexUniform = _mProgram->getUniformByName("phongMaterial.diffuseTex");
   specularTexUniform = _mProgram->getUniformByName("phongMaterial.specularTex");
@@ -175,29 +186,13 @@ PhongMaterial::PhongMaterial(ShaderProgramManager* manager)
   diffuseUniform = _mProgram->getUniformByName("phongMaterial.diffuse");
   specularUniform = _mProgram->getUniformByName("phongMaterial.specular");
   ambientUniform = _mProgram->getUniformByName("phongMaterial.ambient");
+
   shininessUniform = _mProgram->getUniformByName("phongMaterial.shininess");
+  alphaCutoffUniform = _mProgram->getUniformByName("alphaCutoff");
 
   diffuseUVIndexUniform = _mProgram->getUniformByName("phongMaterial.diffuseUVIndex");
   specularUVIndexUniform = _mProgram->getUniformByName("phongMaterial.specularUVIndex");
   ambientUVIndexUniform = _mProgram->getUniformByName("phongMaterial.ambientUVIndex");
-}
-
-PhongMaterial::PhongMaterial(const PhongMaterial& other)
-  : Material(other), 
-  diffuse(other.diffuse), 
-  specular(other.specular), 
-  ambient(other.ambient)
-{
-  diffuseTexUniform = other.diffuseTexUniform;
-  specularTexUniform = other.specularTexUniform;
-  ambientTexUniform = other.ambientTexUniform;
-  diffuseUniform = other.diffuseUniform;
-  specularUniform = other.specularUniform;
-  ambientUniform = other.ambientUniform;
-  shininessUniform = other.shininessUniform;
-  diffuseUVIndexUniform = other.diffuseUVIndexUniform;
-  specularUVIndexUniform = other.specularUVIndexUniform;
-  ambientUVIndexUniform = other.ambientUVIndexUniform;
 }
 
 PhongMaterial::~PhongMaterial()
@@ -270,20 +265,13 @@ void PhongMaterial::copyTo(Cloneable* cloned) const
     return;
   }
 
-  clonedMaterial->ambient = ambient;
-  clonedMaterial->diffuseTex = diffuseTex;
-  clonedMaterial->specularTex = specularTex;
-  clonedMaterial->ambientTex = ambientTex;
-  clonedMaterial->diffuse = diffuse;
-  clonedMaterial->specular = specular;
-  clonedMaterial->ambient = ambient;
-  clonedMaterial->shininess = shininess;
+  // TODO: Implement the copyTo function...
 }
 
 PhongMaterial* PhongMaterial::clone() const
 {
-  PhongMaterial* material = new PhongMaterial(_mProgramManager);
-  copyTo(material);
+  PhongMaterial* material = new PhongMaterial(*this);
+  // copyTo(material);
   return material;
 }
 
@@ -299,29 +287,18 @@ ScreenShader::ScreenShader(ShaderProgramManager* manager)
   _mScreenTextureUniform = _mProgram->getUniformByName("screenTexture");
 }
 
-ScreenShader::ScreenShader(const ScreenShader& other)
-  : Material(other)
-{
-  _mProgramManager = other._mProgramManager;
-  _mProgram = other._mProgram;
-  _mScreenTextureUniform = other._mScreenTextureUniform;
-  screenTextureId = other.screenTextureId;
-}
-
 ScreenShader::~ScreenShader()
 {}
 
 void ScreenShader::copyTo(Cloneable* cloned) const
 {
   Material::copyTo(cloned);
-
   ScreenShader* clonedMaterial = dynamic_cast<ScreenShader*>(cloned);
   if (!clonedMaterial)
   {
     Log.print<Severity::warning>("Failed to cast to PhongMaterial in clone");
     return;
   }
-
   clonedMaterial->_mScreenTextureUniform = _mScreenTextureUniform;
 }
 
