@@ -1,11 +1,11 @@
 ## Description
 This is a project intended to further refine my skills as a graphics programmer. It uses glad as the openGL API loader.
 
-[Youtube demo](https://youtu.be/W5f_E6Tchuk): Current version of the application. Will update as I go.
+[Youtube demo](https://youtu.be/QQPFWqiJHG4): Current version of the application. Will update as I go.
 
 ![screenshot]
 
-[screenshot]: https://i.imgur.com/c6MxRoo.png
+[screenshot]: https://media.giphy.com/media/Vdo8F6Fky7APJDrS4w/giphy.gif
 
 ## Pre-installation
 Before compiling the project, you will need to:
@@ -26,3 +26,6 @@ For this to work, you will need to include several library dependencies.
 
 ## Compilation
 Compile this with a c++ compiler with the libraries listed above. It should run with static libraries (or dynamic, maybe, depending on how the project is set up).
+
+## Running
+To run this program, you will need the assets used for testing. Please email me if you need the assets, or you can head over to GameStates/TestTriangle.cpp and swap out the assets loaded with your own assets.

@@ -18,6 +18,7 @@ Bone* Bone::clone() const
 
 void Bone::copyTo(Cloneable* clone) const
 {
+  Node::copyTo(clone);
   Bone* other = dynamic_cast<Bone*>(clone);
   if (!other)
   {
@@ -221,7 +222,6 @@ std::vector<glm::mat4> Skeleton::calcBoneMatrices(unsigned int idx, double timeI
   }
 
   double boundedTime = timeInTicks - floor(timeInTicks / anim->totalTicks) * anim->totalTicks;
-
   for (unsigned int i = 0; i < bones.size(); i++) 
   {
     const std::string& name = bones[i]->name;
@@ -235,9 +235,12 @@ std::vector<glm::mat4> Skeleton::calcBoneMatrices(unsigned int idx, double timeI
     }
 
     auto& animData = it->second;
-    bones[i]->setPosition(animData->getTranslation(boundedTime));
-    bones[i]->setRotationQuaternion(animData->getRotation(boundedTime));
-    bones[i]->setScale(animData->getScale(boundedTime));
+    glm::vec3 pos = animData->getTranslation(boundedTime);
+    bones[i]->setPosition(pos);
+    glm::quat rot = animData->getRotation(boundedTime);
+    bones[i]->setRotationQuaternion(rot);
+    glm::vec3 sca = animData->getScale(boundedTime);
+    bones[i]->setScale(sca);
   }
 
   root->update(0);
@@ -246,11 +249,6 @@ std::vector<glm::mat4> Skeleton::calcBoneMatrices(unsigned int idx, double timeI
     glm::mat4 boneMatrix = inverseGlobalTransform
       * bones[i]->getGlobalTransform()
       * bones[i]->inverseBindPoseTransform;
-
-    Log.print<Severity::debug>("InverseGlobalTransform: \n", glmPrint::printMat4(inverseGlobalTransform));
-    Log.print<Severity::debug>("bone transform: \n", glmPrint::printMat4(bones[i]->getGlobalTransform()));
-    Log.print<Severity::debug>("inverse bind pose: \n", glmPrint::printMat4(bones[i]->inverseBindPoseTransform));
-
     ret.push_back(boneMatrix);
   }
 

@@ -167,7 +167,7 @@ void AssetImporter::processAnimations(const aiScene* scene)
       for (int nr = 0; nr < animNode->mNumRotationKeys; nr++)
       {
         auto rotKey = animNode->mRotationKeys[nr];
-        boneData->rotations.push_back(glm::quat(rotKey.mValue.x, rotKey.mValue.y, rotKey.mValue.z, rotKey.mValue.w));
+        boneData->rotations.push_back(glm::quat(rotKey.mValue.w, rotKey.mValue.x, rotKey.mValue.y, rotKey.mValue.z));
         boneData->rotationTimes.push_back(rotKey.mTime);
       }
 
@@ -188,7 +188,7 @@ void AssetImporter::processNode(aiNode* node, const aiScene* scene, Asset* asset
   aiQuaternion rotation;
   node->mTransformation.Decompose(scaling, rotation, position);
   assetNode->setPosition(glm::vec3(position.x, position.y, position.z));
-  assetNode->setRotationQuaternion(glm::quat(rotation.x, rotation.y, rotation.z, rotation.w));
+  assetNode->setRotationQuaternion(glm::quat(rotation.w, rotation.x, rotation.y, rotation.z));
   assetNode->setScale(glm::vec3(scaling.x, scaling.y, scaling.z));
   assetNode->name = node->mName.C_Str();
 

@@ -102,7 +102,7 @@ void Asset::draw(const glm::mat4& PV)
   if (isAnimationStarted && currentAnimationIdx >= 0)
   {
     Animation* anim = skeleton->getAnimation(currentAnimationIdx);
-    std::vector<glm::mat4> boneMatrices = skeleton->calcBoneMatrices(currentAnimationIdx, anim->convertMillisecondsToTicks(currentAnimationMs));
+    std::vector<glm::mat4> boneMatrices = skeleton->calcBoneMatrices(currentAnimationIdx, currentAnimationMs);
 
     for (auto it : uniqueMats)
     {

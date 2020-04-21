@@ -1,4 +1,5 @@
 #include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <string>
 #include <sstream>
 
@@ -35,6 +36,14 @@ public:
   {
     std::stringstream str;
     str << "(" << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << ")";
+    std::string copy = str.str();
+    return copy;
+  }
+
+  static std::string printVec(const glm::quat& vec)
+  {
+    std::stringstream str;
+    str << "(" << vec.w << ", " << vec.x << ", " << vec.y << ", " << vec.z << ")";
     std::string copy = str.str();
     return copy;
   }
