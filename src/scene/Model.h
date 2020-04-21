@@ -12,7 +12,6 @@ protected:
 public:
   // material to render the model...
   Material* material = nullptr;
-  Skeleton* skeleton = nullptr;
   virtual void copyTo(Cloneable* cloned) const override;
 
 public:

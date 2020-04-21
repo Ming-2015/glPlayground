@@ -1,4 +1,5 @@
 #include "Primitive.h"
+#include "../utils/Printer.hpp"
 
 // Primitive implementation
 int Primitive::objectCount = 0;
@@ -72,6 +73,24 @@ void Primitive::initArrayObject(const PrimitiveData* data)
   {
     Log.print<Severity::warning>("Trying to initialize a mesh without faces - using drawArrays by default!");
   }
+
+  //Log.print<Severity::debug>("Printing vertices list for a primtive ---------------------!");
+  //for (int v = 0; v < numVertices; v++) {
+  //  int i = v * 3;
+  //  int j = v * 4;
+  //  glm::vec3 position = glm::vec3(data->vertices[i], data->vertices[i + 1], data->vertices[i + 2]);
+
+  //  glm::vec3 normal(0);
+  //  if (numNormals) normal = glm::vec3(data->normals[i], data->normals[i + 1], data->normals[i + 2]);
+
+  //  glm::uvec4 joint(0);
+  //  if (numJoints) joint = glm::uvec4(data->joints[j], data->joints[j + 1], data->joints[j + 2], data->joints[j + 3]);
+
+  //  glm::vec4 weight(0);
+  //  if (numWeights) weight = glm::vec4(data->weights[j], data->weights[j + 1], data->weights[j + 2], data->weights[j + 3]);
+
+  //  Log.print<Severity::debug>("Vertex: ", glmPrint::printVec(position), "\t joint: ", glmPrint::printVec(joint), "\t weight: ", glmPrint::printVec(weight));
+  //}
 
   glGenVertexArrays(1, &_mObjectVao);
   glBindVertexArray(_mObjectVao);
@@ -265,7 +284,7 @@ void Primitive::initArrayObject(const PrimitiveData* data)
     glBindBuffer(GL_ARRAY_BUFFER, _mWeightsVbo);
     glBufferData(
       GL_ARRAY_BUFFER,
-      sizeof(data->weights[0])* data->weights.size(),
+      sizeof(float)* data->weights.size(),
       static_cast<const void*>(data->weights.data()),
       GL_STATIC_DRAW
     );
@@ -276,7 +295,7 @@ void Primitive::initArrayObject(const PrimitiveData* data)
       Primitive::SIZE_WEIGHT,
       GL_FLOAT,
       GL_FALSE,
-      Primitive::SIZE_WEIGHT * sizeof(data->weights[0]),
+      Primitive::SIZE_WEIGHT * sizeof(float),
       (void*)0
     );
     glEnableVertexAttribArray(Primitive::ATTRIBUTE_WEIGHT);
@@ -296,12 +315,11 @@ void Primitive::initArrayObject(const PrimitiveData* data)
       GL_STATIC_DRAW
     );
 
-    // define texture vertex attribute
-    glVertexAttribPointer(
+    // define INTEGER vertex attribute pointer
+    glVertexAttribIPointer(
       Primitive::ATTRIBUTE_JOINT,
       Primitive::SIZE_JOINT,
       GL_UNSIGNED_INT,
-      GL_FALSE,
       Primitive::SIZE_JOINT * sizeof(data->joints[0]),
       (void*)0
     );

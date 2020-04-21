@@ -16,6 +16,7 @@ out vec2 fTex;
 out vec4 fTangent;
 out vec2 fTex_2;
 out vec2 fTex_3;
+flat out uvec4 fJoint;
 
 // model matrix
 uniform mat4 modelMat;
@@ -26,7 +27,7 @@ uniform mat3 normalMat;
 // projectionMat * viewMat * modelMat
 uniform mat4 projViewModelMat;
 
-#define MAX_BONE_MATRICES 64
+#define MAX_BONE_MATRICES 96
 uniform mat4 boneMatrices[MAX_BONE_MATRICES];
 uniform int useBoneMatrices;
 
@@ -36,10 +37,10 @@ void main()
 
   if (useBoneMatrices == 1)
   {
-    skinMat      = aWeight.x * boneMatrices[aJoint.x];
-    skinMat     += aWeight.y * boneMatrices[aJoint.y];
-    skinMat     += aWeight.w * boneMatrices[aJoint.z];
-    skinMat     += aWeight.z * boneMatrices[aJoint.w];
+    skinMat = aWeight.x * boneMatrices[aJoint.x]
+            + aWeight.y * boneMatrices[aJoint.y]
+            + aWeight.w * boneMatrices[aJoint.z]
+            + aWeight.z * boneMatrices[aJoint.w];
   }
 
   gl_Position = projViewModelMat * skinMat * vec4(aPos, 1.0);
@@ -50,4 +51,5 @@ void main()
   fTex = aTex;
   fTex_2 = aTex_2;
   fTex_3 = aTex_3;
+  fJoint = aJoint;
 }

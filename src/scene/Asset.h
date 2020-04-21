@@ -13,5 +13,16 @@ public:
   void removeModel(const std::string& name);
   std::map<std::string, Model*> getAllModels() const;
 
+  Skeleton* skeleton = nullptr;
+  std::vector<Material*> allMaterials;
+
+  // animation state...
+  double currentAnimationMs = 0;
+  int currentAnimationIdx = -1;
+  bool isAnimationStarted = false;
+
   Asset* clone() const override;
+
+  virtual void update(float deltaT) override;
+  virtual void draw(const glm::mat4& PV) override;
 };

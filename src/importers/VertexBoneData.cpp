@@ -69,7 +69,10 @@ glm::vec4 VertexBoneData::getWeights()
 
   // If no bone is available...
   if (weights.size() == 0) 
+  {
+    Log.print<Severity::warning>("there's no bone in this vertex!");
     ret[0] = 1.f;
+  }
 
   return ret;
 }

@@ -100,8 +100,10 @@ public:
   Bone* getBone(const std::string& name) const;
   Bone* getBone(unsigned int idx) const;
   int getBoneIdx(const std::string& name) const;
+  int getBoneCount() const { return bones.size(); }
 
   Animation* getAnimation(const std::string& name) const;
   Animation* getAnimation(unsigned int idx);
   int getAnimationIdx(const std::string& name) const;
+  int getAnimationCount() const { return animations.size(); }
 };

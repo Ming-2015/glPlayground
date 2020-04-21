@@ -1,4 +1,5 @@
 #include "TestTriangle.h"
+#include "../utils/Printer.hpp"
 
 TestTriangle::TestTriangle(const GameResources& resources)
   : GameState(resources),
@@ -6,6 +7,7 @@ TestTriangle::TestTriangle(const GameResources& resources)
   cameraController(nullptr),
   mat(nullptr),
   model(nullptr),
+  _mCamera(nullptr),
   pointLights()
 {}
 
@@ -90,24 +92,37 @@ void TestTriangle::_onLoad()
   _mScene.addLight(dirLight);
 
   // import the hell of this shit!
-  importer = new AssetImporter(_mResources, "./assets/crysis_nano_suit_2/scene.gltf");
+  importer = new AssetImporter(_mResources, "./assets/riggedSimple/RiggedSimple.gltf");
   importer->load();
   Asset* asset = importer->getOriginal();
-  asset->setScale(glm::vec3(0.2f));
   asset->setPosition(glm::vec3(-4, 0, 0));
+  asset->forceComputeTransform();
+  Log.print<Severity::debug>("Asset initial transform: ", glmPrint::printMat4(asset->getGlobalTransform()));
+
   _mScene.addChild(asset);
 
-  importer = new AssetImporter(_mResources, "./assets/miku_gltf/scene.gltf");
-  importer->load();
-  asset = importer->getOriginal();
-  asset->setPosition(glm::vec3(-2, 0, 0));
-  _mScene.addChild(asset);
+  if (asset->skeleton->getAnimationCount() > 0)
+  {
+    asset->currentAnimationIdx = 0;
+    asset->currentAnimationMs = 0;
+    asset->isAnimationStarted = true;
+  }
+  else
+  {
+    Log.print<Severity::warning>("Failed to load the animations!!!!");
+  }
 
-  importer = new AssetImporter(_mResources, "./assets/sponza/sponza.obj");
-  importer->load();
-  asset = importer->getOriginal();
-  asset->setScale(glm::vec3(0.02f));
-  _mScene.addChild(asset);
+  //importer = new AssetImporter(_mResources, "./assets/miku_gltf/scene.gltf");
+  //importer->load();
+  //asset = importer->getOriginal();
+  //asset->setPosition(glm::vec3(-2, 0, 0));
+  //_mScene.addChild(asset);
+
+  //importer = new AssetImporter(_mResources, "./assets/sponza/sponza.obj");
+  //importer->load();
+  //asset = importer->getOriginal();
+  //asset->setScale(glm::vec3(0.02f));
+  //_mScene.addChild(asset);
 
 }
 

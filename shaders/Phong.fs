@@ -10,6 +10,10 @@ in vec2 fTex;
 in vec2 fTex_2;
 in vec2 fTex_3;
 
+/* TESTING ONLY */
+flat in uvec4 fJoint;
+uniform int useBoneMatrices;
+
 /* basic uniforms */
 uniform float alphaCutoff;
 
@@ -132,35 +136,35 @@ vec2 getTexCoord(int uvIndex)
 
 void main()
 {
-  // vec2 diffuseTexCoord  = getTexCoord(phongMaterial.diffuseUVIndex);
-  // vec2 specularTexCoord = getTexCoord(phongMaterial.specularUVIndex);
-  // vec2 ambientTexCoord  = getTexCoord(phongMaterial.ambientUVIndex);
-  
   float alpha = phongMaterial.diffuse.w;
   vec3 matDiffuse = phongMaterial.diffuse.xyz;
   vec3 matSpecular = phongMaterial.specular.xyz;
   vec3 matAmbient = phongMaterial.ambient.xyz;
 
-   if (phongMaterial.diffuseUVIndex != -1) {
+  if (phongMaterial.diffuseUVIndex != -1) 
+  {
     vec2 diffuseTexCoord = fTex;
     vec4 texDiffuse = texture(phongMaterial.diffuseTex, diffuseTexCoord);
     matDiffuse *= texDiffuse.xyz;
     alpha *= texDiffuse.w;
-   }
+  }
 
-  if (phongMaterial.specularUVIndex != -1) {
+  if (phongMaterial.specularUVIndex != -1) 
+  {
     vec2 specularTexCoord = fTex;
     vec4 texSpecular = texture(phongMaterial.specularTex, specularTexCoord);
     matSpecular *= texSpecular.xyz;
   }
   
-  if (phongMaterial.ambientUVIndex != -1) {
+  if (phongMaterial.ambientUVIndex != -1) 
+  {
     vec2 ambientTexCoord  = fTex;
     vec4 texAmbient = texture(phongMaterial.ambientTex, ambientTexCoord);
     matAmbient *= texAmbient.xyz;
   }
 
-  if (alpha < alphaCutoff) {
+  if (alpha < alphaCutoff) 
+  {
     discard;
   }
 

@@ -1,5 +1,5 @@
 #include "Skeleton.h"
-
+#include "../utils/Printer.hpp"
 
 Bone::Bone()
   : Node(), inverseBindPoseTransform(1.f), bindPoseTransform(1.f), boneIndex(0)
@@ -246,6 +246,10 @@ std::vector<glm::mat4> Skeleton::calcBoneMatrices(unsigned int idx, double timeI
     glm::mat4 boneMatrix = inverseGlobalTransform
       * bones[i]->getGlobalTransform()
       * bones[i]->inverseBindPoseTransform;
+
+    Log.print<Severity::debug>("InverseGlobalTransform: \n", glmPrint::printMat4(inverseGlobalTransform));
+    Log.print<Severity::debug>("bone transform: \n", glmPrint::printMat4(bones[i]->getGlobalTransform()));
+    Log.print<Severity::debug>("inverse bind pose: \n", glmPrint::printMat4(bones[i]->inverseBindPoseTransform));
 
     ret.push_back(boneMatrix);
   }

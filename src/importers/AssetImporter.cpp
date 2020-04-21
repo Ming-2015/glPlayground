@@ -35,9 +35,17 @@ void AssetImporter::load(unsigned int flags)
   }
 
   _mRoot = new Asset();
-
   processBones(scene);
   processNode(scene->mRootNode, scene, _mRoot);
+
+  if (_mSkeleton)
+  {
+    _mRoot->skeleton = _mSkeleton;
+    for (auto& it : _mMaterials)
+    {
+      _mRoot->allMaterials.push_back(it.second);
+    }
+  }
 }
 
 glm::mat4 aiMatrixToGlm(aiMatrix4x4 mat)
@@ -48,7 +56,7 @@ glm::mat4 aiMatrixToGlm(aiMatrix4x4 mat)
   {
     for (int j = 0; j < 4; j++)
     {
-      ret[i][j] = mat[i][j];
+      ret[j][i] = mat[i][j];
     }
   }
 
@@ -137,6 +145,8 @@ void AssetImporter::processAnimations(const aiScene* scene)
   {
     aiAnimation* assimpAnimation = scene->mAnimations[i];
     Animation* anim = new Animation();
+    _mSkeleton->addAnimation(anim);
+
     anim->totalTicks = assimpAnimation->mDuration;
     anim->ticksPerSecond = assimpAnimation->mTicksPerSecond;
 
@@ -191,7 +201,6 @@ void AssetImporter::processNode(aiNode* node, const aiScene* scene, Asset* asset
     std::string primitiveName = processMesh(mesh, scene, assetNode);
 
     Model* model = new Model(_mPrimitives[primitiveName]);
-    model->skeleton = _mSkeleton;
     auto it = _mMaterials.find(primitiveName);
     if (it != _mMaterials.end())
       model->material = (*it).second;

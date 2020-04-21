@@ -17,6 +17,7 @@ protected:
 public:
   void use();
   virtual MaterialBase* clone() const override = 0;
+  const ShaderProgram* getProgram() const { return _mProgram; }
 
   std::string name;
 };

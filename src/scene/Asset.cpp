@@ -73,3 +73,55 @@ std::map<std::string, Model*> Asset::getAllModels() const
 {
   return _mModels;
 }
+
+void Asset::update(float deltaT)
+{
+  if (isAnimationStarted)
+  {
+    currentAnimationMs += deltaT;
+  }
+
+  Node::update(deltaT);
+}
+
+
+void Asset::draw(const glm::mat4& PV)
+{
+
+  std::map<const ShaderProgram*, Material*> uniqueMats;
+
+  for (Material*& mat : allMaterials)
+  {
+    const ShaderProgram* p = mat->getProgram();
+    if (uniqueMats.find(p) == uniqueMats.end())
+    {
+      uniqueMats[p] = mat;
+    }
+  }
+
+  if (isAnimationStarted && currentAnimationIdx >= 0)
+  {
+    Animation* anim = skeleton->getAnimation(currentAnimationIdx);
+    std::vector<glm::mat4> boneMatrices = skeleton->calcBoneMatrices(currentAnimationIdx, anim->convertMillisecondsToTicks(currentAnimationMs));
+
+    for (auto it : uniqueMats)
+    {
+      it.second->setBoneMatrices(boneMatrices);
+      it.second->setUseBoneTransform(true);
+    }
+  }
+  else
+  {
+    for (auto it : uniqueMats)
+    {
+      it.second->setUseBoneTransform(false);
+    }
+  }
+
+  Node::draw(PV);
+
+  for (auto it : uniqueMats)
+  {
+    it.second->setUseBoneTransform(false);
+  }
+}
