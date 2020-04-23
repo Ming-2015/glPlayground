@@ -42,6 +42,7 @@ To run this program, you will need the assets used for testing. Please email me 
 ## Next steps
 * Write compiled 'Effects' which the Materials link to (a step between ShaderProgram and Material)
 * Queue render draw calls and sort/optimize them (make sure translucent objects are going last)
+* Skybox
 * Shadow maps
 * Hemispheric lighting
 * Height mapping
@@ -49,6 +50,7 @@ To run this program, you will need the assets used for testing. Please email me 
 * Water shaders
 * Colliders
 * Frustrum culling
+* Morph target animation
 
 ## Next next steps
 * IMGUI
