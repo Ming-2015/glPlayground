@@ -40,7 +40,7 @@ void TestTriangle::_onLoad()
   mat->ambientTex = mat->diffuseTex;
   mat->shininess = 64.f;
   _mScene.addChild(model);
-  model->setPosition(glm::vec3(2, 0.5f, 0));
+  model->setPosition(glm::vec3(0, 0.5f, 0));
 
   _mCamera = new FreeCamera();
   _mCamera->setPosition(glm::vec3(0, 0, -2.f));
@@ -95,9 +95,9 @@ void TestTriangle::_onLoad()
   importer = new AssetImporter(_mResources, "./assets/BrainStem/BrainStem.gltf");
   importer->load();
   Asset* asset = importer->getOriginal();
-  asset->setPosition(glm::vec3(-4, 0, 0));
+  asset->setPosition(glm::vec3(-3, 0, 0));
+  asset->setRotationQuaternion(glm::angleAxis(-glm::pi<float>()/2, glm::vec3(1, 0, 0)));
   asset->forceComputeTransform();
-  Log.print<Severity::debug>("Asset initial transform: ", glmPrint::printMat4(asset->getGlobalTransform()));
 
   _mScene.addChild(asset);
 
@@ -112,17 +112,19 @@ void TestTriangle::_onLoad()
     Log.print<Severity::warning>("Failed to load the animations!!!!");
   }
 
-  importer = new AssetImporter(_mResources, "./assets/miku_gltf/scene.gltf");
-  importer->load();
-  asset = importer->getOriginal();
-  asset->setPosition(glm::vec3(-2, 0, 0));
-  _mScene.addChild(asset);
+  asset->update(0);
 
-  importer = new AssetImporter(_mResources, "./assets/sponza/sponza.obj");
-  importer->load();
-  asset = importer->getOriginal();
-  asset->setScale(glm::vec3(0.02f));
-  _mScene.addChild(asset);
+  //importer = new AssetImporter(_mResources, "./assets/miku_gltf/scene.gltf");
+  //importer->load();
+  //asset = importer->getOriginal();
+  //asset->setPosition(glm::vec3(-1.5, 0, 0));
+  //_mScene.addChild(asset);
+
+  //importer = new AssetImporter(_mResources, "./assets/sponza/sponza.obj");
+  //importer->load();
+  //asset = importer->getOriginal();
+  //asset->setScale(glm::vec3(0.02f));
+  //_mScene.addChild(asset);
 }
 
 void TestTriangle::_onUpdate(float deltaT)

@@ -284,7 +284,7 @@ void Primitive::initArrayObject(const PrimitiveData* data)
     glBindBuffer(GL_ARRAY_BUFFER, _mWeightsVbo);
     glBufferData(
       GL_ARRAY_BUFFER,
-      sizeof(float)* data->weights.size(),
+      sizeof(data->weights[0])* data->weights.size(),
       static_cast<const void*>(data->weights.data()),
       GL_STATIC_DRAW
     );
@@ -295,8 +295,8 @@ void Primitive::initArrayObject(const PrimitiveData* data)
       Primitive::SIZE_WEIGHT,
       GL_FLOAT,
       GL_FALSE,
-      Primitive::SIZE_WEIGHT * sizeof(float),
-      (void*)0
+      Primitive::SIZE_WEIGHT * sizeof(data->weights[0]),
+      nullptr
     );
     glEnableVertexAttribArray(Primitive::ATTRIBUTE_WEIGHT);
 

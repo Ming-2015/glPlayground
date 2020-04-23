@@ -38,7 +38,6 @@ void Node::addChild(Node* n)
   _mChildren.push_back(n);
   n->_mParentIdx = _mChildren.size() - 1;
   n->_mParent = this;
-
   n->_setParentGlobalTransform(getGlobalTransform());
 }
 
@@ -224,14 +223,20 @@ void Node::forceComputeTransform()
     _updateWorldMatrix();
     _mIsGlobalTransformDirty = true;
     _mShouldUpdateModelMatrix = false;
-    for (auto& child : _mChildren) 
+  }
+
+  if (_mIsGlobalTransformDirty)
+  {
+    for (auto& child : _mChildren)
       child->_setParentGlobalTransform(getGlobalTransform());
   }
 }
 
-const glm::mat4& Node::getGlobalTransform() {
+const glm::mat4& Node::getGlobalTransform() 
+{
   if (_mIsGlobalTransformDirty) 
     _mGlobalTransformCache = _mParentGlobalTransform * _mModelMatrix;
+  
   return _mGlobalTransformCache;
 }
 

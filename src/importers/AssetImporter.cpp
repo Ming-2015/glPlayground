@@ -24,7 +24,7 @@ void AssetImporter::load(unsigned int flags)
   Assimp::Importer importer;
   const aiScene* scene = importer.ReadFile(
     _mPath, 
-    aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_GenUVCoords | flags
+    aiProcess_Triangulate | aiProcess_GenNormals | flags
   );
 
   if (!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) 
@@ -63,15 +63,26 @@ glm::mat4 aiMatrixToGlm(aiMatrix4x4 mat)
   return ret;
 }
 
-void processBoneNode(aiNode* node, Bone* parent, const std::unordered_map<std::string, Bone*>& allBones)
+void processBoneNode(aiNode* node, Bone* parent, std::unordered_map<std::string, Bone*>& allBones)
 {
+  std::string nodeName(node->mName.C_Str());
   auto& it = allBones.find(node->mName.C_Str());
   Bone* current = parent;
   if (it != allBones.end())
   {
     current = it->second;
     current->setParent(parent);
-    current->bindPoseTransform = aiMatrixToGlm(node->mTransformation);
+    current->setBindPoseTransform(aiMatrixToGlm(node->mTransformation));
+  }
+  // if has a parent
+  else if (parent && !nodeName.empty())
+  {
+    current = new Bone();
+    current->setParent(parent);
+    current->inverseBindPoseTransform = glm::mat4(1.f);
+    current->setBindPoseTransform(aiMatrixToGlm(node->mTransformation));
+    current->name = std::string(node->mName.C_Str());
+    allBones[current->name] = current;
   }
 
   for (int i = 0; i < node->mNumChildren; i++)
@@ -117,7 +128,7 @@ void AssetImporter::processBones(const aiScene* scene)
     root = new Bone();
     root->name = _mPath + ":joint_root";
     root->inverseBindPoseTransform = glm::mat4(1.f);
-    root->bindPoseTransform = glm::mat4(1.f);
+    root->setBindPoseTransform(glm::mat4(1.f));
 
     for (auto& b : rootBones) root->addChild(b);
   }
@@ -135,6 +146,8 @@ void AssetImporter::processBones(const aiScene* scene)
   _mSkeleton = new Skeleton();
   _mSkeleton->setBoneTree(root);
   _mSkeleton->inverseGlobalTransform = glm::inverse(aiMatrixToGlm( scene->mRootNode->mTransformation ));
+
+  Log.print<Severity::debug>("Creating a skeleton with ", _mSkeleton->getBoneCount(), " bones");
 
   processAnimations(scene);
 }
@@ -156,6 +169,11 @@ void AssetImporter::processAnimations(const aiScene* scene)
 
       AnimationBoneData* boneData = new AnimationBoneData();
       anim->animationData[animNode->mNodeName.C_Str()] = boneData;
+
+      if (!_mSkeleton->getBone(animNode->mNodeName.C_Str())) 
+      {
+        Log.print<Severity::warning>("Failed to find corresponding anim node: ", animNode->mNodeName.C_Str());
+      }
 
       for (int np = 0; np < animNode->mNumPositionKeys; np++)
       {
@@ -183,15 +201,17 @@ void AssetImporter::processAnimations(const aiScene* scene)
 
 void AssetImporter::processNode(aiNode* node, const aiScene* scene, Asset* assetNode)
 {
-  // transformation
-  aiVector3D position, scaling;
-  aiQuaternion rotation;
-  node->mTransformation.Decompose(scaling, rotation, position);
-  assetNode->setPosition(glm::vec3(position.x, position.y, position.z));
-  assetNode->setRotationQuaternion(glm::quat(rotation.w, rotation.x, rotation.y, rotation.z));
-  assetNode->setScale(glm::vec3(scaling.x, scaling.y, scaling.z));
-  assetNode->name = node->mName.C_Str();
+  if (!_mSkeleton) {
+    // transformation
+    aiVector3D position, scaling;
+    aiQuaternion rotation;
+    node->mTransformation.Decompose(scaling, rotation, position);
+    assetNode->setPosition(glm::vec3(position.x, position.y, position.z));
+    assetNode->setRotationQuaternion(glm::quat(rotation.w, rotation.x, rotation.y, rotation.z));
+    assetNode->setScale(glm::vec3(scaling.x, scaling.y, scaling.z));
+  }
 
+  assetNode->name = node->mName.C_Str();
   Log.print<Severity::debug>("Processing node: ", assetNode->name);
 
   // meshes
@@ -201,6 +221,7 @@ void AssetImporter::processNode(aiNode* node, const aiScene* scene, Asset* asset
     std::string primitiveName = processMesh(mesh, scene, assetNode);
 
     Model* model = new Model(_mPrimitives[primitiveName]);
+    //model->renderWireMesh = true;
     auto it = _mMaterials.find(primitiveName);
     if (it != _mMaterials.end())
       model->material = (*it).second;
@@ -325,9 +346,18 @@ Primitive* AssetImporter::createPrimitiveFromAiMesh(const std::string& name, aiM
     }
   }
 
-  if (hasBones && _mSkeleton != nullptr)
+  if (_mSkeleton != nullptr && !hasBones)
   {
-    std::vector<VertexBoneData> boneData(mesh->mNumVertices, VertexBoneData());
+    Log.print<Severity::warning>("Missing boned vertices in a primitive with skeleton!");
+  }
+
+  if (_mSkeleton != nullptr && hasBones)
+  {
+    std::vector<VertexBoneData> boneData;
+
+    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+      boneData.push_back(VertexBoneData());
+    }
 
     for (int i = 0; i < mesh->mNumBones; i++)
     {
@@ -335,7 +365,7 @@ Primitive* AssetImporter::createPrimitiveFromAiMesh(const std::string& name, aiM
       std::string name = bone->mName.C_Str();
 
       int boneId = _mSkeleton->getBoneIdx(name);
-      if (boneId < 0) 
+      if (boneId < 0)
       {
         Log.print<Severity::warning>("Failed to retrieve bone ID from the skeleton");
         continue;
@@ -349,17 +379,27 @@ Primitive* AssetImporter::createPrimitiveFromAiMesh(const std::string& name, aiM
       }
     }
 
-    for (int i = 0; i < boneData.size(); i++)
+    for (int i = 0; i < mesh->mNumVertices; i++)
     {
+
       boneData[i].normalizeBoneWeights();
 
       glm::uvec4 boneIds = boneData[i].getBoneIds();
       glm::vec4 weights = boneData[i].getWeights();
-      for (int j = 0; j < 4; j++) 
+
+
+      float totalWeight = 0;
+      for (int j = 0; j < 4; j++)
       {
         data.joints.push_back(boneIds[j]);
         data.weights.push_back(weights[j]);
+        totalWeight += weights[j];
       }
+
+      if (totalWeight < 0.99f || totalWeight > 1.01f) {
+        Log.print<Severity::warning>("Total weight for this vertex: ",totalWeight );
+      }
+
     }
   }
 
@@ -533,7 +573,7 @@ Asset* AssetImporter::createInstance(bool cloneMaterial) const
 
   if (cloneMaterial) 
   {
-    // clone material somehow..?
+    // TODO: clone material somehow..?
   }
 
   return clone;

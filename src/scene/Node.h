@@ -22,8 +22,14 @@ protected:
 
   // a cache of the parent's transform in the previous draw call
   glm::mat4 _mParentGlobalTransform;
+
+  // a cache of current global transform
   glm::mat4 _mGlobalTransformCache;
+
+  // is the global transform cache dirty? - if the model matrix changes or parentGlobalTransform changes
   bool _mIsGlobalTransformDirty = true;
+
+  // set global transform
   void _setParentGlobalTransform(const glm::mat4& transform);
 
 public:

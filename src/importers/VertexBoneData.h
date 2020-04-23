@@ -13,6 +13,8 @@ public:
   void addBoneData(unsigned int boneId, float weight);
   void normalizeBoneWeights();
 
-  glm::uvec4 getBoneIds();
-  glm::vec4 getWeights();
+  glm::uvec4 getBoneIds() const;
+  glm::vec4 getWeights() const;
+
+  float getTotalWeight() const;
 };

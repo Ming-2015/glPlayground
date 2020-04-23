@@ -9,12 +9,19 @@ protected:
 
   virtual void copyTo(Cloneable* cloneable) const override;
 
+  // the original bone matrix for a bind pose
+  glm::mat4 bindPoseTransform;
+  glm::vec3 bindPosePosition;
+  glm::quat bindPoseRotation;
+  glm::vec3 bindPoseScale;
+
 public:
   // for transforming to the bone space - a.k.a. offsetMatrix or skinning transform
   glm::mat4 inverseBindPoseTransform;
 
-  // the original bone matrix for a bind pose
-  glm::mat4 bindPoseTransform;
+  // set bind pose
+  void setBindPoseTransform(const glm::mat4& t);
+  void useBindPose();
 
   // index in the skeleton
   unsigned int boneIndex;
@@ -76,6 +83,7 @@ protected:
   // each node acts as a bone...
   std::vector<Bone*> bones;
   std::map<std::string, unsigned int> boneMapping;
+  std::vector<glm::mat4> bindPoseTransforms;
   Bone* root = nullptr;
 
   std::vector<Animation*> animations;
@@ -96,6 +104,7 @@ public:
   glm::mat4 inverseGlobalTransform;
   std::vector<glm::mat4> calcBoneMatrices(const std::string& animName, double timeInTicks);
   std::vector<glm::mat4> calcBoneMatrices(unsigned int idx, double timeInTicks);
+  const std::vector<glm::mat4>& getBindPoseMatrices();
 
   Bone* getBone(const std::string& name) const;
   Bone* getBone(unsigned int idx) const;

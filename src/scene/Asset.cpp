@@ -99,22 +99,26 @@ void Asset::draw(const glm::mat4& PV)
     }
   }
 
-  if (isAnimationStarted && currentAnimationIdx >= 0)
-  {
-    Animation* anim = skeleton->getAnimation(currentAnimationIdx);
-    std::vector<glm::mat4> boneMatrices = skeleton->calcBoneMatrices(currentAnimationIdx, currentAnimationMs);
+  if (skeleton) {
+    if (isAnimationStarted && currentAnimationIdx >= 0)
+    {
+      Animation* anim = skeleton->getAnimation(currentAnimationIdx);
+      std::vector<glm::mat4> boneMatrices = skeleton->calcBoneMatrices(currentAnimationIdx, currentAnimationMs);
 
-    for (auto it : uniqueMats)
-    {
-      it.second->setBoneMatrices(boneMatrices);
-      it.second->setUseBoneTransform(true);
+      for (auto it : uniqueMats)
+      {
+        it.second->setBoneMatrices(boneMatrices);
+        it.second->setUseBoneTransform(true);
+      }
     }
-  }
-  else
-  {
-    for (auto it : uniqueMats)
+    else
     {
-      it.second->setUseBoneTransform(false);
+      const std::vector<glm::mat4>& boneMatrices = skeleton->getBindPoseMatrices();
+      for (auto it : uniqueMats)
+      {
+        it.second->setBoneMatrices(boneMatrices);
+        it.second->setUseBoneTransform(true);
+      }
     }
   }
 

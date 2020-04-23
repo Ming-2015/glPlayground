@@ -10,10 +10,6 @@ in vec2 fTex;
 in vec2 fTex_2;
 in vec2 fTex_3;
 
-/* TESTING ONLY */
-flat in uvec4 fJoint;
-uniform int useBoneMatrices;
-
 /* basic uniforms */
 uniform float alphaCutoff;
 

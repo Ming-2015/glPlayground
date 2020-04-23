@@ -42,7 +42,6 @@ void Game::init()
 
   _mCurrentState = new TestTriangle(resources);
   _mCurrentState->load();
-
 }
 
 void Game::render() 

@@ -4,8 +4,8 @@ layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTex;
 layout (location = 3) in vec3 aTangent;
 layout (location = 4) in vec3 aBitangent;
-layout (location = 5) in uvec4 aJoint;
-layout (location = 6) in vec4 aWeight;
+layout (location = 5) in vec4 aWeight;
+layout (location = 6) in uvec4 aJoint;
 layout (location = 7) in vec2 aTex_2;
 layout (location = 8) in vec2 aTex_3;
 
@@ -16,7 +16,6 @@ out vec2 fTex;
 out vec4 fTangent;
 out vec2 fTex_2;
 out vec2 fTex_3;
-flat out uvec4 fJoint;
 
 // model matrix
 uniform mat4 modelMat;
@@ -39,8 +38,8 @@ void main()
   {
     skinMat = aWeight.x * boneMatrices[aJoint.x]
             + aWeight.y * boneMatrices[aJoint.y]
-            + aWeight.w * boneMatrices[aJoint.z]
-            + aWeight.z * boneMatrices[aJoint.w];
+            + aWeight.z * boneMatrices[aJoint.z]
+            + aWeight.w * boneMatrices[aJoint.w];
   }
 
   gl_Position = projViewModelMat * skinMat * vec4(aPos, 1.0);
@@ -51,5 +50,4 @@ void main()
   fTex = aTex;
   fTex_2 = aTex_2;
   fTex_3 = aTex_3;
-  fJoint = aJoint;
 }

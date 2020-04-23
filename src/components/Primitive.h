@@ -108,8 +108,8 @@ public:
   static const int ATTRIBUTE_TEX        = 2;
   static const int ATTRIBUTE_TANGENT    = 3;
   static const int ATTRIBUTE_BITANGENT  = 4;
-  static const int ATTRIBUTE_JOINT      = 5;
-  static const int ATTRIBUTE_WEIGHT     = 6;
+  static const int ATTRIBUTE_WEIGHT     = 5;
+  static const int ATTRIBUTE_JOINT      = 6;
   static const int ATTRIBUTE_TEX_2      = 7;
   static const int ATTRIBUTE_TEX_3      = 8;
 

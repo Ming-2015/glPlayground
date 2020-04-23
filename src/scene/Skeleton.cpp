@@ -1,5 +1,6 @@
 #include "Skeleton.h"
 #include "../utils/Printer.hpp"
+#include <glm/gtx/matrix_decompose.hpp>
 
 Bone::Bone()
   : Node(), inverseBindPoseTransform(1.f), bindPoseTransform(1.f), boneIndex(0)
@@ -29,6 +30,21 @@ void Bone::copyTo(Cloneable* clone) const
   other->inverseBindPoseTransform = inverseBindPoseTransform;
   other->bindPoseTransform = bindPoseTransform;
   other->boneIndex = boneIndex;
+}
+
+void Bone::setBindPoseTransform(const glm::mat4& t)
+{
+  bindPoseTransform = t;
+  glm::vec3 skew;
+  glm::vec4 perspective;
+  glm::decompose(bindPoseTransform, bindPoseScale, bindPoseRotation, bindPosePosition, skew, perspective);
+}
+
+void Bone::useBindPose()
+{
+  setPosition(bindPosePosition);
+  setRotationQuaternion(bindPoseRotation);
+  setScale(bindPoseScale);
 }
 
 static int binarySearch(double time, const std::vector<double>& allTimes, unsigned int start, unsigned int end)
@@ -179,6 +195,21 @@ void Skeleton::setBoneTree(Bone* r)
   bones.clear();
   boneMapping.clear();
   parseBone(r);
+
+  for (int i = 0; i < bones.size(); i++)
+  {
+    bones[i]->useBindPose();
+  }
+  root->update(0);
+
+  bindPoseTransforms.clear();
+  for (unsigned int i = 0; i < bones.size(); i++)
+  {
+    glm::mat4 boneMatrix = inverseGlobalTransform
+      * bones[i]->getGlobalTransform()
+      * bones[i]->inverseBindPoseTransform;
+    bindPoseTransforms.push_back(boneMatrix);
+  }
 }
 
 void Skeleton::parseBone(Bone* bone)
@@ -201,6 +232,11 @@ void Skeleton::addAnimation(Animation* anim)
 {
   animations.push_back(anim);
   animationMapping[anim->name] = animations.size() - 1;
+}
+
+const std::vector<glm::mat4>& Skeleton::getBindPoseMatrices()
+{
+  return bindPoseTransforms;
 }
 
 std::vector<glm::mat4> Skeleton::calcBoneMatrices(const std::string& animName, double time)

@@ -10,8 +10,6 @@ void VertexBoneData::addBoneData(unsigned int boneId, float weight)
   }
   else
   {
-    Log.print<Severity::warning>("Replacing bone with lowest weight for vertex with more than 4 bones");
-
     // find the bone with the smallest weight
     int minIndex = 0;
     float minWeight = weights[0];
@@ -27,19 +25,18 @@ void VertexBoneData::addBoneData(unsigned int boneId, float weight)
     // replace with new bone if the new bone has greater weight
     if (weight > minWeight)
     {
+      if (weights[minIndex] > 0) Log.print <Severity::debug>("Discord bone weight: ", weights[minIndex], " with ID ", boneIds[minIndex]);
+
       boneIds[minIndex] = boneId;
       weights[minIndex] = weight;
     }
+    else if (weight > 0) Log.print <Severity::debug>("Discord bone weight: ", weight, " with ID ", boneId);
   }
 }
 
 void VertexBoneData::normalizeBoneWeights()
 {
-  float totalWeight = 0;
-  for (int i = 0; i < weights.size(); i++)
-  {
-    totalWeight += weights[i];
-  }
+  float totalWeight = getTotalWeight();
 
   if (totalWeight == 0) return;
 
@@ -49,7 +46,17 @@ void VertexBoneData::normalizeBoneWeights()
   }
 }
 
-glm::uvec4 VertexBoneData::getBoneIds()
+float VertexBoneData::getTotalWeight() const
+{
+  float totalWeight = 0;
+  for (int i = 0; i < weights.size(); i++)
+  {
+    totalWeight += weights[i];
+  }
+  return totalWeight;
+}
+
+glm::uvec4 VertexBoneData::getBoneIds() const
 {
   glm::uvec4 ret(0);
   for (int i = 0; i < boneIds.size(); i++)
@@ -59,7 +66,7 @@ glm::uvec4 VertexBoneData::getBoneIds()
   return ret;
 }
 
-glm::vec4 VertexBoneData::getWeights()
+glm::vec4 VertexBoneData::getWeights() const
 {
   glm::vec4 ret(0);
   for (int i = 0; i < weights.size(); i++)
