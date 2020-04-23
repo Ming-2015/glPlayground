@@ -29,3 +29,35 @@ Compile this with a c++ compiler with the libraries listed above. It should run 
 
 ## Running
 To run this program, you will need the assets used for testing. Please email me if you need the assets, or you can head over to GameStates/TestTriangle.cpp and swap out the assets loaded with your own assets.
+
+## Done
+* Phong shader
+* Scene graph
+* Simple Camera
+* Simple Point Lights and Direct Lights
+* Custom SRGB FrameBuffer to render to
+* Asset importing pipeline via Assimp
+* Skin/Skeletal animation
+
+## Next steps
+* Write compiled 'Effects' which the Materials link to (a step between ShaderProgram and Material)
+* Queue render draw calls and sort/optimize them (make sure translucent objects are going last)
+* Shadow maps
+* Hemispheric lighting
+* Height mapping
+* PBR shaders
+* Water shaders
+* Colliders
+* Frustrum culling
+
+## Next next steps
+* IMGUI
+* Some kind of font rendering system
+* DoF and Bloom
+* Physics (external engine or custom?)
+* Procedural generation
+* Store/send bone matrices with a texture
+* Particle system
+* Runtime-compiled Effects based on certain parameters (number of lights, using skinning matrices, etc), to get rid of conditionals based on Uniforms
+* Screenspace effects - blur
+* AI controllers
