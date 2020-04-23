@@ -201,16 +201,14 @@ void AssetImporter::processAnimations(const aiScene* scene)
 
 void AssetImporter::processNode(aiNode* node, const aiScene* scene, Asset* assetNode)
 {
-  if (!_mSkeleton) {
-    // transformation
-    aiVector3D position, scaling;
-    aiQuaternion rotation;
-    node->mTransformation.Decompose(scaling, rotation, position);
-    assetNode->setPosition(glm::vec3(position.x, position.y, position.z));
-    assetNode->setRotationQuaternion(glm::quat(rotation.w, rotation.x, rotation.y, rotation.z));
-    assetNode->setScale(glm::vec3(scaling.x, scaling.y, scaling.z));
-  }
-
+  // transformation
+  aiVector3D position, scaling;
+  aiQuaternion rotation;
+  node->mTransformation.Decompose(scaling, rotation, position);
+  assetNode->setPosition(glm::vec3(position.x, position.y, position.z));
+  assetNode->setRotationQuaternion(glm::quat(rotation.w, rotation.x, rotation.y, rotation.z));
+  assetNode->setScale(glm::vec3(scaling.x, scaling.y, scaling.z));
+  
   assetNode->name = node->mName.C_Str();
   Log.print<Severity::debug>("Processing node: ", assetNode->name);
 

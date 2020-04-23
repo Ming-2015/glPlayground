@@ -128,12 +128,7 @@ void Material::setBoneMatrices(const std::vector<glm::mat4>& matrices)
 {
   if (boneMatricesUniform)
   {
-    // TODO: stream all at once
-    //boneMatricesUniform->setUniform(matrices);
-    for (int i = 0; i < matrices.size(); i++)
-    {
-      boneMatricesUniform->setUniform(matrices[i], i);
-    }
+    boneMatricesUniform->setUniform(matrices);
   }
 }
 

@@ -96,7 +96,6 @@ void TestTriangle::_onLoad()
   importer->load();
   Asset* asset = importer->getOriginal();
   asset->setPosition(glm::vec3(-3, 0, 0));
-  asset->setRotationQuaternion(glm::angleAxis(-glm::pi<float>()/2, glm::vec3(1, 0, 0)));
   asset->forceComputeTransform();
 
   _mScene.addChild(asset);
@@ -114,17 +113,17 @@ void TestTriangle::_onLoad()
 
   asset->update(0);
 
-  //importer = new AssetImporter(_mResources, "./assets/miku_gltf/scene.gltf");
-  //importer->load();
-  //asset = importer->getOriginal();
-  //asset->setPosition(glm::vec3(-1.5, 0, 0));
-  //_mScene.addChild(asset);
+  importer = new AssetImporter(_mResources, "./assets/miku_gltf/scene.gltf");
+  importer->load();
+  asset = importer->getOriginal();
+  asset->setPosition(glm::vec3(-1.5, 0, 0));
+  _mScene.addChild(asset);
 
-  //importer = new AssetImporter(_mResources, "./assets/sponza/sponza.obj");
-  //importer->load();
-  //asset = importer->getOriginal();
-  //asset->setScale(glm::vec3(0.02f));
-  //_mScene.addChild(asset);
+  importer = new AssetImporter(_mResources, "./assets/sponza/sponza.obj");
+  importer->load();
+  asset = importer->getOriginal();
+  asset->setScale(glm::vec3(0.02f));
+  _mScene.addChild(asset);
 }
 
 void TestTriangle::_onUpdate(float deltaT)

@@ -38,7 +38,7 @@ int Application::runMainLoop()
   renderElapsed.startTimer(true);
 
   float numFrames = 0;
-  bool printFps = false;
+  bool printFps = true;
 
   while(!game.shouldClose())
   {
